@@ -27,7 +27,15 @@ setup(
         "Topic :: Scientific/Engineering :: Physics",
     ],
     install_requires=[
-        "scipy"
+        "scipy",
+        "numba",
+        "cytoolz", 
+        "tqdm", 
+        "psutil", 
+        "opt_einsum", 
+        "autoray",
+        "quimb",
+        "qibo"
     ],
     extras_require={
         "docs": ["sphinx", "sphinx_rtd_theme", "recommonmark", "sphinxcontrib-bibtex", "sphinx_markdown_tables", "nbsphinx", "IPython"],
