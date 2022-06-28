@@ -31,7 +31,6 @@ setup(
         "opt_einsum>=3.2",
         "autoray>=0.2.0",
         "diskcache>=3.0",
-        "mpi4py",
         "randomgen>=1.18",
         "quimb",
         "qibo"
