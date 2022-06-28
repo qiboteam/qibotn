@@ -32,11 +32,7 @@ setup(
         "autoray>=0.2.0",
         "diskcache>=3.0",
         "mpi4py",
-        # "petsc4py",
-        # "slepc4py",
         "randomgen>=1.18",
-        "opt_einsum", 
-        "autoray",
         "quimb",
         "qibo"
     ],
