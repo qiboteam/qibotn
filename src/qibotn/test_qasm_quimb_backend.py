@@ -8,63 +8,6 @@ import qibo
 from qibo.models import QFT as qibo_qft
 
 from timeit import default_timer as timer
-import cirq
-
-# define dictionary
-gate_dict_cirq = {
-    #'i': I,
-    'h': cirq.H,
-    't': cirq.T,
-    #'z': Z,
-    'cz': cirq.CZ,
-    #'cX': cX,
-    #'rz': ZPhase,
-    #'rX': XPhase,
-    #'x': X,
-    #'y': Y,
-    'x_1_2': cirq.rx(0.5*np.pi),
-    'y_1_2': cirq.ry(0.5*np.pi)
-    #'hz_1_2': W_1_2,
-    #'fs': fSim
-}
-
-# search 'GATE_FUNCTIONS' in Source code for quimb.tensor.circuit for pre-defined gates in quimb
-gate_dict = {
-    #'i': I,
-    'h': 'H',
-    't': 'T',
-    #'z': Z,
-    'cz': 'cZ',
-    #'cX': cX,
-    #'rz': ZPhase,
-    #'rX': XPhase,
-    #'x': X,
-    #'y': Y,
-    'x_1_2': 'X_1_2',
-    'y_1_2': 'Y_1_2'
-}       
-
-        
-def QI_QFT(nqubits: int, with_swaps: bool = True, psi0 = None):
-    ## constructs qft circuit
-    #from qibo import gates
-    #circuit = Circuit(nqubits)
-    circ = qtn.Circuit(nqubits, psi0 = psi0)
-    
-    for i1 in range(nqubits):
-        #circuit.add(gates.H(i1))
-        circ.apply_gate('H', i1)
-        for i2 in range(i1 + 1, nqubits):
-            theta = np.pi / 2 ** (i2 - i1)
-            #circuit.add(gates.CU1(i2, i1, theta))
-            circ.apply_gate('CU1', theta, i2, i1)
-
-    if with_swaps:
-        for i in range(nqubits // 2):
-            #circuit.add(gates.SWAP(i, nqubits - i - 1))
-            circ.apply_gate('SWAP', i, nqubits - i - 1)
-
-    return circ
 
 def get_gate_params(operation):
     if "h " in operation:
@@ -86,8 +29,8 @@ def get_gate_params(operation):
         qbit_no = [int(re.findall(r'\d+', operation)[0])]
         qbit_no.insert(0, "T")
     elif "cu1" in operation:
-        lamda = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', 
-                                          operation.split(" ")[0])))
+        lamda = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', \
+            operation.split(" ")[0])))
         qbit_no = re.findall(r'\d+', operation.split(" ")[1])
         qbit_no = [int(x) for x in qbit_no]
         qbit_no[0:0] = ["CU1", lamda]
@@ -131,29 +74,29 @@ def get_gate_params(operation):
         qbit_no = [int(x) for x in qbit_no]
         qbit_no.insert(0, "CCZ")
     elif " rx " in operation:
-        theta = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', 
-                                          operation.split(" ")[0])))
+        theta = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', \
+            operation.split(" ")[0])))
         qbit_no = [int(re.findall(r'\d+', operation)[0])]
         qbit_no[0:0] = ["RX", theta]
     elif "^ry " in operation:
-        theta = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', 
-                                          operation.split(" ")[0])))
+        theta = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', \
+            operation.split(" ")[0])))
         qbit_no = [int(re.findall(r'\d+', operation)[0])]
         qbit_no[0:0] = ["RY", theta]
     elif "^rz " in operation:
-        theta = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', 
-                                          operation.split(" ")[0])))
+        theta = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', \
+            operation.split(" ")[0])))
         qbit_no = [int(re.findall(r'\d+', operation)[0])]
         qbit_no[0:0] = ["RZ", theta]
     elif "^rzz " in operation:
-        theta = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', 
-                                          operation.split(" ")[0])))
+        theta = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', \
+            operation.split(" ")[0])))
         qbit_no = re.findall(r'\d+', operation.split(" ")[1])
         qbit_no = [int(x) for x in qbit_no]
         qbit_no[0:0] = ["RZZ", theta]
     elif "^u1 " in operation:
-        lamda = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', 
-                                          operation.split(" ")[0])))
+        lamda = float('.'.join(re.findall(r'\b\d+(?:[Ee][+-]?\d+)?', \
+            operation.split(" ")[0])))
         qbit_no = [int(re.findall(r'\d+', operation)[0])]
         qbit_no[0:0] = ["U1", lamda]
     elif "^u2 " in operation:
@@ -177,7 +120,6 @@ def get_gate_params(operation):
 
 def get_gate_functions(qasm_str, start_idx):
     func_list = []
-    param_list = {}
     result = []
     idx_inc = 0
     for line in qasm_str[start_idx:]:
@@ -195,9 +137,6 @@ def get_gate_functions(qasm_str, start_idx):
 def qasm_QFT(nqubits:int, qasm_str:str, with_swaps: bool = True, psi0 = None):
     circ = qtn.Circuit(nqubits, psi0 = psi0)
 
-    # circ.psi.draw(color=['PSI0','CU1', 'H', 'SWAP'], show_inds=None, show_tags=False,font_size=40, font_size_inner=20)
-    # circ = qtn.Circuit.qasm(nqubits, psi0 = psi0)
-    gate_functions = {}
     qasm_str = qasm_str.split('\n')
     for idx, line in enumerate(qasm_str):
         command = line.split(" ")[0]
@@ -226,32 +165,31 @@ def qasm_QFT(nqubits:int, qasm_str:str, with_swaps: bool = True, psi0 = None):
     return circ
 
 
-def eval_QI_qft(nqubits, bond_dim=0, backend='numpy', qibo_backend='qibojit',
-                with_swaps=True, compare_qibo=False):
+def eval_QI_qft(nqubits, backend='numpy', qibo_backend='qibojit', \
+    with_swaps=True):
     # backend (quimb): numpy, cupy, jax. Passed to ``opt_einsum``.
     # qibo_backend: qibojit, qibotf, tensorflow, numpy
     
     # generate random statevector as initial state
-    init_state = np.random.random(2 ** nqubits) + 1j * np.random.random(2 ** nqubits)
+    init_state = np.random.random(2 ** nqubits) + 1j * \
+        np.random.random(2 ** nqubits)
     init_state = init_state / np.sqrt((np.abs(init_state)**2).sum())
     init_state_quimb = copy.deepcopy(init_state)
     
-    # Qibo part
-    if compare_qibo==True:
-        # qibo.set_backend(qibo_backend)
-        # qibo.set_backend(backend=qibo_backend, platform="numba")
-        qibo.set_backend(backend=qibo_backend, platform="numpy")
+    # Qibo circuit
+    # qibo.set_backend(backend=qibo_backend, platform="numba")
+    qibo.set_backend(backend=qibo_backend, platform="numpy")
 
-        start = timer()
-        circ_qibo = qibo_qft(nqubits, with_swaps)
-        amplitudes_reference = np.array(circ_qibo(init_state))
-        end = timer()
-        print("qibo time is " + str(end-start))
-        qasm_circ = circ_qibo.to_qasm()
+    start = timer()
+    circ_qibo = qibo_qft(nqubits, with_swaps)
+    amplitudes_reference = np.array(circ_qibo(init_state))
+    end = timer()
+    print("qibo time is " + str(end-start))
+    qasm_circ = circ_qibo.to_qasm()
 
  
     #####################################################################
-    # Quimb part
+    # Quimb circuit
     qu.core.pnjit()
     ## convert vector to MPS
     dims = tuple(2*np.ones(nqubits, dtype=int))
@@ -263,15 +201,11 @@ def eval_QI_qft(nqubits, bond_dim=0, backend='numpy', qibo_backend='qibojit',
     
     # construct quimb qft circuit
     start = timer()
-    if compare_qibo == False:
-        circ_quimb = QI_QFT(nqubits, with_swaps, psi0=init_state_MPS)
-    else:
-        circ_quimb = qasm_QFT(nqubits, qasm_circ, with_swaps, psi0=init_state_MPS)
+    circ_quimb = qasm_QFT(nqubits, qasm_circ, with_swaps, psi0=init_state_MPS)
 
     interim = circ_quimb.psi.full_simplify(seq="DRC")
 
     result = interim.to_dense(backend=backend)
-
     amplitudes = result.flatten()
     end = timer()
     quimb_qft_time = end-start
@@ -286,4 +220,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     print("Testing for %d nqubits" % (args.nqubits))
-    result = eval_QI_qft(args.nqubits, compare_qibo=True)
+    result = eval_QI_qft(args.nqubits)
