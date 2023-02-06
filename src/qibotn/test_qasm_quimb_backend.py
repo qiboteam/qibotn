@@ -193,10 +193,8 @@ def eval_QI_qft(nqubits, backend='numpy', qibo_backend='qibojit', \
     qu.core.pnjit()
     ## convert vector to MPS
     dims = tuple(2*np.ones(nqubits, dtype=int))
-    start = timer() 
-    init_state_MPS = qtn.tensor_1d.MatrixProductState.from_dense(init_state_quimb, dims)
-    end = timer()
-    MPS_time = end-start
+    init_state_MPS = qtn.tensor_1d.MatrixProductState.from_dense \
+        (init_state_quimb, dims)
 
     
     # construct quimb qft circuit
