@@ -1,4 +1,3 @@
-# Installation script for python
 from setuptools import setup, find_packages
 import pathlib
 
