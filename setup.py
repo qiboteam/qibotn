@@ -34,6 +34,9 @@ setup(
             "pytest-cov>=4.0.0",
             "pytest-env>=0.8.1",
         ],
+        "analysis": [
+            "pylint>=2.16.0",
+        ],
     },
     python_requires=">=3.7.0",
     long_description=LONG_DESCRIPTION,
