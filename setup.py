@@ -24,12 +24,12 @@ setup(
         "Topic :: Scientific/Engineering :: Physics",
     ],
     install_requires=[
-        "quimb",
-        "qibo",
+        "qibo>=0.1.10",
+        "quimb>=1.4.0",
     ],
     extras_require={
         "docs": [],
-        "tests": ["pytest", "pytest-cov"],
+        "tests": ["pytest>=7.2.0", "pytest-cov>=4.0.0"],
     },
     python_requires=">=3.7.0",
     long_description=LONG_DESCRIPTION,
