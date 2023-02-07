@@ -1,13 +1,13 @@
-import argparse
+import re
+import copy
+from timeit import default_timer as timer
+
+import numpy as np
 import quimb as qu
 import quimb.tensor as qtn
-import numpy as np
-import re, copy
 
 import qibo
 from qibo.models import QFT as qibo_qft
-
-from timeit import default_timer as timer
 
 
 def get_gate_params(operation):
@@ -138,7 +138,7 @@ def get_gate_functions(qasm_str, start_idx):
         elif "}" in line:
             print("Returning the list")
             print(func_list)
-            return func_list, idx_incsss
+            return func_list, idx_inc
         idx_inc += 1
 
 
@@ -196,7 +196,7 @@ def eval_QI_qft(nqubits, backend="numpy", qibo_backend="qibojit", with_swaps=Tru
     #####################################################################
     # Quimb circuit
     qu.core.pnjit()
-    ## convert vector to MPS
+    # convert vector to MPS
     dims = tuple(2 * np.ones(nqubits, dtype=int))
     init_state_MPS = qtn.tensor_1d.MatrixProductState.from_dense(init_state_quimb, dims)
 
