@@ -24,11 +24,16 @@ setup(
     ],
     install_requires=[
         "qibo>=0.1.10",
+        "qibojit>=0.0.7",
         "quimb[tensor]>=1.4.0",
     ],
     extras_require={
         "docs": [],
-        "tests": ["pytest>=7.2.0", "pytest-cov>=4.0.0"],
+        "tests": [
+            "pytest>=7.2.0",
+            "pytest-cov>=4.0.0",
+            "pytest-env>=0.8.1",
+        ],
     },
     python_requires=">=3.7.0",
     long_description=LONG_DESCRIPTION,

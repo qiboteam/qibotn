@@ -4,3 +4,4 @@ output-format = "colorized"
 [tool.pytest.ini_options]
 testpaths = ["tests/"]
 addopts = ["--cov=qibotn", "--cov-report=xml"]
+env = ["D:NUMBA_DISABLE_JIT=1"]
