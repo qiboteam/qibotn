@@ -24,7 +24,7 @@ setup(
     ],
     install_requires=[
         "qibo>=0.1.10",
-        "quimb>=1.4.0",
+        "quimb[tensor]>=1.4.0",
     ],
     extras_require={
         "docs": [],
