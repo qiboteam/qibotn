@@ -111,14 +111,14 @@ def get_gate_params(operation):
         phi = float(".".join(angles[0:2]))
         lamba = float(".".join(angles[2:]))
         qbit_no = int(re.findall(r"\d+", operation)[0])
-        qbit_no[0:0] = ["U2", phi, lamda]
+        qbit_no[0:0] = ["U2", phi, lamda]  # pylint: disable=E1137
     elif "^u3 " in operation:
         angles = re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0])
         theta = float(".".join(angles[0:2]))
         phi = float(".".join(angles[2:4]))
         lamba = float(".".join(angles[4:]))
         qbit_no = int(re.findall(r"\d+", operation)[0])
-        qbit_no[0:0] = ["U3", theta, phi, lamda]
+        qbit_no[0:0] = ["U3", theta, phi, lamda]  # pylint: disable=E1137
     else:
         assert "Unsupported gate"
 

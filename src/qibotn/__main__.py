@@ -12,8 +12,7 @@ def parser():
 
 def main(args: argparse.Namespace):
     print("Testing for %d nqubits" % (args.nqubits))
-    result = qasm_quimb.eval_QI_qft(args.nqubits)
-    print(result)
+    qasm_quimb.eval_QI_qft(args.nqubits)
 
 
 if __name__ == "__main__":
