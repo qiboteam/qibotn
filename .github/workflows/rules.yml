@@ -18,4 +18,5 @@ jobs:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
       environment: "qibotn"
+      pip-extras: "analysis,tests"
     secrets: inherit

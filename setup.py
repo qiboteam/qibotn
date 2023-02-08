@@ -1,4 +1,3 @@
-# Installation script for python
 from setuptools import setup, find_packages
 import pathlib
 
@@ -24,12 +23,20 @@ setup(
         "Topic :: Scientific/Engineering :: Physics",
     ],
     install_requires=[
-        "quimb",
-        "qibo",
+        "qibo>=0.1.10",
+        "qibojit>=0.0.7",
+        "quimb[tensor]>=1.4.0",
     ],
     extras_require={
         "docs": [],
-        "tests": ["pytest", "pytest-cov"],
+        "tests": [
+            "pytest>=7.2.0",
+            "pytest-cov>=4.0.0",
+            "pytest-env>=0.8.1",
+        ],
+        "analysis": [
+            "pylint>=2.16.0",
+        ],
     },
     python_requires=">=3.7.0",
     long_description=LONG_DESCRIPTION,
