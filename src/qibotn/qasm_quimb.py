@@ -3,7 +3,7 @@ import copy
 from dataclasses import dataclass, field
 from enum import Enum
 from timeit import default_timer as timer
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Union
 
 import numpy as np
 import quimb.tensor as qtn
@@ -39,9 +39,6 @@ class Parameter:
     preprocess: Callable = lambda x: x
     postprocess: Callable = lambda x: x
 
-    def extract(self, string):
-        return self.postprocess(self.extractor(self.preprocess(string)))
-
 
 class ParameterKind(Enum):
     FirstInt = Parameter(extract_ints, postprocess=lambda x: int(x[0]))
@@ -53,6 +50,10 @@ class ParameterKind(Enum):
     FirstFloat = Parameter(
         extract_floats, preprocess=lambda x: chunk(x, 0), postprocess=parse_float
     )
+
+    def extract(self, string):
+        v = self.value
+        return v.postprocess(v.extractor(v.preprocess(string)))
 
 
 ParK = ParameterKind
@@ -106,8 +107,8 @@ class GateKind(Enum):
     U3 = Gate("U3", "^u3 ")
 
 
-def gate_params(operation: str) -> List[int]:
-    qbit_no = []
+def gate_params(operation: str):
+    qbit_no: List[Union[int, float, str]] = []
 
     for kind in GateKind:
         gate = kind.value
