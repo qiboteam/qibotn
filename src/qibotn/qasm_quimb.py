@@ -34,29 +34,29 @@ def chunk(string: str, n: int):
 
 
 @dataclass
-class Parameter:
+class Extractor:
     extractor: Callable
     preprocess: Callable = lambda x: x
     postprocess: Callable = lambda x: x
 
 
-class ParameterKind(Enum):
-    FirstInt = Parameter(extract_ints, postprocess=lambda x: int(x[0]))
-    IntSecond = Parameter(
+class Parameter(Enum):
+    FirstInt = Extractor(extract_ints, postprocess=lambda x: int(x[0]))
+    IntSecond = Extractor(
         extract_ints,
         preprocess=lambda x: chunk(x, 1),
         postprocess=lambda x: int(x[0]),
     )
-    FirstFloat = Parameter(
+    FirstFloat = Extractor(
         extract_floats, preprocess=lambda x: chunk(x, 0), postprocess=parse_float
     )
 
     def extract(self, string):
-        v = self.value
-        return v.postprocess(v.extractor(v.preprocess(string)))
+        ex = self.value
+        return ex.postprocess(ex.extractor(ex.preprocess(string)))
 
 
-ParK = ParameterKind
+Par = Parameter
 
 
 # Gates
@@ -66,43 +66,43 @@ ParK = ParameterKind
 class Gate:
     name: str
     tag: str
-    parameters: Dict[str, ParameterKind] = field(default_factory=dict)
+    parameters: Dict[str, Parameter] = field(default_factory=dict)
 
 
 class GateKind(Enum):
-    H = Gate("H", "h ", {"p0": ParK.FirstInt})
-    X = Gate("X", "x ", {"p0": ParK.FirstInt})
-    Y = Gate("Y", "y ", {"p0": ParK.FirstInt})
-    Z = Gate("Z", "z ", {"p0": ParK.FirstInt})
-    S = Gate("S", "s ", {"p0": ParK.FirstInt})
-    T = Gate("T", "t ", {"p0": ParK.FirstInt})
-    CU1 = Gate("CU1", "cu1", {"lambda": ParK.FirstFloat, "p0": ParK.FirstInt})
+    H = Gate("H", "h ", {"p0": Par.FirstInt})
+    X = Gate("X", "x ", {"p0": Par.FirstInt})
+    Y = Gate("Y", "y ", {"p0": Par.FirstInt})
+    Z = Gate("Z", "z ", {"p0": Par.FirstInt})
+    S = Gate("S", "s ", {"p0": Par.FirstInt})
+    T = Gate("T", "t ", {"p0": Par.FirstInt})
+    CU1 = Gate("CU1", "cu1", {"lambda": Par.FirstFloat, "p0": Par.FirstInt})
     CU2 = Gate(
         "CU2",
         "cu2",
-        {"phi": ParK.FirstFloat, "lambda": ParK.FirstInt, "p0": ParK.FirstInt},
+        {"phi": Par.FirstFloat, "lambda": Par.FirstInt, "p0": Par.FirstInt},
     )
     CU3 = Gate(
         "CU3",
         "cu3",
         {
-            "theta": ParK.FirstFloat,
-            "phi": ParK.FirstFloat,
-            "lambda": ParK.FirstInt,
-            "p0": ParK.FirstInt,
+            "theta": Par.FirstFloat,
+            "phi": Par.FirstFloat,
+            "lambda": Par.FirstInt,
+            "p0": Par.FirstInt,
         },
     )
-    CX = Gate("CX", " cx ", {"p0": ParK.IntSecond})
-    CY = Gate("CY", " cy ", {"p0": ParK.IntSecond})
-    CZ = Gate("CZ", " cz ", {"p0": ParK.IntSecond})
-    CCX = Gate("CCX", " ccx ", {"p0": ParK.IntSecond})
-    CCY = Gate("CCY", " ccy ", {"p0": ParK.IntSecond})
-    CCZ = Gate("CCZ", " ccz ", {"p0": ParK.IntSecond})
-    RX = Gate("RX", " rx ", {"p0": ParK.FirstFloat, "theta": ParK.FirstInt})
-    RY = Gate("RY", "^ry ", {"p0": ParK.FirstFloat, "theta": ParK.FirstInt})
-    RZ = Gate("RZ", "^rz ", {"p0": ParK.FirstFloat, "theta": ParK.FirstInt})
-    RZZ = Gate("RZZ", "^rzz ", {"p0": ParK.FirstFloat, "theta": ParK.FirstInt})
-    U1 = Gate("U1", "^u1 ", {"p0": ParK.FirstFloat, "lambda": ParK.FirstInt})
+    CX = Gate("CX", " cx ", {"p0": Par.IntSecond})
+    CY = Gate("CY", " cy ", {"p0": Par.IntSecond})
+    CZ = Gate("CZ", " cz ", {"p0": Par.IntSecond})
+    CCX = Gate("CCX", " ccx ", {"p0": Par.IntSecond})
+    CCY = Gate("CCY", " ccy ", {"p0": Par.IntSecond})
+    CCZ = Gate("CCZ", " ccz ", {"p0": Par.IntSecond})
+    RX = Gate("RX", " rx ", {"p0": Par.FirstFloat, "theta": Par.FirstInt})
+    RY = Gate("RY", "^ry ", {"p0": Par.FirstFloat, "theta": Par.FirstInt})
+    RZ = Gate("RZ", "^rz ", {"p0": Par.FirstFloat, "theta": Par.FirstInt})
+    RZZ = Gate("RZZ", "^rzz ", {"p0": Par.FirstFloat, "theta": Par.FirstInt})
+    U1 = Gate("U1", "^u1 ", {"p0": Par.FirstFloat, "lambda": Par.FirstInt})
     U2 = Gate("U2", "^u2 ")
     U3 = Gate("U3", "^u3 ")
 
