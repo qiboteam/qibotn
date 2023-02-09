@@ -129,7 +129,7 @@ def gate_functions(qasm_str, start_idx):
 
     for line in qasm_str[start_idx:]:
         if "gate " in line:
-            result = re.findall("[^,\s()]+", line)
+            result = re.findall(r"[^,\s()]+", line)
         elif result and "{" not in line and "}" not in line:
             params = gate_params(line)
             func_list.append(*params)
