@@ -190,7 +190,7 @@ def eval_QI_qft(nqubits, backend="numpy", qibo_backend="qibojit", with_swaps=Tru
     circ_qibo = qibo_qft(nqubits, with_swaps)
     amplitudes_reference = np.array(circ_qibo(init_state))
     end = timer()
-    print("qibo time is " + str(end - start))
+    qibo_qft_time = end - start
     qasm_circ = circ_qibo.to_qasm()
 
     #####################################################################
