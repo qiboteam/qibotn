@@ -106,7 +106,7 @@ class GateKind(Enum):
     U3 = Gate("U3", "^u3 ")
 
 
-def gate_params(operation: str):
+def gate_params(operation: str) -> List[int]:
     qbit_no = []
 
     for kind in GateKind:
@@ -162,7 +162,7 @@ def qasm_QFT(nqubits: int, qasm_str: str, with_swaps: bool = True, psi0=None):
             pass
         else:
             params = gate_params(line)
-            circ.apply_gate(*params)
+            circ.apply_gate(params[0], *params[1:])
 
     if with_swaps:
         for i in range(nqubits // 2):  # TODO: Ignore the barrier indices?
