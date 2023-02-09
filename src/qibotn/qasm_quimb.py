@@ -30,27 +30,27 @@ def get_gate_params(operation):
         qbit_no = [int(re.findall(r"\d+", operation)[0])]
         qbit_no.insert(0, "T")
     elif "cu1" in operation:
-        lamda = float(
+        lambda_ = float(
             ".".join(re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
         )
         qbit_no = re.findall(r"\d+", operation.split(" ")[1])
         qbit_no = [int(x) for x in qbit_no]
-        qbit_no[0:0] = ["CU1", lamda]
+        qbit_no[0:0] = ["CU1", lambda_]
     elif "cu2" in operation:
         angles = re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0])
         phi = float(".".join(angles[0:2]))
-        lamba = float(".".join(angles[2:]))
+        lambda_ = float(".".join(angles[2:]))
         qbit_no = re.findall(r"\d+", operation.split(" ")[1])
         qbit_no = [int(x) for x in qbit_no]
-        qbit_no[0:0] = ["CU2", phi, lamda]
+        qbit_no[0:0] = ["CU2", phi, lambda_]
     elif "cu3" in operation:
         angles = re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0])
         theta = float(".".join(angles[0:2]))
         phi = float(".".join(angles[2:4]))
-        lamba = float(".".join(angles[4:]))
+        lambda_ = float(".".join(angles[4:]))
         qbit_no = re.findall(r"\d+", operation.split(" ")[1])
         qbit_no = [int(x) for x in qbit_no]
-        qbit_no[0:0] = ["CU3", theta, phi, lamda]
+        qbit_no[0:0] = ["CU3", theta, phi, lambda_]
     elif " cx " in operation:
         qbit_no = re.findall(r"\d+", operation.split(" ")[1])
         qbit_no = [int(x) for x in qbit_no]
@@ -101,24 +101,24 @@ def get_gate_params(operation):
         qbit_no = [int(x) for x in qbit_no]
         qbit_no[0:0] = ["RZZ", theta]
     elif "^u1 " in operation:
-        lamda = float(
+        lambda_ = float(
             ".".join(re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
         )
         qbit_no = [int(re.findall(r"\d+", operation)[0])]
-        qbit_no[0:0] = ["U1", lamda]
+        qbit_no[0:0] = ["U1", lambda_]
     elif "^u2 " in operation:
         angles = re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0])
         phi = float(".".join(angles[0:2]))
-        lamba = float(".".join(angles[2:]))
+        lambda_ = float(".".join(angles[2:]))
         qbit_no = int(re.findall(r"\d+", operation)[0])
-        qbit_no[0:0] = ["U2", phi, lamda]  # pylint: disable=E1137
+        qbit_no[0:0] = ["U2", phi, lambda_]  # pylint: disable=E1137
     elif "^u3 " in operation:
         angles = re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0])
         theta = float(".".join(angles[0:2]))
         phi = float(".".join(angles[2:4]))
-        lamba = float(".".join(angles[4:]))
+        lambda_ = float(".".join(angles[4:]))
         qbit_no = int(re.findall(r"\d+", operation)[0])
-        qbit_no[0:0] = ["U3", theta, phi, lamda]  # pylint: disable=E1137
+        qbit_no[0:0] = ["U3", theta, phi, lambda_]  # pylint: disable=E1137
     else:
         assert "Unsupported gate"
 
