@@ -76,8 +76,21 @@ class GateKind(Enum):
     S = Gate("S", "s ", {"p0": ParK.FirstInt})
     T = Gate("T", "t ", {"p0": ParK.FirstInt})
     CU1 = Gate("CU1", "cu1", {"lambda": ParK.FirstFloat, "p0": ParK.FirstInt})
-    CU2 = Gate("CU2", "cu2", {"phi": ParK.FirstFloat, "lambda": ParK.FirstInt, "p0": ParK.FirstInt}})
-    CU3 = Gate("CU3", "cu3", {"theta": ParK.FirstFloat, "phi": ParK.FirstFloat, "lambda": ParK.FirstInt, "p0": ParK.FirstInt})
+    CU2 = Gate(
+        "CU2",
+        "cu2",
+        {"phi": ParK.FirstFloat, "lambda": ParK.FirstInt, "p0": ParK.FirstInt},
+    )
+    CU3 = Gate(
+        "CU3",
+        "cu3",
+        {
+            "theta": ParK.FirstFloat,
+            "phi": ParK.FirstFloat,
+            "lambda": ParK.FirstInt,
+            "p0": ParK.FirstInt,
+        },
+    )
     CX = Gate("CX", " cx ", {"p0": ParK.IntSecond})
     CY = Gate("CY", " cy ", {"p0": ParK.IntSecond})
     CZ = Gate("CZ", " cz ", {"p0": ParK.IntSecond})
@@ -113,6 +126,7 @@ def gate_functions(qasm_str, start_idx):
     func_list = []
     result = []
     idx_inc = 0
+
     for line in qasm_str[start_idx:]:
         if "gate " in line:
             result = re.findall("[^,\s()]+", line)
