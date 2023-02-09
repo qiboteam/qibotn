@@ -161,7 +161,7 @@ def qasm_QFT(nqubits: int, qasm_str: str, with_swaps: bool = True, psi0=None):
         elif "measure" in command:  # TODO: Complete measure handling
             pass
         else:
-            params = get_gate_params(line)
+            params = gate_params(line)
             circ.apply_gate(*params)
 
     if with_swaps:
