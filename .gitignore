@@ -127,3 +127,5 @@
 
  # Pyre type checker
  .pyre/
+
+*.pyc
