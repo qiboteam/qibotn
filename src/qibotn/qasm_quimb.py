@@ -1,13 +1,8 @@
 import re
-import copy
-from timeit import default_timer as timer
 
-import numpy as np
 import quimb as qu
 import quimb.tensor as qtn
-
-import qibo
-from qibo.models import QFT as qibo_qft
+import numpy as np
 
 
 def get_gate_params(operation):
@@ -189,6 +184,7 @@ def init_state_tn(nqubits, init_state_sv, tn_lib="quimb"):
 def tn_circ_eval(nqubits, qasm_circ, init_state, swaps=True, tn_lib="quimb",
         backend='numpy'):
     if tn_lib == "quimb":
+
         circ_quimb = qasm_QFT(nqubits, qasm_circ, swaps, psi0=init_state)
         interim = circ_quimb.psi.full_simplify(seq="DRC")
         result = interim.to_dense(backend=backend).flatten()
@@ -198,36 +194,12 @@ def tn_circ_eval(nqubits, qasm_circ, init_state, swaps=True, tn_lib="quimb",
         assert False, "Unsupported tensor network library"
 
 
-def eval_QI_qft(nqubits, backend="numpy", qibo_backend="qibojit", with_swaps=True):
+def eval_QI_qft(nqubits, qasm_circ, init_state, backend="numpy", swaps=True):
     # backend (quimb): numpy, cupy, jax. Passed to ``opt_einsum``.
-    # qibo_backend: qibojit, qibotf, tensorflow, numpy
 
-    # generate random statevector as initial state
-    init_state = np.random.random(2**nqubits) + 1j * np.random.random(2**nqubits)
-    init_state = init_state / np.sqrt((np.abs(init_state) ** 2).sum())
-    init_state_quimb = copy.deepcopy(init_state)
-
-    # Qibo circuit
-    # qibo.set_backend(backend=qibo_backend, platform="numba")
-    qibo.set_backend(backend=qibo_backend, platform="numpy")
-
-    start = timer()
-    circ_qibo = qibo_qft(nqubits, with_swaps)
-    amplitudes_reference = np.array(circ_qibo(init_state))
-    end = timer()
-    qibo_qft_time = end - start
-    qasm_circ = circ_qibo.to_qasm()
-
-    #####################################################################
     # Quimb circuit
-    init_state_MPS = init_state_tn(nqubits=nqubits,
-                                   init_state_sv=init_state_quimb)
-
-    # construct quimb qft circuit
-    start = timer()
+    init_state_mps = init_state_tn(nqubits=nqubits, init_state_sv=init_state)
     amplitudes = tn_circ_eval(nqubits=nqubits, qasm_circ=qasm_circ,
-                              init_state=init_state_MPS, swaps=with_swaps,
+                              init_state=init_state_mps, swaps=swaps,
                               tn_lib="quimb")
-    end = timer()
-    quimb_qft_time = end - start
-    assert np.allclose(amplitudes, amplitudes_reference, atol=1e-06)
+    return amplitudes
