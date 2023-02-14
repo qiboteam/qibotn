@@ -1,4 +1,6 @@
 from setuptools import setup, find_packages
+import os
+import re
 import pathlib
 
 PACKAGE = "qibotn"
