@@ -47,7 +47,6 @@ def main(args: argparse.Namespace):
     nqubits = args.nqubits
     circuit_name = args.circuit
     datatype = args.precision
-    # Create qibo quibit
 
     if circuit_name in ("qft", "QFT"):
         circuit = QFT(nqubits)
@@ -55,12 +54,10 @@ def main(args: argparse.Namespace):
         raise NotImplementedError(f"Cannot find circuit {circuit_name}.")
 
     myconvertor = QiboCircuitToEinsum(circuit, dtype=datatype)
-    expression, operands = myconvertor.state_vector()
+    operands_expression = myconvertor.state_vector()
 
     result_qibo = run_bench(circuit, "Qibo")
-    sv_cutn = run_bench(
-        lambda: contract(expression, *operands), "cuQuantum cuTensorNet"
-    )
+    sv_cutn = run_bench(lambda: contract(*operands_expression), "cuQuantum cuTensorNet")
 
     # print(f"is sv in agreement?", cp.allclose(sv_cutn.flatten(), result_qibo.state(numpy=True)))
     assert cp.allclose(sv_cutn.flatten(), result_qibo.state(numpy=True))
