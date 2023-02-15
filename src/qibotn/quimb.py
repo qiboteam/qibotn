@@ -1,56 +1,20 @@
-import re
-
-from qibo.models import Circuit as QiboCircuit
-import quimb.tensor as qtn
 import numpy as np
+import quimb.tensor as qtn
+from qibo.models import Circuit as QiboCircuit
 
 
-def get_gate_functions(qasm_str, start_idx):
-    func_list = []
-    result = []
-    idx_inc = 0
-    for line in qasm_str[start_idx:]:
-        if "gate " in line:
-            result = re.findall("[^,\s()]+", line)
-        elif result and "{" not in line and "}" not in line:
-            params = get_gate_params(line)
-            func_list.append(*params)
-        elif "}" in line:
-            print("Returning the list")
-            print(func_list)
-            return func_list, idx_inc
-        idx_inc += 1
+def from_qibo(circuit: QiboCircuit, swaps: bool = True, psi0=None):
+    nqubits = circuit.nqubits
+    tncirc = qtn.Circuit(nqubits, psi0=psi0)
 
+    for gate in circuit.queue:
+        tncirc.apply_gate(gate.name)
 
-def from_qibo(circuit: QiboCircuit, with_swaps: bool = True, psi0=None):
-    circ = qtn.Circuit(nqubits, psi0=psi0)
-
-    qasm_str = qasm_str.split("\n")
-    for idx, line in enumerate(qasm_str):
-        command = line.split(" ")[0]
-        if re.search("include|//|OPENQASM", command):
-            continue
-        elif "qreg" in command:
-            nbits = int(re.findall(r"\d+", line)[0])
-            assert nbits == nqubits
-        elif "swap" in command:
-            break
-        elif "gate" in command:  # TODO: Complete gate handling
-            gate_func, increment = get_gate_functions(qasm_str, idx)
-            pass
-        elif "barrier" in command:  # TODO: Complete barrier handling
-            pass
-        elif "measure" in command:  # TODO: Complete measure handling
-            pass
-        else:
-            params = get_gate_params(line)
-            circ.apply_gate(*params)
-
-    if with_swaps:
+    if swaps:
         for i in range(nqubits // 2):  # TODO: Ignore the barrier indices?
-            circ.apply_gate("SWAP", i, nqubits - i - 1)
+            tncirc.apply_gate("SWAP", i, nqubits - i - 1)
 
-    return circ
+    return tncirc
 
 
 def init_state_tn(nqubits, init_state_sv):
