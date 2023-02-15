@@ -1,10 +1,13 @@
-qibo = dict(
-    backend = 'qibojit',
-    platform = 'numpy',
-    swaps = True
-)
+from dataclasses import dataclass
+from typing import Optional
 
-quimb = dict(
-    backend = 'numpy',
-    swaps = True
-)
+
+@dataclass
+class Executor:
+    backend: str
+    platform: Optional[str] = None
+    swaps: bool = True
+
+
+qibo = Executor(backend="qibojit", platform="numpy")
+quimb = Executor(backend="numpy")

@@ -1,6 +1,6 @@
 import re
 
-import qibo
+from qibo.models import Circuit as QiboCircuit
 import quimb.tensor as qtn
 import numpy as np
 
@@ -22,7 +22,7 @@ def get_gate_functions(qasm_str, start_idx):
         idx_inc += 1
 
 
-def convert(nqubits: int, qasm_str: str, with_swaps: bool = True, psi0=None):
+def from_qibo(circuit: QiboCircuit, with_swaps: bool = True, psi0=None):
     circ = qtn.Circuit(nqubits, psi0=psi0)
 
     qasm_str = qasm_str.split("\n")
@@ -65,9 +65,9 @@ def eval(qasm: str, init_state, backend="numpy", swaps=True):
     backend (quimb): numpy, cupy, jax. Passed to ``opt_einsum``.
 
     """
-    circuit = qibo.models.Circuit.from_qasm(qasm)
+    circuit = QiboCircuit.from_qasm(qasm)
     init_state_mps = init_state_tn(circuit.nqubits, init_state)
-    circ_quimb = convert(circuit, swaps=swaps, psi0=init_state_mps)
+    circ_quimb = from_qibo(circuit, swaps=swaps, psi0=init_state_mps)
     interim = circ_quimb.psi.full_simplify(seq="DRC")
     amplitudes = interim.to_dense(backend=backend).flatten()
 
