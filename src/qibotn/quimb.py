@@ -1,6 +1,6 @@
 import re
 
-import quimb as qu
+import qibo
 import quimb.tensor as qtn
 import numpy as np
 
@@ -22,7 +22,7 @@ def get_gate_functions(qasm_str, start_idx):
         idx_inc += 1
 
 
-def qasm_QFT(nqubits: int, qasm_str: str, with_swaps: bool = True, psi0=None):
+def convert(nqubits: int, qasm_str: str, with_swaps: bool = True, psi0=None):
     circ = qtn.Circuit(nqubits, psi0=psi0)
 
     qasm_str = qasm_str.split("\n")
@@ -53,44 +53,22 @@ def qasm_QFT(nqubits: int, qasm_str: str, with_swaps: bool = True, psi0=None):
     return circ
 
 
-def init_state_tn(nqubits, init_state_sv, tn_lib="quimb"):
+def init_state_tn(nqubits, init_state_sv):
     dims = tuple(2 * np.ones(nqubits, dtype=int))
 
-    if tn_lib == "quimb":
-        init_state_MPS = qtn.tensor_1d.MatrixProductState.from_dense(
-            init_state_sv, dims
-        )
-    else:
-        # TODO: Add cuquantum later
-        assert False, "Unsupported tensor network backend in initilization"
-
-    return init_state_MPS
+    return qtn.tensor_1d.MatrixProductState.from_dense(init_state_sv, dims)
 
 
-def tn_circ_eval(
-    nqubits, qasm_circ, init_state, swaps=True, tn_lib="quimb", backend="numpy"
-):
-    if tn_lib == "quimb":
+def eval(qasm: str, init_state, backend="numpy", swaps=True):
+    """Evaluate QASM with Quimb
 
-        circ_quimb = qasm_QFT(nqubits, qasm_circ, swaps, psi0=init_state)
-        interim = circ_quimb.psi.full_simplify(seq="DRC")
-        result = interim.to_dense(backend=backend).flatten()
-        return result
-    else:
-        # TODO: Change assert or value. Add cuquantum later
-        assert False, "Unsupported tensor network library"
+    backend (quimb): numpy, cupy, jax. Passed to ``opt_einsum``.
 
+    """
+    circuit = qibo.models.Circuit.from_qasm(qasm)
+    init_state_mps = init_state_tn(circuit.nqubits, init_state)
+    circ_quimb = convert(circuit, swaps=swaps, psi0=init_state_mps)
+    interim = circ_quimb.psi.full_simplify(seq="DRC")
+    amplitudes = interim.to_dense(backend=backend).flatten()
 
-def eval_QI_qft(nqubits, qasm_circ, init_state, backend="numpy", swaps=True):
-    # backend (quimb): numpy, cupy, jax. Passed to ``opt_einsum``.
-
-    # Quimb circuit
-    init_state_mps = init_state_tn(nqubits=nqubits, init_state_sv=init_state)
-    amplitudes = tn_circ_eval(
-        nqubits=nqubits,
-        qasm_circ=qasm_circ,
-        init_state=init_state_mps,
-        swaps=swaps,
-        tn_lib="quimb",
-    )
     return amplitudes

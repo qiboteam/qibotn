@@ -14,8 +14,7 @@ def init_state_sv(nqubits):
     init_state = np.random.random(2**nqubits) + 1j * np.random.random(2**nqubits)
     init_state = init_state / np.sqrt((np.abs(init_state) ** 2).sum())
     # An unmodified init_state has to be converted to tn format
-    init_state_for_tn = copy.deepcopy(init_state)
-    return init_state, init_state_for_tn
+    return init_state
 
 
 def qibo_qft(nqubits, init_state, swaps):
@@ -29,14 +28,12 @@ def test_eval(nqubits: int):
     os.environ["QUIMB_NUM_PROCS"] = str(os.cpu_count())
     from qibotn import qasm_quimb
 
-    init_state_qibo, init_state_for_tn = init_state_sv(nqubits=nqubits)
+    init_state = init_state_sv(nqubits=nqubits)
 
     # Test qibo
     qibo.set_backend(backend=config.qibo["backend"], platform=config.qibo["platform"])
     start_time = timer()
-    qibo_circ, result_sv = qibo_qft(
-        nqubits, init_state=init_state_qibo, swaps=config.qibo["swaps"]
-    )
+    qibo_circ, result_sv = qibo_qft(nqubits, init_state, swaps=config.qibo["swaps"])
     end_time = timer()
     qibo_time = end_time - start_time
 
@@ -49,7 +46,7 @@ def test_eval(nqubits: int):
     result_tn = qasm_quimb.eval_QI_qft(
         nqubits=nqubits,
         qasm_circ=qasm_circ,
-        init_state=init_state_for_tn,
+        init_state=copy.deepcopy(init_state),
         backend=config.quimb["backend"],
         swaps=config.quimb["swaps"],
     )
