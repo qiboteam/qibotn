@@ -1,13 +1,12 @@
-import os
-
-import pytest
-import qibo
-from qibo.models import QFT
-import numpy as np
 import copy
+import os
 from timeit import default_timer as timer
 
 import config
+import numpy as np
+import pytest
+import qibo
+from qibo.models import QFT
 
 
 def create_init_state(nqubits):
@@ -44,7 +43,7 @@ def test_eval(nqubits: int):
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
     qibo_time, (qibo_circ, result_sv) = time(
-        lambda: qibo_qft(nqubits, init_state, swaps=config.qibo.swaps)
+        lambda: qibo_qft(nqubits, init_state, swaps=True)
     )
 
     # Convert to qasm for other backends
@@ -53,10 +52,7 @@ def test_eval(nqubits: int):
     # Test quimb
     quimb_time, result_tn = time(
         lambda: qibotn.quimb.eval(
-            qasm_circ,
-            init_state_tn,
-            backend=config.quimb.backend,
-            swaps=config.quimb.swaps,
+            qasm_circ, init_state_tn, backend=config.quimb.backend
         )
     )
 

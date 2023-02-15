@@ -6,7 +6,6 @@ from typing import Optional
 class Executor:
     backend: str
     platform: Optional[str] = None
-    swaps: bool = True
 
 
 qibo = Executor(backend="qibojit", platform="numpy")
