@@ -11,7 +11,8 @@ import config
 
 
 def init_state_sv(nqubits):
-    init_state = np.random.random(2**nqubits) + 1j * np.random.random(2**nqubits)
+    init_state = np.random.random(2**nqubits) + \
+        1j * np.random.random(2**nqubits)
     init_state = init_state / np.sqrt((np.abs(init_state) ** 2).sum())
     # An unmodified init_state has to be converted to tn format
     init_state_for_tn = copy.deepcopy(init_state)
@@ -32,11 +33,11 @@ def test_eval(nqubits: int):
     init_state_qibo, init_state_for_tn = init_state_sv(nqubits=nqubits)
 
     # Test qibo
-    qibo.set_backend(backend=config.qibo['backend'], \
-        platform=config.qibo['platform'])
+    qibo.set_backend(backend=config.qibo['backend'],
+                     platform=config.qibo['platform'])
     start_time = timer()
-    qibo_circ, result_sv = qibo_qft(nqubits, init_state=init_state_qibo, \
-        swaps=config.qibo['swaps'])
+    qibo_circ, result_sv = qibo_qft(nqubits, init_state=init_state_qibo,
+                                    swaps=config.qibo['swaps'])
     end_time = timer()
     qibo_time = end_time - start_time
 
@@ -45,9 +46,10 @@ def test_eval(nqubits: int):
 
     # Test quimb
     start_time = timer()
-    result_tn = qasm_quimb.eval_QI_qft(nqubits=nqubits, qasm_circ=qasm_circ, \
-        init_state=init_state_for_tn, backend=config.quimb['backend'], \
-            swaps=config.quimb['swaps'])
+    result_tn = qasm_quimb.eval_QI_qft(nqubits=nqubits, qasm_circ=qasm_circ,
+                                       init_state=init_state_for_tn,
+                                       backend=config.quimb['backend'],
+                                       swaps=config.quimb['swaps'])
     end_time = timer()
     quimb_time = end_time - start_time
 

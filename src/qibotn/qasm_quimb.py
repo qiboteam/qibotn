@@ -26,7 +26,8 @@ def get_gate_params(operation):
         qbit_no.insert(0, "T")
     elif "cu1" in operation:
         lambda_ = float(
-            ".".join(re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
+            ".".join(re.findall(
+                r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
         )
         qbit_no = re.findall(r"\d+", operation.split(" ")[1])
         qbit_no = [int(x) for x in qbit_no]
@@ -72,32 +73,37 @@ def get_gate_params(operation):
         qbit_no.insert(0, "CCZ")
     elif " rx " in operation:
         theta = float(
-            ".".join(re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
+            ".".join(re.findall(
+                r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
         )
         qbit_no = [int(re.findall(r"\d+", operation)[0])]
         qbit_no[0:0] = ["RX", theta]
     elif "^ry " in operation:
         theta = float(
-            ".".join(re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
+            ".".join(re.findall(
+                r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
         )
         qbit_no = [int(re.findall(r"\d+", operation)[0])]
         qbit_no[0:0] = ["RY", theta]
     elif "^rz " in operation:
         theta = float(
-            ".".join(re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
+            ".".join(re.findall(
+                r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
         )
         qbit_no = [int(re.findall(r"\d+", operation)[0])]
         qbit_no[0:0] = ["RZ", theta]
     elif "^rzz " in operation:
         theta = float(
-            ".".join(re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
+            ".".join(re.findall(
+                r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
         )
         qbit_no = re.findall(r"\d+", operation.split(" ")[1])
         qbit_no = [int(x) for x in qbit_no]
         qbit_no[0:0] = ["RZZ", theta]
     elif "^u1 " in operation:
         lambda_ = float(
-            ".".join(re.findall(r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
+            ".".join(re.findall(
+                r"\b\d+(?:[Ee][+-]?\d+)?", operation.split(" ")[0]))
         )
         qbit_no = [int(re.findall(r"\d+", operation)[0])]
         qbit_no[0:0] = ["U1", lambda_]
@@ -182,7 +188,7 @@ def init_state_tn(nqubits, init_state_sv, tn_lib="quimb"):
 
 
 def tn_circ_eval(nqubits, qasm_circ, init_state, swaps=True, tn_lib="quimb",
-        backend='numpy'):
+                 backend='numpy'):
     if tn_lib == "quimb":
 
         circ_quimb = qasm_QFT(nqubits, qasm_circ, swaps, psi0=init_state)
