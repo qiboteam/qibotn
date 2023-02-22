@@ -79,4 +79,4 @@ def main_cuquantum(args: argparse.Namespace):
 
 
 if __name__ == "__main__":
-    main(parser())
+    main_cuquantum(parser_cuquantum())
