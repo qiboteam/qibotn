@@ -8,32 +8,27 @@ class QiboCircuitToEinsum:
         self.dtype = getattr(self.backend, dtype)
 
         self.input_tensor_counter = np.zeros((circuit.nqubits,))
-        self.gates = []
+        self.gate_tensors = []
         for gate in circuit.queue:
-            targets = list(gate.target_qubits)
-            for target in targets:
-                self.input_tensor_counter[target] = (
-                    self.input_tensor_counter[target] + 1
-                )
-            controls = list(gate.control_qubits)
-            for control in controls:
-                self.input_tensor_counter[control] = (
-                    self.input_tensor_counter[control] + 1
-                )
-            gate_qubits = controls + targets
-            self.gates.append(
+            for target in gate.target_qubits:
+                self.input_tensor_counter[target] += 1
+            for control in gate.control_qubits:
+                self.input_tensor_counter[control] += 1
+            gate_qubits = gate.control_qubits + gate.target_qubits
+            # self.gate_tensors is to extract into a list the gate matrix together with the qubit id that it is acting on
+            self.gate_tensors.append(
                 (
                     cp.asarray(gate.matrix).reshape((2,) * 2 * len(gate_qubits)),
                     gate_qubits,
                 )
             )
-
-        self.qubit_name = [
+        # self.active_qubits is to identify qubits with at least 1 gate acting on it in the whole circuit.
+        self.active_qubits = [
             indx for indx, value in enumerate(self.input_tensor_counter) if value > 0
         ]
 
     def state_vector(self):
-        input_tensor_count = np.count_nonzero(self.input_tensor_counter)
+        input_tensor_count = len(self.active_qubits)
 
         input_operands = self._get_bitstring_tensors(
             "0" * input_tensor_count, self.dtype, backend=self.backend
@@ -43,10 +38,10 @@ class QiboCircuitToEinsum:
             mode_labels,
             qubits_frontier,
             next_frontier,
-        ) = self._init_mode_labels_from_qubits(self.qubit_name)
+        ) = self._init_mode_labels_from_qubits(self.active_qubits)
 
         gate_mode_labels, gate_operands = self._parse_gates_to_mode_labels_operands(
-            self.gates, qubits_frontier, next_frontier
+            self.gate_tensors, qubits_frontier, next_frontier
         )
 
         operands = input_operands + gate_operands
@@ -68,7 +63,7 @@ class QiboCircuitToEinsum:
         return [[i] for i in range(n)], frontier_dict, n
 
     def _get_bitstring_tensors(self, bitstring, dtype=np.complex128, backend=cp):
-        asarray = backend.asarray  # _get_backend_asarray_func(backend)
+        asarray = backend.asarray
         state_0 = asarray([1, 0], dtype=dtype)
         state_1 = asarray([0, 1], dtype=dtype)
 
