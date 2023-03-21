@@ -42,6 +42,11 @@ setup(
         "qibo>=0.1.10",
         "qibojit>=0.0.7",
         "quimb[tensor]>=1.4.0",
+        "cupy>=11.6.0",
+        "cuquantum-python-cu11>=22.11.0.1",
+        "custatevec-cu11>=1.2.0",
+        "cutensor-cu11>=1.6.2",
+        "cutensornet-cu11>=2.0.0",
     ],
     extras_require={
         "docs": [],
