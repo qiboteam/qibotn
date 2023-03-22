@@ -59,7 +59,7 @@ setup(
             "pylint>=2.16.0",
         ],
     },
-    python_requires=">=3.7.0",
+    python_requires=">=3.8.0",
     long_description=(HERE / "README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
 )
