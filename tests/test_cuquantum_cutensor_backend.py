@@ -22,7 +22,7 @@ def time(func):
     time = end - start
     return time, res
 
-
+@pytest.mark.gpu
 @pytest.mark.parametrize("nqubits", [1, 2, 5, 10])
 def test_eval(nqubits: int):
     import qibotn.cutn
