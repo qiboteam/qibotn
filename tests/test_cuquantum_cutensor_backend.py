@@ -32,7 +32,8 @@ def test_eval(nqubits: int):
     qibo_time, (qibo_circ, result_sv) = time(lambda: qibo_qft(nqubits, swaps=True))
 
     # Test Cuquantum
-    cutn_time, result_tn = time(lambda: qibotn.cutn.eval(qibo_circ))
+    data_type = "complex128"
+    cutn_time, result_tn = time(lambda: qibotn.cutn.eval(qibo_circ,data_type))
 
     assert 1e-2 * qibo_time < cutn_time < 1e2 * qibo_time
     assert np.allclose(result_sv, result_tn), "Resulting dense vectors do not match"
