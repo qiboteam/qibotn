@@ -1,11 +1,6 @@
 import argparse
-from timeit import default_timer as timer
 
 import qibotn.quimb
-from QiboCircuitConvertor import QiboCircuitToEinsum
-from cuquantum import contract
-import cupy as cp
-from qibo.models import QFT
 
 
 def parser():
