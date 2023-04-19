@@ -57,24 +57,5 @@ def run_bench(task, label):
     return result
 
 
-def main_cuquantum(args: argparse.Namespace):
-    print("Testing for %d nqubits" % (args.nqubits))
-    datatype = args.precision
-
-    if args.circuit.lower() == "qft":
-        circuit = QFT(args.nqubits)
-    else:
-        raise NotImplementedError(f"Cannot find circuit {args.circuit}.")
-
-    myconvertor = QiboCircuitToEinsum(circuit, dtype=datatype)
-    operands_expression = myconvertor.state_vector()
-
-    result_qibo = run_bench(circuit, "Qibo")
-    sv_cutn = run_bench(lambda: contract(*operands_expression), "cuQuantum cuTensorNet")
-
-    # print(f"is sv in agreement?", cp.allclose(sv_cutn.flatten(), result_qibo.state(numpy=True)))
-    assert cp.allclose(sv_cutn.flatten(), result_qibo.state(numpy=True))
-
-
 if __name__ == "__main__":
-    main_cuquantum(parser_cuquantum())
+    main(parser())
