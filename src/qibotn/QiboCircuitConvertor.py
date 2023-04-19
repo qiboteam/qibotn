@@ -12,7 +12,7 @@ class QiboCircuitToEinsum:
     and grouping each gate with its corresponding qubit it is acting on to a list.
 
     It is then converted it to an equivalent TN expression following the Einstein
-    summation convention through the class function state_vector_operand().
+    summation convention through the class function state_vector_operands().
     The output is to be used by cuQuantum's contract() for computation of the state vectors of the circuit.
     """
 
