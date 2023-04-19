@@ -1,7 +1,7 @@
 import argparse
 from timeit import default_timer as timer
 
-from qibotn import quimb as qiboquimb
+import qibotn.quimb
 from QiboCircuitConvertor import QiboCircuitToEinsum
 from cuquantum import contract
 import cupy as cp
@@ -18,7 +18,7 @@ def parser():
 
 def main(args: argparse.Namespace):
     print("Testing for %d nqubits" % (args.nqubits))
-    qiboquimb.eval(args.nqubits, args.qasm_circ, args.init_state)
+    qibotn.quimb.eval(args.nqubits, args.qasm_circ, args.init_state)
 
 
 def parser_cuquantum():
