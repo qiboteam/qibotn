@@ -21,41 +21,5 @@ def main(args: argparse.Namespace):
     qibotn.quimb.eval(args.nqubits, args.qasm_circ, args.init_state)
 
 
-def parser_cuquantum():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--nqubits", default=10, type=int, help="Number of quibits in the circuits."
-    )
-
-    parser.add_argument(
-        "--circuit",
-        default="qft",
-        type=str,
-        help="Type of circuit to use. See README for the list of "
-        "available circuits.",
-    )
-
-    parser.add_argument(
-        "--precision",
-        default="complex128",
-        type=str,
-        help="Numerical precision of the simulation. "
-        "Choose between 'complex128' and 'complex64'.",
-    )
-
-    return parser.parse_args()
-
-
-def run_bench(task, label):
-    start = timer()
-    result = task()
-    end = timer()
-    circuit_eval_time = end - start
-    print(f"Simulation time: {label} = {circuit_eval_time}s")
-
-    return result
-
-
 if __name__ == "__main__":
     main(parser())
