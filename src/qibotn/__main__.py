@@ -59,14 +59,12 @@ def run_bench(task, label):
 
 def main_cuquantum(args: argparse.Namespace):
     print("Testing for %d nqubits" % (args.nqubits))
-    nqubits = args.nqubits
-    circuit_name = args.circuit
     datatype = args.precision
 
-    if circuit_name in ("qft", "QFT"):
-        circuit = QFT(nqubits)
+    if args.circuit.lower() == "qft":
+        circuit = QFT(args.nqubits)
     else:
-        raise NotImplementedError(f"Cannot find circuit {circuit_name}.")
+        raise NotImplementedError(f"Cannot find circuit {args.circuit}.")
 
     myconvertor = QiboCircuitToEinsum(circuit, dtype=datatype)
     operands_expression = myconvertor.state_vector()
