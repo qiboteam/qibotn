@@ -40,7 +40,8 @@ def test_eval(nqubits: int, dtype="complex128"):
         lambda: qibo_qft(nqubits, swaps=True))
 
     # Test Cuquantum
-    cutn_time, result_tn = time(lambda: qibotn.cutn.eval(qibo_circ, dtype))
+    cutn_time, result_tn = time(
+        lambda: qibotn.cutn.eval(qibo_circ, dtype).flatten())
 
     assert 1e-2 * qibo_time < cutn_time < 1e2 * qibo_time
     assert np.allclose(
