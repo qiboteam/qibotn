@@ -21,7 +21,7 @@ class QiboCircuitToEinsum:
             """This function is to modify the shape of the tensor to the required format by cuQuantum
             (qubit_states,) * input_output * qubits_involved
             """
-            return (2,) * 2 * nqubits
+            return (2, 2) * nqubits
 
         self.backend = cp
         self.dtype = getattr(self.backend, dtype)
