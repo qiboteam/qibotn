@@ -42,6 +42,8 @@ setup(
         "qibo>=0.1.10",
         "qibojit>=0.0.7",
         "quimb[tensor]>=1.4.0",
+        "cupy>=11.6.0",
+        "cuquantum-python-cu11",
     ],
     extras_require={
         "docs": [],
@@ -54,7 +56,7 @@ setup(
             "pylint>=2.16.0",
         ],
     },
-    python_requires=">=3.7.0",
+    python_requires=">=3.8.0",
     long_description=(HERE / "README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
 )
