@@ -51,7 +51,7 @@ class QiboCircuitToEinsum:
 
     def _init_mode_labels_from_qubits(self, qubits):
         n = len(qubits)
-        frontier_dict = {qubits[x]: x for x in range(n)}
+        frontier_dict = {q: i for i, q in enumerate(qubits)}
         mode_labels = [[i] for i in range(n)]
         return mode_labels, frontier_dict, n
 
