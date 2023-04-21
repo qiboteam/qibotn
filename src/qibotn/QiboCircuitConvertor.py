@@ -3,17 +3,17 @@ import numpy as np
 
 
 class QiboCircuitToEinsum:
-    """This class takes a quantum circuit defined in Qibo (i.e. a Circuit object)
-    and convert it to an equivalent Tensor Network (TN) representation that is formatted for
-    cuQuantum' contract method to compute the state vectors.
-    See document for detail: https://docs.nvidia.com/cuda/cuquantum/python/api/generated/cuquantum.contract.html
+    """Convert a circuit to Tensor Network(TN) representation.
+    The circuit is first processed to an intermediate form by grouping each gate
+    matrix with its corresponding qubit it is acting on to a list. It is then
+    converted it to an equivalent TN expression through the class function
+    state_vector_operands() following the Einstein summation convention in the
+    interleave format.
 
-    When the class is constructed, it first process the circuit to an intermediate form by extracting the gate matrix
-    and grouping each gate with its corresponding qubit it is acting on to a list.
+    See document for detail of the format: https://docs.nvidia.com/cuda/cuquantum/python/api/generated/cuquantum.contract.html
 
-    It is then converted it to an equivalent TN expression following the Einstein
-    summation convention through the class function state_vector_operands().
-    The output is to be used by cuQuantum's contract() for computation of the state vectors of the circuit.
+    The output is to be used by cuQuantum's contract() for computation of the
+    state vectors of the circuit.
     """
 
     def __init__(self, circuit, dtype="complex128"):
@@ -70,8 +70,7 @@ class QiboCircuitToEinsum:
         for key in qubits_frontier:
             out_list.append(qubits_frontier[key])
 
-        operand_exp_interleave = [x for y in zip(
-            operands, mode_labels) for x in y]
+        operand_exp_interleave = [x for y in zip(operands, mode_labels) for x in y]
         operand_exp_interleave.append(out_list)
         return operand_exp_interleave
 
