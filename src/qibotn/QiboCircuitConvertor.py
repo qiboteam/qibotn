@@ -3,7 +3,7 @@ import numpy as np
 
 
 class QiboCircuitToEinsum:
-    """Convert a circuit to Tensor Network(TN) representation.
+    """Convert a circuit to a Tensor Network (TN) representation.
     The circuit is first processed to an intermediate form by grouping each gate
     matrix with its corresponding qubit it is acting on to a list. It is then
     converted it to an equivalent TN expression through the class function
@@ -44,7 +44,8 @@ class QiboCircuitToEinsum:
         for key in qubits_frontier:
             out_list.append(qubits_frontier[key])
 
-        operand_exp_interleave = [x for y in zip(operands, mode_labels) for x in y]
+        operand_exp_interleave = [x for y in zip(
+            operands, mode_labels) for x in y]
         operand_exp_interleave.append(out_list)
         return operand_exp_interleave
 
