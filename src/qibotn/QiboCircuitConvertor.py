@@ -104,7 +104,7 @@ class QiboCircuitToEinsum:
         return mode_labels, operands
 
     def op_shape_from_qubits(self, nqubits):
-        """This function is to modify the shape of the tensor to the required format by cuQuantum
-        (qubit_states,) * input_output * qubits_involved
+        """Modify tensor to cuQuantum shape
+        (qubit_states,input_output) * qubits_involved
         """
         return (2, 2) * nqubits
