@@ -22,3 +22,5 @@ class QiboCircuitToMPS:
             # apply the gate in-place
             apply_gate(self.mps_tensors, gate, qubits, algorithm=gate_algo, options=self.options)
 
+    def __del__(self):
+        cutn.destroy(self.handle)
