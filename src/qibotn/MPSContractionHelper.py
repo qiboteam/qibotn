@@ -117,34 +117,6 @@ class MPSContractionHelper:
             norm = 1
         return self._contract(f'exp{qubits}', interleaved_inputs, options=options) / norm
     
-    def contract_mps_mpo_to_state_vector(self, mps_tensors, mpo_tensors, options=None):
-        """
-        Contract the corresponding tensor network to form the output state vector from applying the MPO to the MPS.
-
-        Args:
-            mps_tensors: A list of rank-3 ndarray-like tensor objects. 
-                The indices of the ith tensor are expected to be the bonding index to the i-1 tensor, 
-                the physical mode, and then the bonding index to the i+1th tensor.
-            mpo_tensors: A list of rank-4 ndarray-like tensor objects.
-                The indics of the ith tensor are expected to be the bonding index to the i-1 tensor, 
-                the output physical mode, the bonding index to the i+1th tensor and then the inputput physical mode.
-            options: Specify the contract and decompose options. 
-
-        Returns:
-            An ndarray-like object as the output state vector.
-        """
-        interleaved_inputs = []
-        for i, o in enumerate(mps_tensors):
-            interleaved_inputs.extend([o, self.bra_modes[i]])
-        output_modes = []
-        offset = 2 * self.num_qubits + 1
-        for i, o in enumerate(mpo_tensors):
-            mpo_modes = (2*i+offset, 2*i+offset+1, 2*i+offset+2, 2*i+1)
-            output_modes.append(2*i+offset+1)
-            interleaved_inputs.extend([o, mpo_modes])
-        interleaved_inputs.append(output_modes)
-        return self._contract('mps_mpo', interleaved_inputs, options=options)
-    
     def _contract(self, key, interleaved_inputs, options=None):
         """
         Perform the contraction task given interleaved inputs. Path will be cached.
