@@ -13,6 +13,7 @@ def eval(qibo_circ, datatype):
 def eval_mps(qibo_circ, gate_algo, datatype):
     myconvertor = QiboCircuitToMPS(qibo_circ, gate_algo, dtype=datatype)
     mps_helper = MPSContractionHelper(myconvertor.num_qubits)
-    sv_mps = mps_helper.contract_state_vector(
-        myconvertor.mps_tensors, myconvertor.options)
-    return sv_mps
+
+    return mps_helper.contract_state_vector(
+        myconvertor.mps_tensors, myconvertor.options
+    )
