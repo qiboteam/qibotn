@@ -2,7 +2,7 @@ import cupy as cp
 from cuquantum.cutensornet.experimental import contract_decompose
 from cuquantum import contract
 
-def get_initial_mps(num_qubits, dtype='complex128'):
+def initial(num_qubits, dtype):
     """
     Generate the MPS with an initial state of |00...00> 
     """
