@@ -3,7 +3,7 @@ import numpy as np
 
 from cuquantum import cutensornet as cutn
 from qibotn.QiboCircuitConvertor import QiboCircuitToEinsum
-from qibotn.MPSUtils import get_initial_mps, apply_gate
+from qibotn.MPSUtils import initial, apply_gate
 
 
 class QiboCircuitToMPS:
@@ -20,7 +20,7 @@ class QiboCircuitToMPS:
         self.num_qubits = circ_qibo.nqubits
         self.handle = cutn.create()
         self.dtype = dtype
-        self.mps_tensors = get_initial_mps(self.num_qubits, dtype=dtype)
+        self.mps_tensors = initial(self.num_qubits, dtype=dtype)
         circuitconvertor = QiboCircuitToEinsum(circ_qibo)
 
         for gate, qubits in circuitconvertor.gate_tensors:
