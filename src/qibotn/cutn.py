@@ -1,9 +1,6 @@
 from qibotn.QiboCircuitConvertor import QiboCircuitToEinsum
 from cuquantum import contract
-from cuquantum import cutensornet as cutn
-import cupy as cp
-import numpy as np
-from qibo.models import QFT
+
 from qibotn.QiboCircuitToMPS import QiboCircuitToMPS
 from qibotn.MPSContractionHelper import MPSContractionHelper
 
