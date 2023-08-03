@@ -75,4 +75,4 @@ def apply_gate(
             mps_site_right_swap(mps_tensors, i, algorithm=algorithm, options=options)
     else:
         raise NotImplementedError("Only one- and two-qubit gates supported")
-    return mps_tensors
+    #return mps_tensors
