@@ -15,5 +15,5 @@ def eval_mps(qibo_circ, gate_algo, datatype):
     mps_helper = MPSContractionHelper(myconvertor.num_qubits)
 
     return mps_helper.contract_state_vector(
-        myconvertor.mps_tensors, myconvertor.options
+        myconvertor.mps_tensors, {"handle": myconvertor.handle}
     )
