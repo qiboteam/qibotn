@@ -33,7 +33,7 @@ class MPSContractionHelper:
     
     def __init__(self, num_qubits):
         self.num_qubits = num_qubits
-        self.path_cache = dict()
+        self.path_cache = {}
         self.bra_modes = [(2*i, 2*i+1, 2*i+2) for i in range(num_qubits)]
         offset = 2*num_qubits+1
         self.ket_modes = [(i+offset, 2*i+1, i+1+offset) for i in range(num_qubits)]
