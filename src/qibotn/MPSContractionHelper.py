@@ -99,7 +99,6 @@ class MPSContractionHelper:
         interleaved_inputs = []
         extra_mode = 3 * self.num_qubits + 2
         operator_modes = [None] * len(qubits) + [self.bra_modes[q][1] for q in qubits]
-        #qubits = list(qubits)
         qubits = [q for q in qubits]
         for i, o in enumerate(mps_tensors):
             interleaved_inputs.extend([o, self.bra_modes[i]])
