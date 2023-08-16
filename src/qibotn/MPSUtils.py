@@ -13,14 +13,13 @@ def initial(num_qubits, dtype):
 def mps_site_right_swap(
     mps_tensors, 
     i, 
-    algorithm=None, 
-    options=None
+    **kwargs
 ):
     """
     Perform the swap operation between the ith and i+1th MPS tensors.
     """
     # contraction followed by QR decomposition
-    a, _, b = contract_decompose('ipj,jqk->iqj,jpk', *mps_tensors[i:i+2], algorithm=algorithm, options=options)
+    a, _, b = contract_decompose('ipj,jqk->iqj,jpk', *mps_tensors[i:i+2], algorithm=list(kwargs.items())[0][1], options=list(kwargs.items())[1][1])
     mps_tensors[i:i+2] = (a, b)
     return mps_tensors
 
