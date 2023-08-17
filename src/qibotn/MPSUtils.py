@@ -19,7 +19,7 @@ def mps_site_right_swap(
     Perform the swap operation between the ith and i+1th MPS tensors.
     """
     # contraction followed by QR decomposition
-    a, _, b = contract_decompose('ipj,jqk->iqj,jpk', *mps_tensors[i:i+2], algorithm=list(kwargs.items())[0][1], options=list(kwargs.items())[1][1])
+    a, _, b = contract_decompose('ipj,jqk->iqj,jpk', *mps_tensors[i:i+2], algorithm=kwargs.get('algorithm',None), options=kwargs.get('options',None))
     mps_tensors[i:i+2] = (a, b)
     return mps_tensors
 
@@ -27,8 +27,7 @@ def apply_gate(
     mps_tensors, 
     gate, 
     qubits, 
-    algorithm=None, 
-    options=None
+    **kwargs
 ):
     """
     Apply the gate operand to the MPS tensors in-place.
@@ -53,24 +52,24 @@ def apply_gate(
     if n_qubits == 1:
         # single-qubit gate
         i = qubits[0]
-        mps_tensors[i] = contract('ipj,qp->iqj', mps_tensors[i], gate, options=options) # in-place update
+        mps_tensors[i] = contract('ipj,qp->iqj', mps_tensors[i], gate, options=kwargs.get('options',None)) # in-place update
     elif n_qubits == 2:
         # two-qubit gate
         i, j = qubits
         if i > j:
             # swap qubits order
-            return apply_gate(mps_tensors, gate.transpose(1,0,3,2), (j, i), algorithm=algorithm, options=options)
+            return apply_gate(mps_tensors, gate.transpose(1,0,3,2), (j, i), **kwargs)
         elif i+1 == j:
             # two adjacent qubits
-            a, _, b = contract_decompose('ipj,jqk,rspq->irj,jsk', *mps_tensors[i:i+2], gate, algorithm=algorithm, options=options)
+            a, _, b = contract_decompose('ipj,jqk,rspq->irj,jsk', *mps_tensors[i:i+2], gate, algorithm=kwargs.get('algorithm',None), options=kwargs.get('options',None))
             mps_tensors[i:i+2] = (a, b) # in-place update
         else:
             # non-adjacent two-qubit gate
             # step 1: swap i with i+1
-            mps_site_right_swap(mps_tensors, i, algorithm=algorithm, options=options)
+            mps_site_right_swap(mps_tensors, i, **kwargs)
             # step 2: apply gate to (i+1, j) pair. This amounts to a recursive swap until the two qubits are adjacent
-            apply_gate(mps_tensors, gate, (i+1, j), algorithm=algorithm, options=options) 
+            apply_gate(mps_tensors, gate, (i+1, j), **kwargs) 
             # step 3: swap back i and i+1
-            mps_site_right_swap(mps_tensors, i, algorithm=algorithm, options=options)
+            mps_site_right_swap(mps_tensors, i, **kwargs)
     else:
         raise NotImplementedError("Only one- and two-qubit gates supported")
