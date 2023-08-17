@@ -2,7 +2,7 @@ from qibotn.QiboCircuitConvertor import QiboCircuitToEinsum
 from cuquantum import contract
 
 from qibotn.QiboCircuitToMPS import QiboCircuitToMPS
-from qibotn.MPSContractionHelper import MPSContractionHelper
+from qibotn.mps_contraction_helper import MPSContractionHelper
 
 
 def eval(qibo_circ, datatype):
