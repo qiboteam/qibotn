@@ -44,8 +44,7 @@ class QiboCircuitToEinsum:
         for key in qubits_frontier:
             out_list.append(qubits_frontier[key])
 
-        operand_exp_interleave = [x for y in zip(
-            operands, mode_labels) for x in y]
+        operand_exp_interleave = [x for y in zip(operands, mode_labels) for x in y]
         operand_exp_interleave.append(out_list)
         return operand_exp_interleave
 
