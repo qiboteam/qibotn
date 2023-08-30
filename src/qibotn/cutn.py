@@ -15,7 +15,6 @@ def eval_tn_MPI(qibo_circ, datatype):
     ncpu_threads = multiprocessing.cpu_count() // 2
     n_samples = 8
 
-    root = 0
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     device_id = rank % getDeviceCount()
@@ -37,8 +36,7 @@ def eval_tn_MPI(qibo_circ, datatype):
 
     cutn.destroy(handle)
 
-    if rank == root:
-        return result, rank
+    return result, rank
 
 
 if __name__ == "__main__":
