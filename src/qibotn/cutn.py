@@ -19,7 +19,6 @@ def eval_tn_MPI(qibo_circ, datatype):
     root = 0
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
-    
     device_id = rank % getDeviceCount()
     cp.cuda.Device(device_id).use()
     
@@ -31,7 +30,7 @@ def eval_tn_MPI(qibo_circ, datatype):
     operands_interleave = myconvertor.state_vector_operands()
     
     network = cutn.Network(*operands_interleave, options=network_opts)
-    network.contract_path(optimize={'samples': n_samples, 'threads': ncpu_threads}) # Calculate path, info
+    network.contract_path(optimize={'samples': n_samples, 'threads': ncpu_threads}) # Calculate optimal path, returns path and info
     
     result = network.contract()
     
