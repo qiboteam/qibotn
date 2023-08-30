@@ -42,7 +42,6 @@ setup(
         "qibo>=0.1.10",
         "qibojit>=0.0.7",
         "quimb[tensor]>=1.4.0",
-        "cupy>=11.6.0",
     ],
     extras_require={
         "docs": [],
@@ -54,7 +53,8 @@ setup(
         "analysis": [
             "pylint>=2.16.0",
         ],
-        "cuquantum": [
+        "cuda": [
+            "cupy>=11.6.0",
             "cuquantum-python-cu11>=23.3.0",
         ],
     },
