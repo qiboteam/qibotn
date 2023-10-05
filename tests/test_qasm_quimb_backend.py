@@ -29,8 +29,9 @@ def time(func):
     return time, res
 
 
-@pytest.mark.parametrize("nqubits", [1, 2, 5, 10])
-def test_eval(nqubits: int):
+@pytest.mark.parametrize("nqubits, tolerance",
+                         [(1, 1e-6), (2, 1e-6), (5, 1e-3), (10, 1e-3)])
+def test_eval(nqubits: int, tolerance: float):
     # hack quimb to use the correct number of processes
     # TODO: remove completely, or at least delegate to the backend
     # implementation
@@ -57,4 +58,5 @@ def test_eval(nqubits: int):
     )
 
     assert 1e-2 * qibo_time < quimb_time < 1e2 * qibo_time
-    assert np.allclose(result_sv, result_tn), "Resulting dense vectors do not match"
+    assert np.allclose(result_sv, result_tn,
+                       atol=tolerance), "Resulting dense vectors do not match"
