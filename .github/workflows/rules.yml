@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    if: contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push'
+    if: contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' && {{ $CUDA_PATH != '' }}
     strategy:
       matrix:
         os: [ubuntu-latest]
