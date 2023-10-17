@@ -13,7 +13,7 @@ def eval(qibo_circ, datatype):
 
 def eval_tn_MPI(qibo_circ, datatype, n_samples=8):
     """Convert qibo circuit to tensornet (TN) format and perform contraction using multi node and multi GPU through MPI.
-    The conversion is performed by QiboCircuitToEinsum() afterwhich it goes through 2 steps: pathfinder and execution.
+    The conversion is performed by QiboCircuitToEinsum(), after which it goes through 2 steps: pathfinder and execution.
     The pathfinder looks at user defined number of samples (n_samples) iteratively to select the least costly contraction path. This is sped up with multi thread.
     After pathfinding the optimal path is used in the actual contraction to give a dense vector representation of the TN.
     """
