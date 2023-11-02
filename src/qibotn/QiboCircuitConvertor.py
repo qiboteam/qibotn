@@ -6,7 +6,7 @@ class QiboCircuitToEinsum:
     """Convert a circuit to a Tensor Network (TN) representation.
     The circuit is first processed to an intermediate form by grouping each gate
     matrix with its corresponding qubit it is acting on to a list. It is then
-    converted it to an equivalent TN expression through the class function
+    converted to an equivalent TN expression through the class function
     state_vector_operands() following the Einstein summation convention in the
     interleave format.
 
@@ -44,8 +44,7 @@ class QiboCircuitToEinsum:
         for key in qubits_frontier:
             out_list.append(qubits_frontier[key])
 
-        operand_exp_interleave = [x for y in zip(
-            operands, mode_labels) for x in y]
+        operand_exp_interleave = [x for y in zip(operands, mode_labels) for x in y]
         operand_exp_interleave.append(out_list)
         return operand_exp_interleave
 
@@ -95,7 +94,8 @@ class QiboCircuitToEinsum:
             required_shape = self.op_shape_from_qubits(len(gate_qubits))
             self.gate_tensors.append(
                 (
-                    cp.asarray(gate.matrix).reshape(required_shape),
+                    cp.asarray(gate.matrix(), dtype=self.dtype).reshape(
+                        required_shape),
                     gate_qubits,
                 )
             )
