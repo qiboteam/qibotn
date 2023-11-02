@@ -3,7 +3,7 @@ import quimb.tensor as qtn
 from qibo.models import Circuit as QiboCircuit
 
 
-def from_qibo(circuit: QiboCircuit, is_mps: False, psi0=None, method='svd', 
+def from_qibo(circuit: QiboCircuit, is_mps: False, psi0=None, method='svd',
               cutoff=1e-6, cutoff_mode='abs'):
     nqubits = circuit.nqubits
     gate_opt = {}
@@ -12,7 +12,7 @@ def from_qibo(circuit: QiboCircuit, is_mps: False, psi0=None, method='svd',
         gate_opt["method"] = method
         gate_opt["cutoff"] = cutoff
         gate_opt["cutoff_mode"] = cutoff_mode
-    else:    
+    else:
         tncirc = qtn.Circuit(nqubits, psi0=psi0)
 
     for gate in circuit.queue:

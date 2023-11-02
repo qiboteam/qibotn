@@ -10,7 +10,8 @@ from qibo.models import QFT
 
 
 def create_init_state(nqubits):
-    init_state = np.random.random(2**nqubits) + 1j * np.random.random(2**nqubits)
+    init_state = np.random.random(2**nqubits) + \
+        1j * np.random.random(2**nqubits)
     init_state = init_state / np.sqrt((np.abs(init_state) ** 2).sum())
     return init_state
 
@@ -42,7 +43,8 @@ def test_eval(nqubits: int, tolerance: float):
     init_state_tn = copy.deepcopy(init_state)
 
     # Test qibo
-    qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
+    qibo.set_backend(backend=config.qibo.backend,
+                     platform=config.qibo.platform)
     qibo_time, (qibo_circ, result_sv) = time(
         lambda: qibo_qft(nqubits, init_state, swaps=True)
     )
