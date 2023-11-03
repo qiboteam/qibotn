@@ -43,13 +43,17 @@ class QiboTNBackend(NumpyBackend):
             xxx.
 
         """
-        if initial_state is not None:
-            raise_error(NotImplementedError, "QiboTN cannot support initial state.")
 
         if self.platform == "cu_tensornet":
+            if initial_state is not None:
+                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
+
             state = cutn.eval(circuit, self.dtype)
 
         if self.platform == "cu_mps":
+            if initial_state is not None:
+                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
+
             gate_algo = {
                 "qr_method": False,
                 "svd_method": {
