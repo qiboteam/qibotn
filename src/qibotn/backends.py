@@ -3,6 +3,7 @@ from qibo.config import raise_error
 from qibotn import cutn
 from qibotn import quimb
 from qibo.states import CircuitResult
+import numpy as np
 
 
 class QiboTNBackend(NumpyBackend):
@@ -30,7 +31,7 @@ class QiboTNBackend(NumpyBackend):
         raise_error(NotImplementedError, "Not implemented in QiboTN.")
 
     def execute_circuit(
-        self, circuit, initial_state=None, nshots=None, return_array=False
+        self, circuit, initial_state=None, nshots=None, return_array=True
     ):  # pragma: no cover
         """Executes a quantum circuit.
 
@@ -64,7 +65,12 @@ class QiboTNBackend(NumpyBackend):
             state = cutn.eval_mps(circuit, gate_algo, self.dtype)
 
         if self.platform == "qu_tensornet":
-            state = quimb.eval(circuit.to_qasm(), initial_state, backend="numpy")
+            
+            #init_state = np.random.random(2**circuit.nqubits) + 1j * np.random.random(2**circuit.nqubits)
+            #init_state = init_state / np.sqrt((np.abs(init_state) ** 2).sum())
+            init_state = np.zeros(2**circuit.nqubits, dtype=self.dtype)
+            init_state[0] = 1.0
+            state = quimb.eval(circuit.to_qasm(), init_state, backend="numpy")
 
         if return_array:
             return state.flatten()
