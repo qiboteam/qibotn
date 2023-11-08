@@ -31,7 +31,7 @@ class QiboTNBackend(NumpyBackend):
         raise_error(NotImplementedError, "Not implemented in QiboTN.")
 
     def execute_circuit(
-        self, circuit, initial_state=None, nshots=None, return_array=True
+        self, circuit, initial_state=None, nshots=None, return_array=False
     ):  # pragma: no cover
         """Executes a quantum circuit.
 
