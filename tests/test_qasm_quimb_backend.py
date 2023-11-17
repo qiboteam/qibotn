@@ -30,9 +30,9 @@ def time(func):
     return time, res
 
 
-@pytest.mark.parametrize("nqubits, tolerance",
-                         [(1, 1e-6), (2, 1e-6), (5, 1e-3), (10, 1e-3)])
-def test_eval(nqubits: int, tolerance: float):
+@pytest.mark.parametrize("nqubits, tolerance, is_mps",
+                         [(1, 1e-6, True), (2, 1e-6, False), (5, 1e-3, True), (10, 1e-3, False)])
+def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     # hack quimb to use the correct number of processes
     # TODO: remove completely, or at least delegate to the backend
     # implementation
@@ -55,7 +55,7 @@ def test_eval(nqubits: int, tolerance: float):
     # Test quimb
     quimb_time, result_tn = time(
         lambda: qibotn.quimb.eval(
-            qasm_circ, init_state_tn, backend=config.quimb.backend
+            qasm_circ, init_state_tn, is_mps, backend=config.quimb.backend
         )
     )
 
