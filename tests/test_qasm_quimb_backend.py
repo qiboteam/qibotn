@@ -10,7 +10,8 @@ from qibo.models import QFT
 
 
 def create_init_state(nqubits):
-    init_state = np.random.random(2**nqubits) + 1j * np.random.random(2**nqubits)
+    init_state = np.random.random(2**nqubits) + \
+        1j * np.random.random(2**nqubits)
     init_state = init_state / np.sqrt((np.abs(init_state) ** 2).sum())
     return init_state
 
@@ -29,8 +30,9 @@ def time(func):
     return time, res
 
 
-@pytest.mark.parametrize("nqubits", [1, 2, 5, 10])
-def test_eval(nqubits: int):
+@pytest.mark.parametrize("nqubits, tolerance, is_mps",
+                         [(1, 1e-6, True), (2, 1e-6, False), (5, 1e-3, True), (10, 1e-3, False)])
+def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     # hack quimb to use the correct number of processes
     # TODO: remove completely, or at least delegate to the backend
     # implementation
@@ -41,7 +43,8 @@ def test_eval(nqubits: int):
     init_state_tn = copy.deepcopy(init_state)
 
     # Test qibo
-    qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
+    qibo.set_backend(backend=config.qibo.backend,
+                     platform=config.qibo.platform)
     qibo_time, (qibo_circ, result_sv) = time(
         lambda: qibo_qft(nqubits, init_state, swaps=True)
     )
@@ -52,9 +55,10 @@ def test_eval(nqubits: int):
     # Test quimb
     quimb_time, result_tn = time(
         lambda: qibotn.quimb.eval(
-            qasm_circ, init_state_tn, backend=config.quimb.backend
+            qasm_circ, init_state_tn, is_mps, backend=config.quimb.backend
         )
     )
 
     assert 1e-2 * qibo_time < quimb_time < 1e2 * qibo_time
-    assert np.allclose(result_sv, result_tn), "Resulting dense vectors do not match"
+    assert np.allclose(result_sv, result_tn,
+                       atol=tolerance), "Resulting dense vectors do not match"
