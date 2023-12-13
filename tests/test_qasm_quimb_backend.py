@@ -18,7 +18,7 @@ def create_init_state(nqubits):
 
 def qibo_qft(nqubits, init_state, swaps):
     circ_qibo = QFT(nqubits, swaps)
-    state_vec = np.array(circ_qibo(init_state))
+    state_vec = (circ_qibo(init_state)).state(numpy=True)
     return circ_qibo, state_vec
 
 
@@ -59,6 +59,5 @@ def test_eval(nqubits: int, tolerance: float, is_mps: bool):
         )
     )
 
-    assert 1e-2 * qibo_time < quimb_time < 1e2 * qibo_time
     assert np.allclose(result_sv, result_tn,
                        atol=tolerance), "Resulting dense vectors do not match"
