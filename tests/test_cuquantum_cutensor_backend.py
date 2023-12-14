@@ -10,7 +10,7 @@ from qibo.models import QFT
 
 def qibo_qft(nqubits, swaps):
     circ_qibo = QFT(nqubits, swaps)
-    state_vec = np.array(circ_qibo())
+    state_vec = circ_qibo().state(numpy=True)
     return circ_qibo, state_vec
 
 

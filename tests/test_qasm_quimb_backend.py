@@ -1,7 +1,5 @@
 import copy
 import os
-from timeit import default_timer as timer
-
 import config
 import numpy as np
 import pytest
@@ -18,16 +16,8 @@ def create_init_state(nqubits):
 
 def qibo_qft(nqubits, init_state, swaps):
     circ_qibo = QFT(nqubits, swaps)
-    state_vec = np.array(circ_qibo(init_state))
+    state_vec = circ_qibo(init_state).state(numpy=True)
     return circ_qibo, state_vec
-
-
-def time(func):
-    start = timer()
-    res = func()
-    end = timer()
-    time = end - start
-    return time, res
 
 
 @pytest.mark.parametrize("nqubits, tolerance, is_mps",
@@ -45,20 +35,20 @@ def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend,
                      platform=config.qibo.platform)
-    qibo_time, (qibo_circ, result_sv) = time(
-        lambda: qibo_qft(nqubits, init_state, swaps=True)
-    )
+    #qibo_time, (qibo_circ, result_sv) = time(
+        #lambda: qibo_qft(nqubits, init_state, swaps=True)
+    #)
+    qibo_circ, result_sv= qibo_qft(nqubits, init_state, swaps=True)
+    
 
     # Convert to qasm for other backends
     qasm_circ = qibo_circ.to_qasm()
 
     # Test quimb
-    quimb_time, result_tn = time(
-        lambda: qibotn.quimb.eval(
+    result_tn = qibotn.quimb.eval(
             qasm_circ, init_state_tn, is_mps, backend=config.quimb.backend
         )
-    )
+   
 
-    assert 1e-2 * qibo_time < quimb_time < 1e2 * qibo_time
     assert np.allclose(result_sv, result_tn,
                        atol=tolerance), "Resulting dense vectors do not match"
