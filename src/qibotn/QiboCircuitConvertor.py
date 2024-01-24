@@ -110,7 +110,6 @@ class QiboCircuitToEinsum:
 
         self.basis_map = {"0": state_0, "1": state_1}
 
-
     def init_inverse_circuit(self, circuit):
         self.gate_tensors_inverse = []
         gates_qubits_inverse = []
@@ -131,14 +130,13 @@ class QiboCircuitToEinsum:
 
         # self.active_qubits is to identify qubits with at least 1 gate acting on it in the whole circuit.
         self.active_qubits_inverse = np.unique(gates_qubits_inverse)
-        
-        
-    def get_pauli_gates(self, pauli_map, dtype='complex128', backend=cp):
+
+    def get_pauli_gates(self, pauli_map, dtype="complex128", backend=cp):
         """
         Populate the gates for all pauli operators.
 
         Args:
-            pauli_map: A dictionary mapping qubits to pauli operators. 
+            pauli_map: A dictionary mapping qubits to pauli operators.
             dtype: Data type for the tensor operands.
             backend: The package the tensor operands belong to.
 
@@ -146,70 +144,74 @@ class QiboCircuitToEinsum:
             A sequence of pauli gates.
         """
         asarray = backend.asarray
-        pauli_i = asarray([[1,0], [0,1]], dtype=dtype)
-        pauli_x = asarray([[0,1], [1,0]], dtype=dtype)
-        pauli_y = asarray([[0,-1j], [1j,0]], dtype=dtype)
-        pauli_z = asarray([[1,0], [0,-1]], dtype=dtype)
-        
-        operand_map = {'I': pauli_i,
-                    'X': pauli_x,
-                    'Y': pauli_y,
-                    'Z': pauli_z}
+        pauli_i = asarray([[1, 0], [0, 1]], dtype=dtype)
+        pauli_x = asarray([[0, 1], [1, 0]], dtype=dtype)
+        pauli_y = asarray([[0, -1j], [1j, 0]], dtype=dtype)
+        pauli_z = asarray([[1, 0], [0, -1]], dtype=dtype)
+
+        operand_map = {"I": pauli_i, "X": pauli_x, "Y": pauli_y, "Z": pauli_z}
         gates = []
         for qubit, pauli_char in pauli_map.items():
             operand = operand_map.get(pauli_char)
             if operand is None:
-                raise ValueError('pauli string character must be one of I/X/Y/Z')
+                raise ValueError("pauli string character must be one of I/X/Y/Z")
             gates.append((operand, (qubit,)))
         return gates
 
     def expectation_operands(self, pauli_string):
-        #assign pauli string to qubit
-        #_get_forward_inverse_metadata()
-        input_bitstring = "0" * self.circuit.nqubits #Need all qubits!
+        # assign pauli string to qubit
+        # _get_forward_inverse_metadata()
+        input_bitstring = "0" * self.circuit.nqubits  # Need all qubits!
 
         input_operands = self._get_bitstring_tensors(input_bitstring)
-        pauli_string = dict(zip(range(self.circuit.nqubits), pauli_string))        
+        pauli_string = dict(zip(range(self.circuit.nqubits), pauli_string))
         pauli_map = pauli_string
         coned_qubits = pauli_map.keys()
-        
+
         (
             mode_labels,
             qubits_frontier,
             next_frontier,
         ) = self._init_mode_labels_from_qubits(range(self.circuit.nqubits))
-        
+
         gate_mode_labels, gate_operands = self._parse_gates_to_mode_labels_operands(
             self.gate_tensors, qubits_frontier, next_frontier
         )
-        
+
         operands = input_operands + gate_operands
         mode_labels += gate_mode_labels
-        
+
         self.init_inverse_circuit(self.circuit.invert())
-        
-        
+
         next_frontier = max(qubits_frontier.values()) + 1
 
-        #input_mode_labels, input_operands, qubits_frontier, next_frontier, inverse_gates = self._get_forward_inverse_metadata(coned_qubits)
+        # input_mode_labels, input_operands, qubits_frontier, next_frontier, inverse_gates = self._get_forward_inverse_metadata(coned_qubits)
 
-        pauli_gates = self.get_pauli_gates(pauli_map, dtype=self.dtype, backend=self.backend)
-        
-        
+        pauli_gates = self.get_pauli_gates(
+            pauli_map, dtype=self.dtype, backend=self.backend
+        )
+
         gates_inverse = pauli_gates + self.gate_tensors_inverse
-        
-        gate_mode_labels_inverse, gate_operands_inverse = self._parse_gates_to_mode_labels_operands(
+
+        (
+            gate_mode_labels_inverse,
+            gate_operands_inverse,
+        ) = self._parse_gates_to_mode_labels_operands(
             gates_inverse, qubits_frontier, next_frontier
         )
-        mode_labels = mode_labels + gate_mode_labels_inverse + [[qubits_frontier[ix]] for ix in range(self.circuit.nqubits)]
-        operands = operands + gate_operands_inverse + operands[:self.circuit.nqubits]
-        
-        operand_exp_interleave = [x for y in zip(operands, mode_labels) for x in y]
-        
-        #expec = contract(*operand_exp_interleave)
-        #print(expec)
+        mode_labels = (
+            mode_labels
+            + gate_mode_labels_inverse
+            + [[qubits_frontier[ix]] for ix in range(self.circuit.nqubits)]
+        )
+        operands = operands + gate_operands_inverse + operands[: self.circuit.nqubits]
 
-        '''
+        operand_exp_interleave = [x for y in zip(operands, mode_labels) for x in y]
+
+        # expec = contract(*operand_exp_interleave)
+        # print(expec)
+
+        """
         gate_mode_labels, gate_operands = circ_utils.parse_gates_to_mode_labels_operands(gates, 
                                                                                          qubits_frontier, 
                                                                                          next_frontier)
@@ -219,5 +221,5 @@ class QiboCircuitToEinsum:
 
         output_mode_labels = []
         expression = circ_utils.convert_mode_labels_to_expression(mode_labels, output_mode_labels)
-        '''
+        """
         return operand_exp_interleave
