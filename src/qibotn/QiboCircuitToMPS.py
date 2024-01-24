@@ -21,7 +21,7 @@ class QiboCircuitToMPS:
         self.handle = cutn.create()
         self.dtype = dtype
         self.mps_tensors = initial(self.num_qubits, dtype=dtype)
-        circuitconvertor = QiboCircuitToEinsum(circ_qibo)
+        circuitconvertor = QiboCircuitToEinsum(circ_qibo, dtype=dtype)
 
         for gate, qubits in circuitconvertor.gate_tensors:
             # mapping from qubits to qubit indices
