@@ -14,6 +14,13 @@ class QiboTNBackend(NumpyBackend):
             platform == "cu_tensornet"
             or platform == "cu_mps"
             or platform == "qu_tensornet"
+            or platform == "cu_tensornet_mpi"
+            or platform == "cu_tensornet_mpi_expectation"
+            or platform == "cu_tensornet_expectation"
+            or platform == "cu_tensornet_nccl"
+            or platform == "cu_tensornet_nccl_expectation"
+
+
         ):  # pragma: no cover
             self.platform = platform
         else:
@@ -71,6 +78,52 @@ class QiboTNBackend(NumpyBackend):
             init_state = np.zeros(2**circuit.nqubits, dtype=self.dtype)
             init_state[0] = 1.0
             state = quimb.eval(circuit.to_qasm(), init_state, backend="numpy")
+            
+        if self.platform == "cu_tensornet_mpi":
+            if initial_state is not None:
+                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
+
+            #state, rank = cutn.eval_tn_MPI(circuit, self.dtype,32)
+            state, rank = cutn.eval_tn_MPI_2(circuit, self.dtype,32)
+            if rank > 0:
+                state = np.array(0)
+             
+        if self.platform == "cu_tensornet_nccl":
+            if initial_state is not None:
+                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
+
+            #state, rank = cutn.eval_tn_MPI(circuit, self.dtype,32)
+            state, rank = cutn.eval_tn_nccl(circuit, self.dtype,32)
+            if rank > 0:
+                state = np.array(0)
+        
+        if self.platform == "cu_tensornet_expectation":
+            if initial_state is not None:
+                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
+                
+            state = cutn.eval_expectation(circuit, self.dtype)
+        
+        if self.platform == "cu_tensornet_mpi_expectation":
+            if initial_state is not None:
+                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
+
+            #state, rank = cutn.eval_tn_MPI(circuit, self.dtype,32)
+            #state, rank = cutn.eval_tn_MPI_expectation(circuit, self.dtype,32)
+            state, rank = cutn.eval_tn_MPI_2_expectation(circuit, self.dtype,32)
+            
+            if rank > 0:
+                state = np.array(0)
+
+        if self.platform == "cu_tensornet_nccl_expectation":
+            if initial_state is not None:
+                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
+
+            #state, rank = cutn.eval_tn_MPI(circuit, self.dtype,32)
+            #state, rank = cutn.eval_tn_MPI_expectation(circuit, self.dtype,32)
+            state, rank = cutn.eval_tn_nccl_expectation(circuit, self.dtype,32)
+            
+            if rank > 0:
+                state = np.array(0)
 
         if return_array:
             return state.flatten()
