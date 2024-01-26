@@ -1,20 +1,37 @@
+import numpy as np
+
 from qibo.backends.numpy import NumpyBackend
+from qibo.result import CircuitResult
+from qibo.config import raise_error
 
 
 class CuTensorNet(NumpyBackend):  # pragma: no cover
     # CI does not test for GPU
 
-    def __init__(self):
+    def __init__(self, MPI_enabled=False, MPS_enabled=False, NCCL_enabled=False):
         super().__init__()
         import cuquantum  # pylint: disable=import-error
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
 
+        self.name = "qibotn"
         self.cuquantum = cuquantum
         self.cutn = cutn
         self.platform = "cutensornet"
         self.versions["cuquantum"] = self.cuquantum.__version__
         self.supports_multigpu = True
+        self.MPI_enabled = MPI_enabled
+        self.MPS_enabled = MPS_enabled
+        self.NCCL_enabled = NCCL_enabled
         self.handle = self.cutn.create()
+
+    def apply_gate(self, gate, state, nqubits):  # pragma: no cover
+        raise_error(NotImplementedError, "QiboTN cannot apply gates directly.")
+
+    def apply_gate_density_matrix(self, gate, state, nqubits):  # pragma: no cover
+        raise_error(NotImplementedError, "QiboTN cannot apply gates directly.")
+
+    def assign_measurements(self, measurement_map, circuit_result):
+        raise_error(NotImplementedError, "Not implemented in QiboTN.")
 
     def __del__(self):
         if hasattr(self, "cutn"):
@@ -37,3 +54,128 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             )
         else:
             raise TypeError("Type can be either complex64 or complex128")
+
+    def execute_circuit(
+        self, circuit, initial_state=None, nshots=None, return_array=False
+    ):  # pragma: no cover
+        """Executes a quantum circuit.
+
+        Args:
+            circuit (:class:`qibo.models.circuit.Circuit`): Circuit to execute.
+            initial_state (:class:`qibo.models.circuit.Circuit`): Circuit to prepare the initial state.
+                If ``None`` the default ``|00...0>`` state is used.
+
+        Returns:
+            xxx.
+
+        """
+
+        import qibotn.cutn
+
+        cutn = qibotn.cutn
+        MPI_enabled = self.MPI_enabled
+        MPS_enabled = self.MPS_enabled
+        NCCL_enabled = self.NCCL_enabled
+
+        if (
+            MPI_enabled == False
+            and MPS_enabled == False
+            and NCCL_enabled == False
+        ):
+            if initial_state is not None:
+                raise_error(NotImplementedError,
+                            "QiboTN cannot support initial state.")
+
+            state = cutn.eval(circuit, self.dtype)
+
+        if (
+            MPI_enabled == False
+            and MPS_enabled == True
+            and NCCL_enabled == False
+        ):
+            if initial_state is not None:
+                raise_error(NotImplementedError,
+                            "QiboTN cannot support initial state.")
+
+            gate_algo = {
+                "qr_method": False,
+                "svd_method": {
+                    "partition": "UV",
+                    "abs_cutoff": 1e-12,
+                },
+            }  # make this user input
+            state = cutn.eval_mps(circuit, gate_algo, self.dtype)
+
+        if (
+            MPI_enabled == True
+            and MPS_enabled == False
+            and NCCL_enabled == False
+        ):
+            if initial_state is not None:
+                raise_error(NotImplementedError,
+                            "QiboTN cannot support initial state.")
+
+            state, rank = cutn.eval_tn_MPI_2(circuit, self.dtype, 32)
+            if rank > 0:
+                state = np.array(0)
+
+        if (
+            MPI_enabled == False
+            and MPS_enabled == False
+            and NCCL_enabled == True
+        ):
+            if initial_state is not None:
+                raise_error(NotImplementedError,
+                            "QiboTN cannot support initial state.")
+
+            state, rank = cutn.eval_tn_nccl(circuit, self.dtype, 32)
+            if rank > 0:
+                state = np.array(0)
+
+        if (
+            MPI_enabled == False
+            and MPS_enabled == False
+            and NCCL_enabled == False
+        ):
+            if initial_state is not None:
+                raise_error(NotImplementedError,
+                            "QiboTN cannot support initial state.")
+
+            state = cutn.eval_expectation(circuit, self.dtype)
+
+        if (
+            MPI_enabled == True
+            and MPS_enabled == False
+            and NCCL_enabled == False
+        ):
+            if initial_state is not None:
+                raise_error(NotImplementedError,
+                            "QiboTN cannot support initial state.")
+
+            state, rank = cutn.eval_tn_MPI_2_expectation(
+                circuit, self.dtype, 32)
+
+            if rank > 0:
+                state = np.array(0)
+
+        if (
+            MPI_enabled == False
+            and MPS_enabled == False
+            and NCCL_enabled == True
+        ):
+            if initial_state is not None:
+                raise_error(NotImplementedError,
+                            "QiboTN cannot support initial state.")
+
+            state, rank = cutn.eval_tn_nccl_expectation(
+                circuit, self.dtype, 32)
+
+            if rank > 0:
+                state = np.array(0)
+
+        if return_array:
+            return state.flatten()
+        else:
+            circuit._final_state = CircuitResult(
+                self, circuit, state.flatten(), nshots)
+            return circuit._final_state
