@@ -71,9 +71,8 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
 
         """
 
-        import qibotn.src.qibotn.eval
+        import qibotn.eval as eval
 
-        cutn = qibotn.eval
         MPI_enabled = self.MPI_enabled
         MPS_enabled = self.MPS_enabled
         NCCL_enabled = self.NCCL_enabled
@@ -89,7 +88,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 raise_error(NotImplementedError,
                             "QiboTN cannot support initial state.")
 
-            state = cutn.eval(circuit, self.dtype)
+            state = eval.dense_vector_tn(circuit, self.dtype)
 
         if (
             MPI_enabled == False
@@ -108,7 +107,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                     "abs_cutoff": 1e-12,
                 },
             }  # make this user input
-            state = cutn.eval_mps(circuit, gate_algo, self.dtype)
+            state = eval.dense_vector_mps(circuit, gate_algo, self.dtype)
 
         if (
             MPI_enabled == True
@@ -120,7 +119,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 raise_error(NotImplementedError,
                             "QiboTN cannot support initial state.")
 
-            state, rank = cutn.eval_tn_MPI(circuit, self.dtype, 32)
+            state, rank = eval.dense_vector_tn_MPI(circuit, self.dtype, 32)
             if rank > 0:
                 state = np.array(0)
 
@@ -134,7 +133,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 raise_error(NotImplementedError,
                             "QiboTN cannot support initial state.")
 
-            state, rank = cutn.eval_tn_nccl(circuit, self.dtype, 32)
+            state, rank = eval.dense_vector_tn_nccl(circuit, self.dtype, 32)
             if rank > 0:
                 state = np.array(0)
 
@@ -148,7 +147,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 raise_error(NotImplementedError,
                             "QiboTN cannot support initial state.")
 
-            state = cutn.eval_expectation(circuit, self.dtype)
+            state = eval.expectation_tn(circuit, self.dtype)
 
         if (
             MPI_enabled == True
@@ -160,7 +159,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 raise_error(NotImplementedError,
                             "QiboTN cannot support initial state.")
 
-            state, rank = cutn.eval_tn_MPI_expectation(
+            state, rank = eval.expectation_tn_MPI(
                 circuit, self.dtype, 32)
 
             if rank > 0:
@@ -176,7 +175,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 raise_error(NotImplementedError,
                             "QiboTN cannot support initial state.")
 
-            state, rank = cutn.eval_tn_nccl_expectation(
+            state, rank = eval.expectation_tn_nccl(
                 circuit, self.dtype, 32)
 
             if rank > 0:
