@@ -23,6 +23,12 @@ def eval_expectation(qibo_circ, datatype):
 
 
 def eval_tn_MPI_2(qibo_circ, datatype, n_samples=8):
+    """Convert qibo circuit to tensornet (TN) format and perform contraction using multi node and multi GPU through MPI.
+    The conversion is performed by QiboCircuitToEinsum(), after which it goes through 2 steps: pathfinder and execution.
+    The pathfinder looks at user defined number of samples (n_samples) iteratively to select the least costly contraction path. This is sped up with multi thread.
+    After pathfinding the optimal path is used in the actual contraction to give a dense vector representation of the TN.
+    """
+    
     from mpi4py import MPI  # this line initializes MPI
     import socket
     from cuquantum import Network
@@ -97,6 +103,17 @@ def eval_tn_MPI_2(qibo_circ, datatype, n_samples=8):
 
     # Sum the partial contribution from each process on root.
     result = comm.reduce(sendobj=result, op=MPI.SUM, root=root)
+    
+    """
+    path, opt_info = network.contract_path(optimize={"samples": n_samples, "threads": ncpu_threads, 'slicing': {'min_slices': max(16, size)}})
+
+    num_slices = opt_info.num_slices#Andy
+    chunk, extra = num_slices // size, num_slices % size#Andy
+    slice_begin = rank * chunk + min(rank, extra)#Andy
+    slice_end = num_slices if rank == size - 1 else (rank + 1) * chunk + min(rank + 1, extra)#Andy
+    slices = range(slice_begin, slice_end)#Andy
+    result = network.contract(slices=slices)
+    """
 
     return result, rank
 
