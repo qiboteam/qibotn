@@ -10,19 +10,19 @@ from qibotn.QiboCircuitConvertor import QiboCircuitToEinsum
 from qibotn.QiboCircuitToMPS import QiboCircuitToMPS
 
 
-def eval(qibo_circ, datatype):
+def dense_vector_tn(qibo_circ, datatype):
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     return contract(*myconvertor.state_vector_operands())
 
 
-def eval_expectation(qibo_circ, datatype):
+def expectation_tn(qibo_circ, datatype):
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     return contract(
         *myconvertor.expectation_operands(PauliStringGen(qibo_circ.nqubits))
     )
 
 
-def eval_tn_MPI(qibo_circ, datatype, n_samples=8):
+def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
     """Convert qibo circuit to tensornet (TN) format and perform contraction using multi node and multi GPU through MPI.
     The conversion is performed by QiboCircuitToEinsum(), after which it goes through 2 steps: pathfinder and execution.
     The pathfinder looks at user defined number of samples (n_samples) iteratively to select the least costly contraction path. This is sped up with multi thread.
@@ -118,7 +118,7 @@ def eval_tn_MPI(qibo_circ, datatype, n_samples=8):
     return result, rank
 
 
-def eval_tn_nccl(qibo_circ, datatype, n_samples=8):
+def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     from mpi4py import MPI  # this line initializes MPI
     import socket
     from cuquantum import Network
@@ -204,7 +204,7 @@ def eval_tn_nccl(qibo_circ, datatype, n_samples=8):
     return result, rank
 
 
-def eval_tn_nccl_expectation(qibo_circ, datatype, n_samples=8):
+def expectation_tn_nccl(qibo_circ, datatype, n_samples=8):
     from mpi4py import MPI  # this line initializes MPI
     import socket
     from cuquantum import Network
@@ -291,7 +291,7 @@ def eval_tn_nccl_expectation(qibo_circ, datatype, n_samples=8):
     return result, rank
 
 
-def eval_tn_MPI_expectation(qibo_circ, datatype, n_samples=8):
+def expectation_tn_MPI(qibo_circ, datatype, n_samples=8):
     from mpi4py import MPI  # this line initializes MPI
     import socket
     from cuquantum import Network
@@ -370,7 +370,7 @@ def eval_tn_MPI_expectation(qibo_circ, datatype, n_samples=8):
     return result, rank
 
 
-def eval_mps(qibo_circ, gate_algo, datatype):
+def dense_vector_mps(qibo_circ, gate_algo, datatype):
     myconvertor = QiboCircuitToMPS(qibo_circ, gate_algo, dtype=datatype)
     mps_helper = MPSContractionHelper(myconvertor.num_qubits)
 
