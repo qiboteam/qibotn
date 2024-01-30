@@ -1,14 +1,14 @@
 import numpy as np
 
 from qibo.backends.numpy import NumpyBackend
-from qibo.result import CircuitResult
+from qibo.states import CircuitResult
 from qibo.config import raise_error
 
 
 class CuTensorNet(NumpyBackend):  # pragma: no cover
     # CI does not test for GPU
 
-    def __init__(self, MPI_enabled=False, MPS_enabled=False, NCCL_enabled=False, expectation_enabled=False):
+    def __init__(self):
         super().__init__()
         import cuquantum  # pylint: disable=import-error
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
@@ -19,10 +19,6 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         self.platform = "cutensornet"
         self.versions["cuquantum"] = self.cuquantum.__version__
         self.supports_multigpu = True
-        self.MPI_enabled = MPI_enabled
-        self.MPS_enabled = MPS_enabled
-        self.NCCL_enabled = NCCL_enabled
-        self.expectation_enabled = expectation_enabled
         self.handle = self.cutn.create()
 
     def apply_gate(self, gate, state, nqubits):  # pragma: no cover
@@ -57,7 +53,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             raise TypeError("Type can be either complex64 or complex128")
 
     def execute_circuit(
-        self, circuit, initial_state=None, nshots=None, return_array=False
+        self, circuit, test, MPI_enabled=False, MPS_enabled=False, NCCL_enabled=False, expectation_enabled=False, initial_state=None, nshots=None, return_array=False
     ):  # pragma: no cover
         """Executes a quantum circuit.
 
@@ -72,12 +68,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         """
 
         import qibotn.eval as eval
-
-        MPI_enabled = self.MPI_enabled
-        MPS_enabled = self.MPS_enabled
-        NCCL_enabled = self.NCCL_enabled
-        expectation_enabled = self.expectation_enabled
-
+        print("Test", test)
         if (
             MPI_enabled == False
             and MPS_enabled == False
