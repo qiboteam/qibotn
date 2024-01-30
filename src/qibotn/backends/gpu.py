@@ -70,9 +70,9 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
 
         """
 
-        import qibotn.cutn
+        import qibotn.src.qibotn.eval
 
-        cutn = qibotn.cutn
+        cutn = qibotn.eval
         MPI_enabled = self.MPI_enabled
         MPS_enabled = self.MPS_enabled
         NCCL_enabled = self.NCCL_enabled
