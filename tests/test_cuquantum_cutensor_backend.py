@@ -32,7 +32,7 @@ def test_eval(nqubits: int, dtype="complex128"):
         dtype (str): The data type for precision, 'complex64' for single,
             'complex128' for double.
     """
-    import qibotn.cutn
+    import qibotn.eval
 
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
@@ -55,7 +55,7 @@ def test_mps(nqubits: int, dtype="complex128"):
         dtype (str): The data type for precision, 'complex64' for single,
             'complex128' for double.
     """
-    import qibotn.cutn
+    import qibotn.eval
 
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
@@ -74,7 +74,7 @@ def test_mps(nqubits: int, dtype="complex128"):
     }
 
     cutn_time, result_tn = time(
-        lambda: qibotn.cutn.eval_mps(circ_qibo, gate_algo, dtype).flatten()
+        lambda: qibotn.eval.eval_mps(circ_qibo, gate_algo, dtype).flatten()
     )
 
     print(f"State vector difference: {abs(result_tn - result_sv_cp).max():0.3e}")
