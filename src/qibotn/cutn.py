@@ -27,7 +27,7 @@ def eval_tn_MPI(qibo_circ, datatype, n_samples=8):
     The pathfinder looks at user defined number of samples (n_samples) iteratively to select the least costly contraction path. This is sped up with multi thread.
     After pathfinding the optimal path is used in the actual contraction to give a dense vector representation of the TN.
     """
-    
+
     from mpi4py import MPI  # this line initializes MPI
     import socket
     from cuquantum import Network
@@ -102,7 +102,7 @@ def eval_tn_MPI(qibo_circ, datatype, n_samples=8):
 
     # Sum the partial contribution from each process on root.
     result = comm.reduce(sendobj=result, op=MPI.SUM, root=root)
-    
+
     """
     path, opt_info = network.contract_path(optimize={"samples": n_samples, "threads": ncpu_threads, 'slicing': {'min_slices': max(16, size)}})
 
@@ -368,6 +368,7 @@ def eval_tn_MPI_expectation(qibo_circ, datatype, n_samples=8):
 
     return result, rank
 
+
 def eval_mps(qibo_circ, gate_algo, datatype):
     myconvertor = QiboCircuitToMPS(qibo_circ, gate_algo, dtype=datatype)
     mps_helper = MPSContractionHelper(myconvertor.num_qubits)
@@ -375,6 +376,7 @@ def eval_mps(qibo_circ, gate_algo, datatype):
     return mps_helper.contract_state_vector(
         myconvertor.mps_tensors, {"handle": myconvertor.handle}
     )
+
 
 def PauliStringGen(nqubits):
     if nqubits <= 0:
