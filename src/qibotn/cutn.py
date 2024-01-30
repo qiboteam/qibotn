@@ -291,7 +291,7 @@ def eval_tn_nccl_expectation(qibo_circ, datatype, n_samples=8):
     return result, rank
 
 
-def eval_tn_MPI_2_expectation(qibo_circ, datatype, n_samples=8):
+def eval_tn_MPI_expectation(qibo_circ, datatype, n_samples=8):
     from mpi4py import MPI  # this line initializes MPI
     import socket
     from cuquantum import Network
