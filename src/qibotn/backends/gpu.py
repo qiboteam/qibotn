@@ -8,7 +8,7 @@ from qibo.config import raise_error
 class CuTensorNet(NumpyBackend):  # pragma: no cover
     # CI does not test for GPU
 
-    def __init__(self, MPI_enabled=False, MPS_enabled=False, NCCL_enabled=False):
+    def __init__(self, MPI_enabled=False, MPS_enabled=False, NCCL_enabled=False, expectation_enabled=False):
         super().__init__()
         import cuquantum  # pylint: disable=import-error
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
@@ -22,6 +22,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         self.MPI_enabled = MPI_enabled
         self.MPS_enabled = MPS_enabled
         self.NCCL_enabled = NCCL_enabled
+        self.expectation_enabled = expectation_enabled
         self.handle = self.cutn.create()
 
     def apply_gate(self, gate, state, nqubits):  # pragma: no cover
@@ -76,11 +77,13 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         MPI_enabled = self.MPI_enabled
         MPS_enabled = self.MPS_enabled
         NCCL_enabled = self.NCCL_enabled
+        expectation_enabled = self.expectation_enabled
 
         if (
             MPI_enabled == False
             and MPS_enabled == False
             and NCCL_enabled == False
+            and expectation_enabled == False
         ):
             if initial_state is not None:
                 raise_error(NotImplementedError,
@@ -92,6 +95,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             MPI_enabled == False
             and MPS_enabled == True
             and NCCL_enabled == False
+            and expectation_enabled == False
         ):
             if initial_state is not None:
                 raise_error(NotImplementedError,
@@ -110,6 +114,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             MPI_enabled == True
             and MPS_enabled == False
             and NCCL_enabled == False
+            and expectation_enabled == False
         ):
             if initial_state is not None:
                 raise_error(NotImplementedError,
@@ -123,6 +128,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             MPI_enabled == False
             and MPS_enabled == False
             and NCCL_enabled == True
+            and expectation_enabled == False
         ):
             if initial_state is not None:
                 raise_error(NotImplementedError,
@@ -136,6 +142,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             MPI_enabled == False
             and MPS_enabled == False
             and NCCL_enabled == False
+            and expectation_enabled == True
         ):
             if initial_state is not None:
                 raise_error(NotImplementedError,
@@ -147,6 +154,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             MPI_enabled == True
             and MPS_enabled == False
             and NCCL_enabled == False
+            and expectation_enabled == True
         ):
             if initial_state is not None:
                 raise_error(NotImplementedError,
@@ -162,6 +170,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             MPI_enabled == False
             and MPS_enabled == False
             and NCCL_enabled == True
+            and expectation_enabled == True
         ):
             if initial_state is not None:
                 raise_error(NotImplementedError,
