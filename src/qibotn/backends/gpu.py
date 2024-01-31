@@ -53,7 +53,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             raise TypeError("Type can be either complex64 or complex128")
 
     def execute_circuit(
-        self, circuit, test, MPI_enabled=False, MPS_enabled=False, NCCL_enabled=False, expectation_enabled=False, initial_state=None, nshots=None, return_array=False
+        self, circuit, MPI_enabled=False, MPS_enabled=False, NCCL_enabled=False, expectation_enabled=False, initial_state=None, nshots=None, return_array=False
     ):  # pragma: no cover
         """Executes a quantum circuit.
 
@@ -68,7 +68,11 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         """
 
         import qibotn.eval as eval
-        print("Test", test)
+        print("MPI_enabled", MPI_enabled)
+        print("MPS_enabled", MPS_enabled)
+        print("NCCL_enabled", NCCL_enabled)
+        print("expectation_enabled", expectation_enabled)
+        
         if (
             MPI_enabled == False
             and MPS_enabled == False
@@ -150,7 +154,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 raise_error(NotImplementedError,
                             "QiboTN cannot support initial state.")
 
-            state, rank = eval.expectation_tn_MPI(
+            state, rank = eval.expectation_pauli_tn_MPI(
                 circuit, self.dtype, 32)
 
             if rank > 0:
@@ -166,7 +170,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 raise_error(NotImplementedError,
                             "QiboTN cannot support initial state.")
 
-            state, rank = eval.expectation_tn_nccl(
+            state, rank = eval.expectation_pauli_tn_nccl(
                 circuit, self.dtype, 32)
 
             if rank > 0:

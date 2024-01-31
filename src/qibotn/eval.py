@@ -15,7 +15,7 @@ def dense_vector_tn(qibo_circ, datatype):
     return contract(*myconvertor.state_vector_operands())
 
 
-def expectation_tn(qibo_circ, datatype):
+def expectation_pauli_tn(qibo_circ, datatype):
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     return contract(
         *myconvertor.expectation_operands(PauliStringGen(qibo_circ.nqubits))
@@ -204,7 +204,7 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     return result, rank
 
 
-def expectation_tn_nccl(qibo_circ, datatype, n_samples=8):
+def expectation_pauli_tn_nccl(qibo_circ, datatype, n_samples=8):
     from mpi4py import MPI  # this line initializes MPI
     import socket
     from cuquantum import Network
@@ -291,7 +291,7 @@ def expectation_tn_nccl(qibo_circ, datatype, n_samples=8):
     return result, rank
 
 
-def expectation_tn_MPI(qibo_circ, datatype, n_samples=8):
+def expectation_pauli_tn_MPI(qibo_circ, datatype, n_samples=8):
     from mpi4py import MPI  # this line initializes MPI
     import socket
     from cuquantum import Network
