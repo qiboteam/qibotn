@@ -12,34 +12,43 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         super().__init__()
         import cuquantum  # pylint: disable=import-error
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
-        
-        self.pauli_string_pattern = "XXXZ"
+
         if runcard is not None:
             self.MPI_enabled = runcard.get("MPI_enabled", False)
-            self.MPS_enabled = runcard.get("MPS_enabled", False)
             self.NCCL_enabled = runcard.get("NCCL_enabled", False)
-                        
-            expectation_enabled_value = runcard.get('expectation_enabled')
 
+            expectation_enabled_value = runcard.get("expectation_enabled")
             if expectation_enabled_value is True:
                 self.expectation_enabled = True
-
-                print("expectation_enabled is",self.expectation_enabled)
+                self.pauli_string_pattern = "XXXZ"
             elif expectation_enabled_value is False:
                 self.expectation_enabled = False
-
-                print("expectation_enabled is",self.expectation_enabled)
             elif isinstance(expectation_enabled_value, dict):
                 self.expectation_enabled = True
-                expectation_enabled_dict = runcard.get('expectation_enabled', {})
-
-                self.pauli_string_pattern = expectation_enabled_dict.get('pauli_string_pattern', None)
-
-                print("expectation_enabled is a dictionary",self.expectation_enabled,self.pauli_string_pattern )
+                expectation_enabled_dict = runcard.get("expectation_enabled", {})
+                self.pauli_string_pattern = expectation_enabled_dict.get(
+                    "pauli_string_pattern", None
+                )
             else:
                 raise TypeError("expectation_enabled has an unexpected type")
 
-
+            mps_enabled_value = runcard.get("MPS_enabled")
+            if mps_enabled_value is True:
+                self.MPS_enabled = True
+                self.gate_algo = {
+                    "qr_method": False,
+                    "svd_method": {
+                        "partition": "UV",
+                        "abs_cutoff": 1e-12,
+                    },
+                }
+            elif mps_enabled_value is False:
+                self.MPS_enabled = False
+            elif isinstance(mps_enabled_value, dict):
+                self.MPS_enabled = True
+                self.gate_algo = runcard.get("MPS_enabled", {})
+            else:
+                raise TypeError("MPS_enabled has an unexpected type")
 
         else:
             self.MPI_enabled = False
@@ -123,14 +132,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             if initial_state is not None:
                 raise_error(NotImplementedError, "QiboTN cannot support initial state.")
 
-            gate_algo = {
-                "qr_method": False,
-                "svd_method": {
-                    "partition": "UV",
-                    "abs_cutoff": 1e-12,
-                },
-            }  # make this user input
-            state = eval.dense_vector_mps(circuit, gate_algo, self.dtype)
+            state = eval.dense_vector_mps(circuit, self.gate_algo, self.dtype)
 
         elif (
             self.MPI_enabled == True
@@ -167,7 +169,9 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             if initial_state is not None:
                 raise_error(NotImplementedError, "QiboTN cannot support initial state.")
 
-            state = eval.expectation_pauli_tn(circuit, self.dtype, self.pauli_string_pattern)
+            state = eval.expectation_pauli_tn(
+                circuit, self.dtype, self.pauli_string_pattern
+            )
 
         elif (
             self.MPI_enabled == True
@@ -178,7 +182,9 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             if initial_state is not None:
                 raise_error(NotImplementedError, "QiboTN cannot support initial state.")
 
-            state, rank = eval.expectation_pauli_tn_MPI(circuit, self.dtype, self.pauli_string_pattern, 32)
+            state, rank = eval.expectation_pauli_tn_MPI(
+                circuit, self.dtype, self.pauli_string_pattern, 32
+            )
 
             if rank > 0:
                 state = np.array(0)
@@ -192,7 +198,9 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             if initial_state is not None:
                 raise_error(NotImplementedError, "QiboTN cannot support initial state.")
 
-            state, rank = eval.expectation_pauli_tn_nccl(circuit, self.dtype, self.pauli_string_pattern, 32)
+            state, rank = eval.expectation_pauli_tn_nccl(
+                circuit, self.dtype, self.pauli_string_pattern, 32
+            )
 
             if rank > 0:
                 state = np.array(0)

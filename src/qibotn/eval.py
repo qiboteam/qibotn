@@ -18,7 +18,9 @@ def dense_vector_tn(qibo_circ, datatype):
 def expectation_pauli_tn(qibo_circ, datatype, pauli_string):
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     return contract(
-        *myconvertor.expectation_operands(PauliStringGen(qibo_circ.nqubits, pauli_string))
+        *myconvertor.expectation_operands(
+            PauliStringGen(qibo_circ.nqubits, pauli_string)
+        )
     )
 
 
@@ -232,7 +234,9 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string, n_samples=8):
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     # mem_avail = cp.cuda.Device().mem_info[0]
     # print("Mem avail: aft convetor",mem_avail, "rank =",rank)
-    operands = myconvertor.expectation_operands(PauliStringGen(qibo_circ.nqubits, pauli_string))
+    operands = myconvertor.expectation_operands(
+        PauliStringGen(qibo_circ.nqubits, pauli_string)
+    )
 
     # mem_avail = cp.cuda.Device().mem_info[0]
     # print("Mem avail: aft operand interleave",mem_avail, "rank =",rank)
@@ -311,7 +315,9 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string, n_samples=8):
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     # mem_avail = cp.cuda.Device().mem_info[0]
     # print("Mem avail: aft convetor",mem_avail, "rank =",rank)
-    operands = myconvertor.expectation_operands(PauliStringGen(qibo_circ.nqubits, pauli_string))
+    operands = myconvertor.expectation_operands(
+        PauliStringGen(qibo_circ.nqubits, pauli_string)
+    )
     # mem_avail = cp.cuda.Device().mem_info[0]
     # print("Mem avail: aft operand interleave",mem_avail, "rank =",rank)
 
@@ -384,7 +390,7 @@ def PauliStringGen(nqubits, pauli_string):
         return "Invalid input. N should be a positive integer."
 
     characters = pauli_string
-    #characters = "XXXZ"
+    # characters = "XXXZ"
 
     result = ""
 
