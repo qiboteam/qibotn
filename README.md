@@ -11,16 +11,10 @@ import numpy as np
 from qibo import Circuit, gates
 import qibo
 
-'''
-computation_settings = {
-    'MPI_enabled': False,
-    'MPS_enabled': False,
-    'NCCL_enabled': False,
-    'expectation_enabled': {
-        'pauli_string_pattern': "IXZ"
-    }
-}
-'''
+# Below shows 3 ways of setting the computation_settings
+# Note that for MPS_enabled and expectation_enabled parameters the accepted inputs are boolean or a dictionary with the format shown below.
+# If computation_settings is not specified, the default setting is used in which all booleans will be False. 
+# This will trigger the dense vector computation of the tensornet.
 
 computation_settings = {
     'MPI_enabled': False,
@@ -34,6 +28,14 @@ computation_settings = {
     'NCCL_enabled': False,
     'expectation_enabled': False
 }
+
+# computation_settings = {
+#    'MPI_enabled': False,
+#    'MPS_enabled': False,
+#    'NCCL_enabled': False,
+#    'expectation_enabled': {
+#        'pauli_string_pattern': "IXZ"
+# }
 
 # computation_settings = {
 #     'MPI_enabled': False,
