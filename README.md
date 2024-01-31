@@ -4,7 +4,7 @@ To get started, `python setup.py install` to install the tools and dependencies.
 
 # Sample Codes
 ## Single Node
-
+The code below shows an example of how to activate the Cuquantum TensorNetwork backend of Qibo.
 <pre>
 ```
 import numpy as np
@@ -56,5 +56,14 @@ c.add(gates.H(1))
 result = c()
 
 print(result.state())
+```
+</pre>
+
+## Multi-Node
+Multi-node is enabled by setting either the MPI or NCCL enabled flag to True in the computation settings. Below shows the script to launch multi node on 4 GPU in cluster. 
+
+<pre>
+```
+mpirun -n 4 --mca opal_common_ucx_opal_mem_hooks 1 --mca orte_base_help_aggregate 0 -mca btl ^openib  -hostfile $node_list python test.py
 ```
 </pre>
