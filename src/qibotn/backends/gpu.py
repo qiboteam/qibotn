@@ -14,8 +14,6 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
 
         if runcard is not None:
-            print("inside runcard")
-            # Parse the runcard or use its values to set flags
             self.MPI_enabled = runcard.get("MPI_enabled", False)
             self.MPS_enabled = runcard.get("MPS_enabled", False)
             self.NCCL_enabled = runcard.get("NCCL_enabled", False)
@@ -81,11 +79,6 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         """
 
         import qibotn.eval as eval
-
-        print("MPI_enabled", self.MPI_enabled)
-        print("MPS_enabled", self.MPS_enabled)
-        print("NCCL_enabled", self.NCCL_enabled)
-        print("expectation_enabled", self.expectation_enabled)
 
         if (
             self.MPI_enabled == False
@@ -181,7 +174,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             if rank > 0:
                 state = np.array(0)
         else:
-            raise_error(NotImplementedError, "Backend not supported.")
+            raise_error(NotImplementedError, "Compute type not supported.")
 
         if return_array:
             return state.flatten()
