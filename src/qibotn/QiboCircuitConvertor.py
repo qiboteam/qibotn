@@ -1,6 +1,8 @@
 import cupy as cp
 import numpy as np
 
+# Reference: https://github.com/NVIDIA/cuQuantum/tree/main/python/samples/cutensornet/circuit_converter
+
 
 class QiboCircuitToEinsum:
     """Convert a circuit to a Tensor Network (TN) representation.
@@ -159,9 +161,7 @@ class QiboCircuitToEinsum:
         return gates
 
     def expectation_operands(self, pauli_string):
-        # assign pauli string to qubit
-        # _get_forward_inverse_metadata()
-        input_bitstring = "0" * self.circuit.nqubits  # Need all qubits!
+        input_bitstring = "0" * self.circuit.nqubits 
 
         input_operands = self._get_bitstring_tensors(input_bitstring)
         pauli_string = dict(zip(range(self.circuit.nqubits), pauli_string))
@@ -185,8 +185,6 @@ class QiboCircuitToEinsum:
 
         next_frontier = max(qubits_frontier.values()) + 1
 
-        # input_mode_labels, input_operands, qubits_frontier, next_frontier, inverse_gates = self._get_forward_inverse_metadata(coned_qubits)
-
         pauli_gates = self.get_pauli_gates(
             pauli_map, dtype=self.dtype, backend=self.backend
         )
@@ -208,18 +206,4 @@ class QiboCircuitToEinsum:
 
         operand_exp_interleave = [x for y in zip(operands, mode_labels) for x in y]
 
-        # expec = contract(*operand_exp_interleave)
-        # print(expec)
-
-        """
-        gate_mode_labels, gate_operands = circ_utils.parse_gates_to_mode_labels_operands(gates, 
-                                                                                         qubits_frontier, 
-                                                                                         next_frontier)
-        
-        mode_labels = input_mode_labels + gate_mode_labels + [[qubits_frontier[ix]] for ix in self.qubits]
-        operands = input_operands + gate_operands + input_operands[:n_qubits]
-
-        output_mode_labels = []
-        expression = circ_utils.convert_mode_labels_to_expression(mode_labels, output_mode_labels)
-        """
         return operand_exp_interleave

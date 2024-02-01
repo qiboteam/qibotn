@@ -1,5 +1,7 @@
 from cuquantum import contract, contract_path, CircuitToEinsum, tensor
 
+# Reference: https://github.com/NVIDIA/cuQuantum/blob/main/python/samples/cutensornet/tn_algorithms/mps_algorithms.ipynb
+
 
 class MPSContractionHelper:
     """
@@ -85,7 +87,7 @@ class MPSContractionHelper:
         self, mps_tensors, operator, qubits, options=None, normalize=False
     ):
         """
-        Contract the corresponding tensor network to form the state vector representation of the MPS.
+        Contract the corresponding tensor network to form the expectation of the MPS.
 
         Args:
             mps_tensors: A list of rank-3 ndarray-like tensor objects.
