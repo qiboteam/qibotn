@@ -2,6 +2,8 @@ import cupy as cp
 from cuquantum import contract
 from cuquantum.cutensornet.experimental import contract_decompose
 
+# Reference: https://github.com/NVIDIA/cuQuantum/blob/main/python/samples/cutensornet/tn_algorithms/mps_algorithms.ipynb
+
 
 def initial(num_qubits, dtype):
     """
