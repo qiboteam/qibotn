@@ -320,5 +320,4 @@ def pauli_string_gen(nqubits, pauli_string_pattern):
     for i in range(nqubits):
         char_to_add = pauli_string_pattern[i % len(pauli_string_pattern)]
         result += char_to_add
-    print("pauli string", result)
     return result
