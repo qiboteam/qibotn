@@ -19,7 +19,7 @@ def expectation_pauli_tn(qibo_circ, datatype, pauli_string):
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     return contract(
         *myconvertor.expectation_operands(
-            PauliStringGen(qibo_circ.nqubits, pauli_string)
+            pauli_string_gen(qibo_circ.nqubits, pauli_string)
         )
     )
 
@@ -235,7 +235,7 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string, n_samples=8):
     # mem_avail = cp.cuda.Device().mem_info[0]
     # print("Mem avail: aft convetor",mem_avail, "rank =",rank)
     operands = myconvertor.expectation_operands(
-        PauliStringGen(qibo_circ.nqubits, pauli_string)
+        pauli_string_gen(qibo_circ.nqubits, pauli_string)
     )
 
     # mem_avail = cp.cuda.Device().mem_info[0]
@@ -316,7 +316,7 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string, n_samples=8):
     # mem_avail = cp.cuda.Device().mem_info[0]
     # print("Mem avail: aft convetor",mem_avail, "rank =",rank)
     operands = myconvertor.expectation_operands(
-        PauliStringGen(qibo_circ.nqubits, pauli_string)
+        pauli_string_gen(qibo_circ.nqubits, pauli_string)
     )
     # mem_avail = cp.cuda.Device().mem_info[0]
     # print("Mem avail: aft operand interleave",mem_avail, "rank =",rank)
@@ -377,6 +377,8 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string, n_samples=8):
 
 
 def dense_vector_mps(qibo_circ, gate_algo, datatype):
+    """Convert qibo circuit to matrix product state (MPS) format and perform contraction to dense vector.
+    """
     myconvertor = QiboCircuitToMPS(qibo_circ, gate_algo, dtype=datatype)
     mps_helper = MPSContractionHelper(myconvertor.num_qubits)
 
@@ -385,17 +387,17 @@ def dense_vector_mps(qibo_circ, gate_algo, datatype):
     )
 
 
-def PauliStringGen(nqubits, pauli_string):
+def pauli_string_gen(nqubits, pauli_string_pattern):
+    """ Used internally to generate the string based on given pattern and number of qubit.
+    Example: pattern: "XZ", number of qubit: 7, output = XZXZXZX
+    """
     if nqubits <= 0:
         return "Invalid input. N should be a positive integer."
-
-    characters = pauli_string
-    # characters = "XXXZ"
 
     result = ""
 
     for i in range(nqubits):
-        char_to_add = characters[i % len(characters)]
+        char_to_add = pauli_string_pattern[i % len(pauli_string_pattern)]
         result += char_to_add
     print("pauli string", result)
     return result
