@@ -2,6 +2,19 @@ Qibotn is the tensor-network translation module for Qibo to support large-scale 
 
 To get started, `python setup.py install` to install the tools and dependencies.
 
+# Computation Supported
+
+- Tensornet (TN)
+    - TN contraction to dense vector
+    - TN contraction to dense vector with Message Passing Interface (MPI)
+    - TN contraction to dense vector with NCCL
+    - TN contraction to expectation of given Pauli string
+    - TN contraction to expectation of given Pauli string with Message Passing Interface (MPI)
+    - TN contraction to expectation of given Pauli string with NCCL
+
+- Matrix Product State (MPS)
+    - MPS contraction to dense vector
+
 # Sample Codes
 ## Single Node
 The code below shows an example of how to activate the Cuquantum TensorNetwork backend of Qibo.
