@@ -24,11 +24,12 @@ import numpy as np
 from qibo import Circuit, gates
 import qibo
 
-# Below shows 3 ways of setting the computation_settings
+# Below shows how to set the computation_settings
 # Note that for MPS_enabled and expectation_enabled parameters the accepted inputs are boolean or a dictionary with the format shown below.
 # If computation_settings is not specified, the default setting is used in which all booleans will be False. 
 # This will trigger the dense vector computation of the tensornet.
 
+computation_settings = {
     'MPI_enabled': False,
     'MPS_enabled': {
                 "qr_method": False,
@@ -41,20 +42,6 @@ import qibo
     'expectation_enabled': False
 }
 
-# computation_settings = {
-#    'MPI_enabled': False,
-#    'MPS_enabled': False,
-#    'NCCL_enabled': False,
-#    'expectation_enabled': {
-#        'pauli_string_pattern': "IXZ"
-# }
-
-# computation_settings = {
-#     'MPI_enabled': False,
-#     'MPS_enabled': True,
-#     'NCCL_enabled': False,
-#     'expectation_enabled': False
-# }
 
 qibo.set_backend(backend="qibotn", runcard=computation_settings)
 
@@ -68,6 +55,27 @@ c.add(gates.H(1))
 result = c()
 
 print(result.state())
+```
+
+Other examples of setting the computation_settings
+
+```py
+# Expectation computation with specific Pauli String pattern
+computation_settings = {
+   'MPI_enabled': False,
+   'MPS_enabled': False,
+   'NCCL_enabled': False,
+   'expectation_enabled': {
+       'pauli_string_pattern': "IXZ"
+}
+
+# Dense vector computation using multi node through MPI
+computation_settings = {
+    'MPI_enabled': False,
+    'MPS_enabled': True,
+    'NCCL_enabled': False,
+    'expectation_enabled': False
+}
 ```
 
 ## Multi-Node
