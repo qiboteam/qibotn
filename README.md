@@ -4,22 +4,22 @@ To get started, `python setup.py install` to install the tools and dependencies.
 
 # Computation Supported
 
-- Tensornet (TN)
-    - TN contraction to dense vector
-    - TN contraction to dense vector with Message Passing Interface (MPI)
-    - TN contraction to dense vector with NCCL
-    - TN contraction to expectation of given Pauli string
-    - TN contraction to expectation of given Pauli string with Message Passing Interface (MPI)
-    - TN contraction to expectation of given Pauli string with NCCL
+1. Tensornet (TN) with contractions to:
+    - dense vector
+    - expecation of given Pauli string
 
-- Matrix Product State (MPS)
-    - MPS contraction to dense vector
+    For each TN case:
+    - single node
+    - multi node with Message Passing Interface (MPI)
+    - multi node with NCCL
+
+2. Tensornet (TN) with contractions to:
+    - dense vector (single node)
 
 # Sample Codes
 ## Single Node
 The code below shows an example of how to activate the Cuquantum TensorNetwork backend of Qibo.
-<pre>
-```
+```py
 import numpy as np
 from qibo import Circuit, gates
 import qibo
@@ -29,7 +29,6 @@ import qibo
 # If computation_settings is not specified, the default setting is used in which all booleans will be False. 
 # This will trigger the dense vector computation of the tensornet.
 
-computation_settings = {
     'MPI_enabled': False,
     'MPS_enabled': {
                 "qr_method": False,
@@ -70,13 +69,11 @@ result = c()
 
 print(result.state())
 ```
-</pre>
 
 ## Multi-Node
 Multi-node is enabled by setting either the MPI or NCCL enabled flag to True in the computation settings. Below shows the script to launch on 2 nodes with 2 GPUs each. $node_list contains the IP of the nodes assigned.
 
-<pre>
-```
+
+```sh
 mpirun -n 4 -hostfile $node_list python test.py
 ```
-</pre>
