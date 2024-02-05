@@ -71,8 +71,8 @@ computation_settings = {
 
 # Dense vector computation using multi node through MPI
 computation_settings = {
-    'MPI_enabled': False,
-    'MPS_enabled': True,
+    'MPI_enabled': True,
+    'MPS_enabled': False,
     'NCCL_enabled': False,
     'expectation_enabled': False
 }
