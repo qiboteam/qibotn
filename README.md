@@ -1,17 +1,21 @@
-Qibotn is the tensor-network translation module for Qibo to support large-scale simulation of quantum circuits and acceleration.
+Qibotn is the tensor network translation module for Qibo to support large-scale simulation of quantum circuits and acceleration.
 
 To get started, `python setup.py install` to install the tools and dependencies.
 
-# Computation Supported
+# Supported Computation
 
-1. Tensornet (TN) with contractions to:
-    - dense vector
-    - expecation of given Pauli string
+Tensor network contractions to:
+- dense vectors
+- expecation values of given Pauli string
 
-    For each TN case:
-    - single node
-    - multi node with Message Passing Interface (MPI)
-    - multi node with NCCL
+The supported configuration are:
+- single node
+- multi node with Message Passing Interface (MPI)
+- multi node with NVIDIA Collective Communications Library (NCCL)
+
+Currently the supported libraries are:
+ - [cuQuantum](https://github.com/NVIDIA/cuQuantum)
+ - [quimb](https://quimb.readthedocs.io/en/latest/)
 
 2. Tensornet (TN) with contractions to:
     - dense vector (single node)
