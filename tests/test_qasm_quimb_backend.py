@@ -29,7 +29,7 @@ def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     # TODO: remove completely, or at least delegate to the backend
     # implementation
     os.environ["QUIMB_NUM_PROCS"] = str(os.cpu_count())
-    import qibotn.quimb
+    import qibotn.eval_qu
 
     init_state = create_init_state(nqubits=nqubits)
     init_state_tn = copy.deepcopy(init_state)
@@ -45,7 +45,7 @@ def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     qasm_circ = qibo_circ.to_qasm()
 
     # Test quimb
-    result_tn = qibotn.quimb.eval(
+    result_tn = qibotn.eval_qu.dense_vector_tn_qu(
         qasm_circ, init_state_tn, is_mps, backend=config.quimb.backend
     )
 
