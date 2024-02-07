@@ -8,17 +8,15 @@ Tensor network contractions to:
 - dense vectors
 - expecation values of given Pauli string
 
-The supported configuration are:
-- single node
-- multi node with Message Passing Interface (MPI)
-- multi node with NVIDIA Collective Communications Library (NCCL)
+The supported configurations are:
+- single-node CPU
+- single-node GPU or GPUs
+- multi-node multi-GPU with Message Passing Interface (MPI)
+- multi-node multi-GPU with NVIDIA Collective Communications Library (NCCL)
 
-Currently the supported libraries are:
- - [cuQuantum](https://github.com/NVIDIA/cuQuantum)
- - [quimb](https://quimb.readthedocs.io/en/latest/)
-
-2. Tensornet (TN) with contractions to:
-    - dense vector (single node)
+Currently, the supported tensor network libraries are:
+ - [cuQuantum](https://github.com/NVIDIA/cuQuantum), an NVIDIA SDK of optimized libraries and tools for accelerating quantum computing workflows.
+ - [quimb](https://quimb.readthedocs.io/en/latest/), an easy but fast python library for ‘quantum information many-body’ calculations, focusing primarily on tensor networks.
 
 # Sample Codes
 ## Single Node
