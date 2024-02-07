@@ -1,8 +1,8 @@
 from timeit import default_timer as timer
 
 import config
-import numpy as np
 import cupy as cp
+import numpy as np
 import pytest
 import qibo
 from qibo.models import QFT

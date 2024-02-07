@@ -1,9 +1,9 @@
 import cupy as cp
 import numpy as np
-
 from cuquantum import cutensornet as cutn
+
+from qibotn.MPSUtils import apply_gate, initial
 from qibotn.QiboCircuitConvertor import QiboCircuitToEinsum
-from qibotn.MPSUtils import initial, apply_gate
 
 
 class QiboCircuitToMPS:
