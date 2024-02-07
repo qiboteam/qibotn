@@ -5,7 +5,7 @@ from qibo.states import CircuitResult
 from qibo.config import raise_error
 
 
-class QuTensorNet(NumpyBackend):  
+class QuTensorNet(NumpyBackend):
 
     def __init__(self, runcard):
         super().__init__()
@@ -15,7 +15,6 @@ class QuTensorNet(NumpyBackend):
             self.MPI_enabled = runcard.get("MPI_enabled", False)
             self.NCCL_enabled = runcard.get("NCCL_enabled", False)
             self.expectation_enabled_value = runcard.get("expectation_enabled", False)
-
 
             mps_enabled_value = runcard.get("MPS_enabled")
             if mps_enabled_value is True:
@@ -35,7 +34,6 @@ class QuTensorNet(NumpyBackend):
         self.quimb = quimb
         self.platform = "qutensornet"
         self.versions["quimb"] = self.quimb.__version__
-   
 
     def apply_gate(self, gate, state, nqubits):  # pragma: no cover
         raise_error(NotImplementedError, "QiboTN cannot apply gates directly.")
@@ -46,12 +44,9 @@ class QuTensorNet(NumpyBackend):
     def assign_measurements(self, measurement_map, circuit_result):
         raise_error(NotImplementedError, "Not implemented in QiboTN.")
 
-
     def set_precision(self, precision):
         if precision != self.precision:
             super().set_precision(precision)
-
-
 
     def execute_circuit(
         self, circuit, initial_state=None, nshots=None, return_array=False
@@ -77,7 +72,9 @@ class QuTensorNet(NumpyBackend):
             and self.expectation_enabled == False
         ):
 
-            state = eval.dense_vector_tn_qu(circuit, init_state, is_mps=False, backend="numpy")
+            state = eval.dense_vector_tn_qu(
+                circuit, init_state, is_mps=False, backend="numpy"
+            )
 
         elif (
             self.MPI_enabled == False
@@ -85,9 +82,10 @@ class QuTensorNet(NumpyBackend):
             and self.NCCL_enabled == False
             and self.expectation_enabled == False
         ):
-            
 
-            state = eval.dense_vector_tn_qu(circuit, init_state, is_mps=True, backend="numpy")
+            state = eval.dense_vector_tn_qu(
+                circuit, init_state, is_mps=True, backend="numpy"
+            )
 
         elif (
             self.MPI_enabled == True
@@ -95,19 +93,19 @@ class QuTensorNet(NumpyBackend):
             and self.NCCL_enabled == False
             and self.expectation_enabled == False
         ):
-           
+
             raise_error(NotImplementedError, "QiboTN quimb backend cannot support MPI.")
 
-
         elif (
             self.MPI_enabled == False
             and self.MPS_enabled == False
             and self.NCCL_enabled == True
             and self.expectation_enabled == False
         ):
-           
-            raise_error(NotImplementedError, "QiboTN quimb backend cannot support NCCL.")
 
+            raise_error(
+                NotImplementedError, "QiboTN quimb backend cannot support NCCL."
+            )
 
         elif (
             self.MPI_enabled == False
@@ -115,9 +113,10 @@ class QuTensorNet(NumpyBackend):
             and self.NCCL_enabled == False
             and self.expectation_enabled == True
         ):
-           
-            raise_error(NotImplementedError, "QiboTN quimb backend cannot support expectation")
 
+            raise_error(
+                NotImplementedError, "QiboTN quimb backend cannot support expectation"
+            )
 
         elif (
             self.MPI_enabled == True
@@ -125,7 +124,9 @@ class QuTensorNet(NumpyBackend):
             and self.NCCL_enabled == False
             and self.expectation_enabled == True
         ):
-            raise_error(NotImplementedError, "QiboTN quimb backend cannot support expectation")
+            raise_error(
+                NotImplementedError, "QiboTN quimb backend cannot support expectation"
+            )
 
         elif (
             self.MPI_enabled == False
@@ -133,7 +134,9 @@ class QuTensorNet(NumpyBackend):
             and self.NCCL_enabled == True
             and self.expectation_enabled == True
         ):
-            raise_error(NotImplementedError, "QiboTN quimb backend cannot support expectation")
+            raise_error(
+                NotImplementedError, "QiboTN quimb backend cannot support expectation"
+            )
         else:
             raise_error(NotImplementedError, "Compute type not supported.")
 
