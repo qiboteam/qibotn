@@ -5,26 +5,33 @@ To get started, `python setup.py install` to install the tools and dependencies.
 # Supported Computation
 
 Tensor Network Types:
+
 - Tensornet (TN)
 - Matrix Product States (MPS)
 
 Tensor Network contractions to:
+
 - dense vectors
 - expecation values of given Pauli string
 
 The supported HPC configurations are:
+
 - single-node CPU
 - single-node GPU or GPUs
 - multi-node multi-GPU with Message Passing Interface (MPI)
 - multi-node multi-GPU with NVIDIA Collective Communications Library (NCCL)
 
 Currently, the supported tensor network libraries are:
- - [cuQuantum](https://github.com/NVIDIA/cuQuantum), an NVIDIA SDK of optimized libraries and tools for accelerating quantum computing workflows.
- - [quimb](https://quimb.readthedocs.io/en/latest/), an easy but fast python library for ‘quantum information many-body’ calculations, focusing primarily on tensor networks.
+
+- [cuQuantum](https://github.com/NVIDIA/cuQuantum), an NVIDIA SDK of optimized libraries and tools for accelerating quantum computing workflows.
+- [quimb](https://quimb.readthedocs.io/en/latest/), an easy but fast python library for ‘quantum information many-body’ calculations, focusing primarily on tensor networks.
 
 # Sample Codes
+
 ## Single-Node Example
+
 The code below shows an example of how to activate the Cuquantum TensorNetwork backend of Qibo.
+
 ```py
 import numpy as np
 from qibo import Circuit, gates
@@ -36,20 +43,22 @@ import qibo
 # This will trigger the dense vector computation of the tensornet.
 
 computation_settings = {
-    'MPI_enabled': False,
-    'MPS_enabled': {
-                "qr_method": False,
-                "svd_method": {
-                    "partition": "UV",
-                    "abs_cutoff": 1e-12,
-                },
-            } ,
-    'NCCL_enabled': False,
-    'expectation_enabled': False
+    "MPI_enabled": False,
+    "MPS_enabled": {
+        "qr_method": False,
+        "svd_method": {
+            "partition": "UV",
+            "abs_cutoff": 1e-12,
+        },
+    },
+    "NCCL_enabled": False,
+    "expectation_enabled": False,
 }
 
 
-qibo.set_backend(backend="qibotn", platform="cutensornet", runcard=computation_settings)  #cuQuantum
+qibo.set_backend(
+    backend="qibotn", platform="cutensornet", runcard=computation_settings
+)  # cuQuantum
 # qibo.set_backend(backend="qibotn", platform="qutensornet", runcard=computation_settings) #quimb
 
 
@@ -70,25 +79,26 @@ Other examples of setting the computation_settings
 ```py
 # Expectation computation with specific Pauli String pattern
 computation_settings = {
-   'MPI_enabled': False,
-   'MPS_enabled': False,
-   'NCCL_enabled': False,
-   'expectation_enabled': {
-       'pauli_string_pattern': "IXZ"
+    "MPI_enabled": False,
+    "MPS_enabled": False,
+    "NCCL_enabled": False,
+    "expectation_enabled": {
+        "pauli_string_pattern": "IXZ",
+    },
 }
 
 # Dense vector computation using multi node through MPI
 computation_settings = {
-    'MPI_enabled': True,
-    'MPS_enabled': False,
-    'NCCL_enabled': False,
-    'expectation_enabled': False
+    "MPI_enabled": True,
+    "MPS_enabled": False,
+    "NCCL_enabled": False,
+    "expectation_enabled": False,
 }
 ```
 
 ## Multi-Node Example
-Multi-node is enabled by setting either the MPI or NCCL enabled flag to True in the computation settings. Below shows the script to launch on 2 nodes with 2 GPUs each. $node_list contains the IP of the nodes assigned.
 
+Multi-node is enabled by setting either the MPI or NCCL enabled flag to True in the computation settings. Below shows the script to launch on 2 nodes with 2 GPUs each. $node_list contains the IP of the nodes assigned.
 
 ```sh
 mpirun -n 4 -hostfile $node_list python test.py
