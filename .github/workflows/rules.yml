@@ -1,6 +1,9 @@
 # A single CI script with github workflow
 name: Tests
 
+env:
+  CUDA_PATH: echo $CUDA_PATH
+
 on:
   push:
   pull_request:
@@ -8,7 +11,7 @@ on:
 
 jobs:
   build:
-    if: contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' && {{ $CUDA_PATH != '' }}
+    if: contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' && github.env.CUDA_PATH != ''
     strategy:
       matrix:
         os: [ubuntu-latest]
