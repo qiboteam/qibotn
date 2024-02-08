@@ -5,6 +5,8 @@ from qibo.models import Circuit as QiboCircuit
 
 def from_qibo(circuit: QiboCircuit, is_mps: False, psi0=None, method='svd',
               cutoff=1e-6, cutoff_mode='abs'):
+    """Create a tensornetwork representation of the circuit"""
+
     nqubits = circuit.nqubits
     gate_opt = {}
     if is_mps:
@@ -28,6 +30,9 @@ def from_qibo(circuit: QiboCircuit, is_mps: False, psi0=None, method='svd',
 
 
 def init_state_tn(nqubits, init_state_sv):
+
+    """Create a matrixproductstate directly from a dense vector"""
+
     dims = tuple(2 * np.ones(nqubits, dtype=int))
 
     return qtn.tensor_1d.MatrixProductState.from_dense(init_state_sv, dims)
