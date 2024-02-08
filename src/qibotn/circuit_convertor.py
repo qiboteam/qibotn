@@ -5,12 +5,12 @@ import numpy as np
 
 
 class QiboCircuitToEinsum:
-    """Convert a circuit to a Tensor Network (TN) representation. The circuit
-    is first processed to an intermediate form by grouping each gate matrix
-    with its corresponding qubit it is acting on to a list. It is then
-    converted to an equivalent TN expression through the class function
-    state_vector_operands() following the Einstein summation convention in the
-    interleave format.
+    """Convert a circuit to a Tensor Network (TN) representation.
+
+    The circuit is first processed to an intermediate form by grouping each gate matrix
+    with its corresponding qubit it is acting on to a list. It is then converted to an
+    equivalent TN expression through the class function state_vector_operands()
+    following the Einstein summation convention in the interleave format.
 
     See document for detail of the format: https://docs.nvidia.com/cuda/cuquantum/python/api/generated/cuquantum.contract.html
 
