@@ -38,17 +38,17 @@ def init_state_tn(nqubits, init_state_sv):
     return qtn.tensor_1d.MatrixProductState.from_dense(init_state_sv, dims)
 
 
-def dense_vector_tn_qu(qasm: str, init_state, is_mps, backend="numpy"):
+def dense_vector_tn_qu(qasm: str, initial_state, is_mps,  backend="numpy"):
     """Evaluate QASM with Quimb
 
     backend (quimb): numpy, cupy, jax. Passed to ``opt_einsum``.
 
     """
     circuit = QiboCircuit.from_qasm(qasm)
-    if init_state is not None:
-        init_state = init_state_tn(circuit.nqubits, init_state)
-    circ_quimb = from_qibo(circuit, is_mps, psi0=init_state)
+    if initial_state is not None:
+        initial_state = init_state_tn(circuit.nqubits, initial_state)
+    circ_quimb = from_qibo(circuit, is_mps, psi0=initial_state)
     interim = circ_quimb.psi.full_simplify(seq="DRC")
-    amplitudes = interim.to_dense(backend=backend).flatten()
+    amplitudes = interim.to_dense(backend=backend)
 
     return amplitudes
