@@ -2,9 +2,9 @@ import cupy as cp
 from cupy.cuda.runtime import getDeviceCount
 from cuquantum import contract
 
+from qibotn.circuit_convertor import QiboCircuitToEinsum
+from qibotn.circuit_to_mps import QiboCircuitToMPS
 from qibotn.mps_contraction_helper import MPSContractionHelper
-from qibotn.QiboCircuitConvertor import QiboCircuitToEinsum
-from qibotn.QiboCircuitToMPS import QiboCircuitToMPS
 
 
 def dense_vector_tn(qibo_circ, datatype):
