@@ -11,7 +11,7 @@ def from_qibo(
     cutoff=1e-6,
     cutoff_mode="abs",
 ):
-    """Create a tensornetwork representation of the circuit."""
+    """Create a tensor network representation of the circuit."""
 
     nqubits = circuit.nqubits
     gate_opt = {}
