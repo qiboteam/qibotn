@@ -5,9 +5,9 @@ import numpy as np
 
 
 class QiboCircuitToEinsum:
-    """Convert a circuit to a Tensor Network (TN) representation.
-    The circuit is first processed to an intermediate form by grouping each gate
-    matrix with its corresponding qubit it is acting on to a list. It is then
+    """Convert a circuit to a Tensor Network (TN) representation. The circuit
+    is first processed to an intermediate form by grouping each gate matrix
+    with its corresponding qubit it is acting on to a list. It is then
     converted to an equivalent TN expression through the class function
     state_vector_operands() following the Einstein summation convention in the
     interleave format.
@@ -79,9 +79,8 @@ class QiboCircuitToEinsum:
         return mode_labels, operands
 
     def op_shape_from_qubits(self, nqubits):
-        """Modify tensor to cuQuantum shape
-        (qubit_states,input_output) * qubits_involved
-        """
+        """Modify tensor to cuQuantum shape (qubit_states,input_output) *
+        qubits_involved."""
         return (2, 2) * nqubits
 
     def init_intermediate_circuit(self, circuit):
@@ -134,8 +133,7 @@ class QiboCircuitToEinsum:
         self.active_qubits_inverse = np.unique(gates_qubits_inverse)
 
     def get_pauli_gates(self, pauli_map, dtype="complex128", backend=cp):
-        """
-        Populate the gates for all pauli operators.
+        """Populate the gates for all pauli operators.
 
         Args:
             pauli_map: A dictionary mapping qubits to pauli operators.

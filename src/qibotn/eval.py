@@ -1,10 +1,6 @@
-import multiprocessing
-
 import cupy as cp
 from cupy.cuda.runtime import getDeviceCount
 from cuquantum import contract
-from cupy.cuda.runtime import getDeviceCount
-import cupy as cp
 
 from qibotn.mps_contraction_helper import MPSContractionHelper
 from qibotn.QiboCircuitConvertor import QiboCircuitToEinsum
@@ -12,13 +8,15 @@ from qibotn.QiboCircuitToMPS import QiboCircuitToMPS
 
 
 def dense_vector_tn(qibo_circ, datatype):
-    """Convert qibo circuit to tensornet (TN) format and perform contraction to dense vector."""
+    """Convert qibo circuit to tensornet (TN) format and perform contraction to
+    dense vector."""
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     return contract(*myconvertor.state_vector_operands())
 
 
 def expectation_pauli_tn(qibo_circ, datatype, pauli_string_pattern):
-    """Convert qibo circuit to tensornet (TN) format and perform contraction to expectation of given Pauli string."""
+    """Convert qibo circuit to tensornet (TN) format and perform contraction to
+    expectation of given Pauli string."""
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     return contract(
         *myconvertor.expectation_operands(
@@ -28,14 +26,19 @@ def expectation_pauli_tn(qibo_circ, datatype, pauli_string_pattern):
 
 
 def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
-    """Convert qibo circuit to tensornet (TN) format and perform contraction using multi node and multi GPU through MPI.
-    The conversion is performed by QiboCircuitToEinsum(), after which it goes through 2 steps: pathfinder and execution.
-    The pathfinder looks at user defined number of samples (n_samples) iteratively to select the least costly contraction path. This is sped up with multi thread.
-    After pathfinding the optimal path is used in the actual contraction to give a dense vector representation of the TN.
+    """Convert qibo circuit to tensornet (TN) format and perform contraction
+    using multi node and multi GPU through MPI.
+
+    The conversion is performed by QiboCircuitToEinsum(), after which it
+    goes through 2 steps: pathfinder and execution. The pathfinder looks
+    at user defined number of samples (n_samples) iteratively to select
+    the least costly contraction path. This is sped up with multi
+    thread. After pathfinding the optimal path is used in the actual
+    contraction to give a dense vector representation of the TN.
     """
 
-    from mpi4py import MPI
     from cuquantum import Network
+    from mpi4py import MPI
 
     root = 0
     comm = MPI.COMM_WORLD
@@ -90,14 +93,19 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
 
 
 def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
-    """Convert qibo circuit to tensornet (TN) format and perform contraction using multi node and multi GPU through NCCL.
-    The conversion is performed by QiboCircuitToEinsum(), after which it goes through 2 steps: pathfinder and execution.
-    The pathfinder looks at user defined number of samples (n_samples) iteratively to select the least costly contraction path. This is sped up with multi thread.
-    After pathfinding the optimal path is used in the actual contraction to give a dense vector representation of the TN.
+    """Convert qibo circuit to tensornet (TN) format and perform contraction
+    using multi node and multi GPU through NCCL.
+
+    The conversion is performed by QiboCircuitToEinsum(), after which it
+    goes through 2 steps: pathfinder and execution. The pathfinder looks
+    at user defined number of samples (n_samples) iteratively to select
+    the least costly contraction path. This is sped up with multi
+    thread. After pathfinding the optimal path is used in the actual
+    contraction to give a dense vector representation of the TN.
     """
-    from mpi4py import MPI
-    from cuquantum import Network
     from cupy.cuda import nccl
+    from cuquantum import Network
+    from mpi4py import MPI
 
     root = 0
     comm_mpi = MPI.COMM_WORLD
@@ -163,15 +171,22 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
 
 
 def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_samples=8):
-    """Convert qibo circuit to tensornet (TN) format and perform contraction to expectation of given Pauli string using multi node and multi GPU through NCCL.
-    The conversion is performed by QiboCircuitToEinsum(), after which it goes through 2 steps: pathfinder and execution.
-    The pauli_string_pattern is used to generate the pauli string corresponding to the number of qubits of the system.
-    The pathfinder looks at user defined number of samples (n_samples) iteratively to select the least costly contraction path. This is sped up with multi thread.
-    After pathfinding the optimal path is used in the actual contraction to give an expectation value.
+    """Convert qibo circuit to tensornet (TN) format and perform contraction to
+    expectation of given Pauli string using multi node and multi GPU through
+    NCCL.
+
+    The conversion is performed by QiboCircuitToEinsum(), after which it
+    goes through 2 steps: pathfinder and execution. The
+    pauli_string_pattern is used to generate the pauli string
+    corresponding to the number of qubits of the system. The pathfinder
+    looks at user defined number of samples (n_samples) iteratively to
+    select the least costly contraction path. This is sped up with multi
+    thread. After pathfinding the optimal path is used in the actual
+    contraction to give an expectation value.
     """
-    from mpi4py import MPI
-    from cuquantum import Network
     from cupy.cuda import nccl
+    from cuquantum import Network
+    from mpi4py import MPI
 
     root = 0
     comm_mpi = MPI.COMM_WORLD
@@ -239,14 +254,21 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
 
 
 def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_samples=8):
-    """Convert qibo circuit to tensornet (TN) format and perform contraction to expectation of given Pauli string using multi node and multi GPU through MPI.
-    The conversion is performed by QiboCircuitToEinsum(), after which it goes through 2 steps: pathfinder and execution.
-    The pauli_string_pattern is used to generate the pauli string corresponding to the number of qubits of the system.
-    The pathfinder looks at user defined number of samples (n_samples) iteratively to select the least costly contraction path. This is sped up with multi thread.
-    After pathfinding the optimal path is used in the actual contraction to give an expectation value.
+    """Convert qibo circuit to tensornet (TN) format and perform contraction to
+    expectation of given Pauli string using multi node and multi GPU through
+    MPI.
+
+    The conversion is performed by QiboCircuitToEinsum(), after which it
+    goes through 2 steps: pathfinder and execution. The
+    pauli_string_pattern is used to generate the pauli string
+    corresponding to the number of qubits of the system. The pathfinder
+    looks at user defined number of samples (n_samples) iteratively to
+    select the least costly contraction path. This is sped up with multi
+    thread. After pathfinding the optimal path is used in the actual
+    contraction to give an expectation value.
     """
-    from mpi4py import MPI  # this line initializes MPI
     from cuquantum import Network
+    from mpi4py import MPI  # this line initializes MPI
 
     root = 0
     comm = MPI.COMM_WORLD
@@ -303,7 +325,8 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
 
 
 def dense_vector_mps(qibo_circ, gate_algo, datatype):
-    """Convert qibo circuit to matrix product state (MPS) format and perform contraction to dense vector."""
+    """Convert qibo circuit to matrix product state (MPS) format and perform
+    contraction to dense vector."""
     myconvertor = QiboCircuitToMPS(qibo_circ, gate_algo, dtype=datatype)
     mps_helper = MPSContractionHelper(myconvertor.num_qubits)
 
@@ -313,7 +336,9 @@ def dense_vector_mps(qibo_circ, gate_algo, datatype):
 
 
 def pauli_string_gen(nqubits, pauli_string_pattern):
-    """Used internally to generate the string based on given pattern and number of qubit.
+    """Used internally to generate the string based on given pattern and number
+    of qubit.
+
     Example: pattern: "XZ", number of qubit: 7, output = XZXZXZX
     """
     if nqubits <= 0:

@@ -9,8 +9,8 @@ PACKAGE = "qibotn"
 
 # Returns the qibotn version
 def version():
-    """Gets the version from the package's __init__ file
-    if there is some problem, let it happily fail"""
+    """Gets the version from the package's __init__ file if there is some
+    problem, let it happily fail."""
     version_file = HERE / "src" / PACKAGE / "__init__.py"
     version_regex = r"^__version__ = ['\"]([^'\"]*)['\"]"
 
