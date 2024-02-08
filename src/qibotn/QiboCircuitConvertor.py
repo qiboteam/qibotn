@@ -166,7 +166,6 @@ class QiboCircuitToEinsum:
         input_operands = self._get_bitstring_tensors(input_bitstring)
         pauli_string = dict(zip(range(self.circuit.nqubits), pauli_string))
         pauli_map = pauli_string
-        coned_qubits = pauli_map.keys()
 
         (
             mode_labels,
