@@ -23,7 +23,7 @@ Currently, the supported tensor network libraries are:
  - [quimb](https://quimb.readthedocs.io/en/latest/), an easy but fast python library for ‘quantum information many-body’ calculations, focusing primarily on tensor networks.
 
 # Sample Codes
-## Single Node
+## Single-Node Example
 The code below shows an example of how to activate the Cuquantum TensorNetwork backend of Qibo.
 ```py
 import numpy as np
@@ -86,7 +86,7 @@ computation_settings = {
 }
 ```
 
-## Multi-Node
+## Multi-Node Example
 Multi-node is enabled by setting either the MPI or NCCL enabled flag to True in the computation settings. Below shows the script to launch on 2 nodes with 2 GPUs each. $node_list contains the IP of the nodes assigned.
 
 
