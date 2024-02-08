@@ -73,7 +73,7 @@ class QuTensorNet(NumpyBackend):
         ):
 
             state = eval.dense_vector_tn_qu(
-                circuit, initial_state=None, is_mps=False, backend="numpy"
+                circuit.to_qasm(), initial_state=None, is_mps=False, backend="numpy"
             )
 
         elif (
@@ -84,7 +84,7 @@ class QuTensorNet(NumpyBackend):
         ):
 
             state = eval.dense_vector_tn_qu(
-                circuit, initial_state=None, is_mps=True, backend="numpy"
+                circuit.to_qasm(), initial_state=None, is_mps=True, backend="numpy"
             )
 
         elif (
