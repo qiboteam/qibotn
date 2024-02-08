@@ -4,7 +4,6 @@ from qibo.states import CircuitResult
 
 
 class QuimbBackend(NumpyBackend):
-
     def __init__(self, runcard):
         super().__init__()
         import quimb  # pylint: disable=import-error
@@ -73,9 +72,9 @@ class QuimbBackend(NumpyBackend):
                 NotImplementedError, "QiboTN quimb backend cannot support expectation"
             )
 
-       state = eval.dense_vector_tn_qu(
-                circuit.to_qasm(), initial_state, is_mps=self.MPS_enabled, backend="numpy"
-       )
+        state = eval.dense_vector_tn_qu(
+            circuit.to_qasm(), initial_state, is_mps=self.MPS_enabled, backend="numpy"
+        )
 
         if return_array:
             return state.flatten()
