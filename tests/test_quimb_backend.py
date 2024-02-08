@@ -52,7 +52,7 @@ def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     # Test quimb
     result_tn = qibotn.eval_qu.dense_vector_tn_qu(
         qasm_circ, init_state_tn, is_mps, backend=config.quimb.backend
-    )
+    ).flatten()
 
     assert np.allclose(
         result_sv, result_tn, atol=tolerance
