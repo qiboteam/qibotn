@@ -36,7 +36,7 @@ def from_qibo(
 
 
 def init_state_tn(nqubits, init_state_sv):
-    """Create a matrixproductstate directly from a dense vector."""
+    """Create a matrix product state directly from a dense vector."""
 
     dims = tuple(2 * np.ones(nqubits, dtype=int))
 
