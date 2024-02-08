@@ -62,80 +62,20 @@ class QuimbBackend(NumpyBackend):
 
         import qibotn.eval_qu as eval
 
-        if (
-            self.MPI_enabled == False
-            and self.MPS_enabled == False
-            and self.NCCL_enabled == False
-            and self.expectation_enabled == False
-        ):
-
-            state = eval.dense_vector_tn_qu(
-                circuit.to_qasm(), initial_state, is_mps=False, backend="numpy"
-            )
-
-        elif (
-            self.MPI_enabled == False
-            and self.MPS_enabled == True
-            and self.NCCL_enabled == False
-            and self.expectation_enabled == False
-        ):
-
-            state = eval.dense_vector_tn_qu(
-                circuit.to_qasm(), initial_state, is_mps=True, backend="numpy"
-            )
-
-        elif (
-            self.MPI_enabled == True
-            and self.MPS_enabled == False
-            and self.NCCL_enabled == False
-            and self.expectation_enabled == False
-        ):
-
+        if self.MPI_enabled == True:
             raise_error(NotImplementedError, "QiboTN quimb backend cannot support MPI.")
-
-        elif (
-            self.MPI_enabled == False
-            and self.MPS_enabled == False
-            and self.NCCL_enabled == True
-            and self.expectation_enabled == False
-        ):
-
+        if self.NCCL_enabled == True:
             raise_error(
                 NotImplementedError, "QiboTN quimb backend cannot support NCCL."
             )
-
-        elif (
-            self.MPI_enabled == False
-            and self.MPS_enabled == False
-            and self.NCCL_enabled == False
-            and self.expectation_enabled == True
-        ):
-
+        if self.expectation_enabled == True:
             raise_error(
                 NotImplementedError, "QiboTN quimb backend cannot support expectation"
             )
 
-        elif (
-            self.MPI_enabled == True
-            and self.MPS_enabled == False
-            and self.NCCL_enabled == False
-            and self.expectation_enabled == True
-        ):
-            raise_error(
-                NotImplementedError, "QiboTN quimb backend cannot support expectation"
-            )
-
-        elif (
-            self.MPI_enabled == False
-            and self.MPS_enabled == False
-            and self.NCCL_enabled == True
-            and self.expectation_enabled == True
-        ):
-            raise_error(
-                NotImplementedError, "QiboTN quimb backend cannot support expectation"
-            )
-        else:
-            raise_error(NotImplementedError, "Compute type not supported.")
+       state = eval.dense_vector_tn_qu(
+                circuit.to_qasm(), initial_state, is_mps=self.MPS_enabled, backend="numpy"
+       )
 
         if return_array:
             return state.flatten()
