@@ -3,9 +3,15 @@ import quimb.tensor as qtn
 from qibo.models import Circuit as QiboCircuit
 
 
-def from_qibo(circuit: QiboCircuit, is_mps: False, psi0=None, method='svd',
-              cutoff=1e-6, cutoff_mode='abs'):
-    """Create a tensornetwork representation of the circuit"""
+def from_qibo(
+    circuit: QiboCircuit,
+    is_mps: False,
+    psi0=None,
+    method="svd",
+    cutoff=1e-6,
+    cutoff_mode="abs",
+):
+    """Create a tensornetwork representation of the circuit."""
 
     nqubits = circuit.nqubits
     gate_opt = {}
@@ -30,19 +36,17 @@ def from_qibo(circuit: QiboCircuit, is_mps: False, psi0=None, method='svd',
 
 
 def init_state_tn(nqubits, init_state_sv):
-
-    """Create a matrixproductstate directly from a dense vector"""
+    """Create a matrixproductstate directly from a dense vector."""
 
     dims = tuple(2 * np.ones(nqubits, dtype=int))
 
     return qtn.tensor_1d.MatrixProductState.from_dense(init_state_sv, dims)
 
 
-def dense_vector_tn_qu(qasm: str, initial_state, is_mps,  backend="numpy"):
-    """Evaluate QASM with Quimb
+def dense_vector_tn_qu(qasm: str, initial_state, is_mps, backend="numpy"):
+    """Evaluate QASM with Quimb.
 
     backend (quimb): numpy, cupy, jax. Passed to ``opt_einsum``.
-
     """
     circuit = QiboCircuit.from_qasm(qasm)
     if initial_state is not None:
