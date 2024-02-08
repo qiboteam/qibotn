@@ -1,2 +1,2 @@
-from qibotn.backends.cpu import QuTensorNet
+from qibotn.backends.quimb import QuimbBackend
 from qibotn.backends.gpu import CuTensorNet
