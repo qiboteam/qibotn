@@ -8,7 +8,7 @@ Tensor network contractions to:
 - dense vectors
 - expecation values of given Pauli string
 
-The supported configurations are:
+The supported HPC configurations are:
 - single-node CPU
 - single-node GPU or GPUs
 - multi-node multi-GPU with Message Passing Interface (MPI)
