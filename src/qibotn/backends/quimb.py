@@ -74,7 +74,7 @@ class QuimbBackend(NumpyBackend):
             )
 
         state = eval.dense_vector_tn_qu(
-                circuit.to_qasm(), initial_state, is_mps=self.MPS_enabled, backend="numpy"
+            circuit.to_qasm(), initial_state, is_mps=self.MPS_enabled, backend="numpy"
         )
 
         if return_array:
