@@ -161,7 +161,7 @@ class QiboCircuitToEinsum:
         return gates
 
     def expectation_operands(self, pauli_string):
-        input_bitstring = "0" * self.circuit.nqubits 
+        input_bitstring = "0" * self.circuit.nqubits
 
         input_operands = self._get_bitstring_tensors(input_bitstring)
         pauli_string = dict(zip(range(self.circuit.nqubits), pauli_string))
