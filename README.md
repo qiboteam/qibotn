@@ -4,7 +4,11 @@ To get started, `python setup.py install` to install the tools and dependencies.
 
 # Supported Computation
 
-Tensor network contractions to:
+Tensor Network Types:
+- Tensornet (TN)
+- Matrix Product States (MPS)
+
+Tensor Network contractions to:
 - dense vectors
 - expecation values of given Pauli string
 
