@@ -3,7 +3,7 @@ from qibo.config import raise_error
 from qibo.states import CircuitResult
 
 
-class QuTensorNet(NumpyBackend):
+class QuimbBackend(NumpyBackend):
 
     def __init__(self, runcard):
         super().__init__()
