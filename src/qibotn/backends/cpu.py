@@ -1,8 +1,6 @@
-import numpy as np
-
 from qibo.backends.numpy import NumpyBackend
-from qibo.states import CircuitResult
 from qibo.config import raise_error
+from qibo.states import CircuitResult
 
 
 class QuTensorNet(NumpyBackend):
@@ -60,7 +58,6 @@ class QuTensorNet(NumpyBackend):
 
         Returns:
             xxx.
-
         """
 
         import qibotn.eval_qu as eval
