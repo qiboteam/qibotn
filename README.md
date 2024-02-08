@@ -45,7 +45,9 @@ computation_settings = {
 }
 
 
-qibo.set_backend(backend="qibotn", runcard=computation_settings)
+qibo.set_backend(backend="qibotn", platform="cutensornet", runcard=computation_settings)  #cuQuantum
+# qibo.set_backend(backend="qibotn", platform="qutensornet", runcard=computation_settings) #quimb
+
 
 # Construct the circuit
 c = Circuit(2)
