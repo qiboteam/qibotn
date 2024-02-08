@@ -14,7 +14,7 @@ class QuTensorNet(NumpyBackend):
         if runcard is not None:
             self.MPI_enabled = runcard.get("MPI_enabled", False)
             self.NCCL_enabled = runcard.get("NCCL_enabled", False)
-            self.expectation_enabled_value = runcard.get("expectation_enabled", False)
+            self.expectation_enabled = runcard.get("expectation_enabled", False)
 
             mps_enabled_value = runcard.get("MPS_enabled")
             if mps_enabled_value is True:
@@ -63,7 +63,7 @@ class QuTensorNet(NumpyBackend):
 
         """
 
-        import qibotn.eval_qu as eval_qu
+        import qibotn.eval_qu as eval
 
         if (
             self.MPI_enabled == False
@@ -73,7 +73,7 @@ class QuTensorNet(NumpyBackend):
         ):
 
             state = eval.dense_vector_tn_qu(
-                circuit, init_state, is_mps=False, backend="numpy"
+                circuit, initial_state=None, is_mps=False, backend="numpy"
             )
 
         elif (
@@ -84,7 +84,7 @@ class QuTensorNet(NumpyBackend):
         ):
 
             state = eval.dense_vector_tn_qu(
-                circuit, init_state, is_mps=True, backend="numpy"
+                circuit, initial_state=None, is_mps=True, backend="numpy"
             )
 
         elif (
