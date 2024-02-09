@@ -215,7 +215,7 @@ toml = ["tomli"]
 name = "cupy"
 version = "11.6.0"
 description = "CuPy: NumPy & SciPy for GPU"
-optional = false
+optional = true
 python-versions = ">=3.7"
 files = [
     {file = "cupy-11.6.0.tar.gz", hash = "sha256:53dbb840072bb32d4bfbaa6bfa072365a30c98b1fcd1f43e48969071ad98f1a7"},
@@ -234,7 +234,7 @@ test = ["hypothesis (>=6.37.2,<6.55.0)", "pytest (>=7.2)"]
 name = "cuquantum-python-cu11"
 version = "23.10.0"
 description = "NVIDIA cuQuantum Python"
-optional = false
+optional = true
 python-versions = ">=3.9"
 files = [
     {file = "cuquantum_python_cu11-23.10.0-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:a0f0dfcb6239ec5fce836fa2f641820d3235ac7d83f391eac90952cf481da03f"},
@@ -254,7 +254,7 @@ numpy = ">=1.21,<2.0"
 name = "custatevec-cu11"
 version = "1.5.0"
 description = "cuStateVec - a component of NVIDIA cuQuantum SDK"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "custatevec_cu11-1.5.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:3e0cbbc487a0590d9f889ad70b9ac21d88c1f555f6fe01b18ba687a0d98d902f"},
@@ -265,7 +265,7 @@ files = [
 name = "cutensor-cu11"
 version = "1.7.0"
 description = "NVIDIA cuTENSOR"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "cutensor_cu11-1.7.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:c5598670f4f31906d725f5ea852f0df675522e3ff5a7bf886057eab36497062d"},
@@ -277,7 +277,7 @@ files = [
 name = "cutensornet-cu11"
 version = "2.3.0"
 description = "cuTensorNet - a component of NVIDIA cuQuantum SDK"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "cutensornet_cu11-2.3.0-py3-none-manylinux2014_aarch64.whl", hash = "sha256:fd15b199b189f0501b3fdaa576ee70eedbdfec37b557f7fd56b97aaa5e618667"},
@@ -465,7 +465,7 @@ test = ["pytest (>=6)"]
 name = "fastrlock"
 version = "0.8.2"
 description = "Fast, re-entrant optimistic lock implemented in Cython"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "fastrlock-0.8.2-cp27-cp27m-macosx_10_15_x86_64.whl", hash = "sha256:94e348c72a1fd1f8191f25ea056448e4f5a87b8fbf005b39d290dcb0581a48cd"},
@@ -1374,13 +1374,13 @@ six = ">=1.5"
 
 [[package]]
 name = "quimb"
-version = "1.7.2"
+version = "1.7.3"
 description = "Quantum information and many-body library."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "quimb-1.7.2-py3-none-any.whl", hash = "sha256:77dd7e70f93f4a9dca7d4c9ce5e6e2a42ba01849292bebb506c7e58aeff6db17"},
-    {file = "quimb-1.7.2.tar.gz", hash = "sha256:8c04f173e010551f686cce1e02d5215e4c0770db0966161270c74663bef59128"},
+    {file = "quimb-1.7.3-py3-none-any.whl", hash = "sha256:5fb94a562808712c09f4ee52f012fbf1bbab286ea4aaab5c251570d859afcbc3"},
+    {file = "quimb-1.7.3.tar.gz", hash = "sha256:f7157270b9ace44aedbeb24769a5413f2b66e6df1b52fb23374c33108760b7a4"},
 ]
 
 [package.dependencies]
@@ -1575,7 +1575,10 @@ files = [
 docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (<7.2.5)", "sphinx (>=3.5)", "sphinx-lint"]
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy (>=0.9.1)", "pytest-ruff"]
 
+[extras]
+cuda = ["cupy", "cuquantum-python-cu11"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.13"
-content-hash = "ba2a028b834fd2459bed074b1b2769fdfbf5a6db14c3daecf80d8af115216da6"
+content-hash = "2bd83be8134c6922dcb957ec105289c83459ae2d7ea6d152d3879780e22c3857"
