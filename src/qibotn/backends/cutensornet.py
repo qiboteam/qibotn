@@ -110,96 +110,70 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
 
         import qibotn.eval as eval
 
+        if initial_state is not None:
+            raise_error(NotImplementedError, "QiboTN cannot support initial state.")
+
         if (
             self.MPI_enabled == False
             and self.MPS_enabled == False
             and self.NCCL_enabled == False
             and self.expectation_enabled == False
         ):
-            if initial_state is not None:
-                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
-
             state = eval.dense_vector_tn(circuit, self.dtype)
-
         elif (
             self.MPI_enabled == False
             and self.MPS_enabled == True
             and self.NCCL_enabled == False
             and self.expectation_enabled == False
         ):
-            if initial_state is not None:
-                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
-
             state = eval.dense_vector_mps(circuit, self.gate_algo, self.dtype)
-
         elif (
             self.MPI_enabled == True
             and self.MPS_enabled == False
             and self.NCCL_enabled == False
             and self.expectation_enabled == False
         ):
-            if initial_state is not None:
-                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
-
             state, rank = eval.dense_vector_tn_MPI(circuit, self.dtype, 32)
             if rank > 0:
                 state = np.array(0)
-
         elif (
             self.MPI_enabled == False
             and self.MPS_enabled == False
             and self.NCCL_enabled == True
             and self.expectation_enabled == False
         ):
-            if initial_state is not None:
-                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
-
             state, rank = eval.dense_vector_tn_nccl(circuit, self.dtype, 32)
             if rank > 0:
                 state = np.array(0)
-
         elif (
             self.MPI_enabled == False
             and self.MPS_enabled == False
             and self.NCCL_enabled == False
             and self.expectation_enabled == True
         ):
-            if initial_state is not None:
-                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
-
             state = eval.expectation_pauli_tn(
                 circuit, self.dtype, self.pauli_string_pattern
             )
-
         elif (
             self.MPI_enabled == True
             and self.MPS_enabled == False
             and self.NCCL_enabled == False
             and self.expectation_enabled == True
         ):
-            if initial_state is not None:
-                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
-
             state, rank = eval.expectation_pauli_tn_MPI(
                 circuit, self.dtype, self.pauli_string_pattern, 32
             )
-
             if rank > 0:
                 state = np.array(0)
-
         elif (
             self.MPI_enabled == False
             and self.MPS_enabled == False
             and self.NCCL_enabled == True
             and self.expectation_enabled == True
         ):
-            if initial_state is not None:
-                raise_error(NotImplementedError, "QiboTN cannot support initial state.")
-
             state, rank = eval.expectation_pauli_tn_nccl(
                 circuit, self.dtype, self.pauli_string_pattern, 32
             )
-
             if rank > 0:
                 state = np.array(0)
         else:
