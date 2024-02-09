@@ -5,9 +5,19 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "qibotn"
 version = "0.0.1"
-description = ""
-authors = ["Qibo Team"]
+description = "A tensor-network translation module for Qibo"
+authors = ["The Qibo team"]
+license = "Apache License 2.0"
 readme = "README.md"
+homepage = "https://qibo.science/"
+repository = "https://github.com/qiboteam/qibotn/"
+documentation = "https://qibo.science/docs/qibotn/stable"
+keywords = []
+classifiers = [
+	"Programming Language :: Python :: 3",
+	"Topic :: Scientific/Engineering :: Physics",
+]
+packages = [{ include = "qibotn", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.9,<3.12"
