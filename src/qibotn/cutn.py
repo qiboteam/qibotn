@@ -1,12 +1,13 @@
-from qibotn.QiboCircuitConvertor import QiboCircuitToEinsum
+import multiprocessing
+
+import cupy as cp
+from cupy.cuda.runtime import getDeviceCount
 from cuquantum import contract
 from cuquantum import cutensornet as cutn
-import multiprocessing
-from cupy.cuda.runtime import getDeviceCount
-import cupy as cp
 
-from qibotn.QiboCircuitToMPS import QiboCircuitToMPS
 from qibotn.mps_contraction_helper import MPSContractionHelper
+from qibotn.QiboCircuitConvertor import QiboCircuitToEinsum
+from qibotn.QiboCircuitToMPS import QiboCircuitToMPS
 
 
 def eval(qibo_circ, datatype):
@@ -49,7 +50,7 @@ def eval_tn_MPI(qibo_circ, datatype, n_samples=8):
 
     return result, rank
 
-  
+
 def eval_mps(qibo_circ, gate_algo, datatype):
     myconvertor = QiboCircuitToMPS(qibo_circ, gate_algo, dtype=datatype)
     mps_helper = MPSContractionHelper(myconvertor.num_qubits)
