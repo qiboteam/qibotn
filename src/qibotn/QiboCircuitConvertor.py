@@ -94,8 +94,7 @@ class QiboCircuitToEinsum:
             required_shape = self.op_shape_from_qubits(len(gate_qubits))
             self.gate_tensors.append(
                 (
-                    cp.asarray(gate.matrix(), dtype=self.dtype).reshape(
-                        required_shape),
+                    cp.asarray(gate.matrix(), dtype=self.dtype).reshape(required_shape),
                     gate_qubits,
                 )
             )

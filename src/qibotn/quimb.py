@@ -3,8 +3,14 @@ import quimb.tensor as qtn
 from qibo.models import Circuit as QiboCircuit
 
 
-def from_qibo(circuit: QiboCircuit, is_mps: False, psi0=None, method='svd',
-              cutoff=1e-6, cutoff_mode='abs'):
+def from_qibo(
+    circuit: QiboCircuit,
+    is_mps: False,
+    psi0=None,
+    method="svd",
+    cutoff=1e-6,
+    cutoff_mode="abs",
+):
     nqubits = circuit.nqubits
     gate_opt = {}
     if is_mps:

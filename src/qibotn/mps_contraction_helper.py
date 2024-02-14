@@ -1,4 +1,4 @@
-from cuquantum import contract, contract_path, CircuitToEinsum, tensor
+from cuquantum import CircuitToEinsum, contract, contract_path, tensor
 
 
 class MPSContractionHelper:

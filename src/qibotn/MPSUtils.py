@@ -1,6 +1,6 @@
 import cupy as cp
-from cuquantum.cutensornet.experimental import contract_decompose
 from cuquantum import contract
+from cuquantum.cutensornet.experimental import contract_decompose
 
 
 def initial(num_qubits, dtype):
