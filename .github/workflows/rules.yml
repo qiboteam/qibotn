@@ -2,7 +2,7 @@
 name: Tests
 
 env:
-  CUDA_PATH: echo $CUDA_PATH
+  CUDA_PATH:
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    if: contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' && github.env.CUDA_PATH != ''
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' }} && env.CUDA_PATH != ''
     strategy:
       matrix:
         os: [ubuntu-latest]
