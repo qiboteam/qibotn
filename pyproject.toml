@@ -1,3 +1,6 @@
+[tool.pylint.main]
+ignored-modules = ["cupy", "cuquantum", "mpi4py"]
+
 [tool.pylint.reports]
 output-format = "colorized"
 
