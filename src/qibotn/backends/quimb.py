@@ -1,6 +1,6 @@
 from qibo.backends.numpy import NumpyBackend
 from qibo.config import raise_error
-from qibo.states import CircuitResult
+from qibo.result import CircuitResult
 
 
 class QuimbBackend(NumpyBackend):
