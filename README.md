@@ -1,8 +1,8 @@
-Qibotn is the tensor network translation module for Qibo to support large-scale simulation of quantum circuits and acceleration.
+# Qibotn
 
-To get started, `python setup.py install` to install the tools and dependencies.
+The tensor network translation module for Qibo to support large-scale simulation of quantum circuits and acceleration.
 
-# Supported Computation
+## Supported Computation
 
 Tensor Network Types:
 
@@ -26,9 +26,22 @@ Currently, the supported tensor network libraries are:
 - [cuQuantum](https://github.com/NVIDIA/cuQuantum), an NVIDIA SDK of optimized libraries and tools for accelerating quantum computing workflows.
 - [quimb](https://quimb.readthedocs.io/en/latest/), an easy but fast python library for ‘quantum information many-body’ calculations, focusing primarily on tensor networks.
 
-# Sample Codes
+## Installation
 
-## Single-Node Example
+To get started:
+
+```sh
+python setup.py install
+```
+
+to install the tools and dependencies. A few extras are provided, check `setup.py` in
+case you need them.
+
+<!-- TODO: describe extras, after Poetry adoption and its groups -->
+
+## Sample Codes
+
+### Single-Node Example
 
 The code below shows an example of how to activate the Cuquantum TensorNetwork backend of Qibo.
 
@@ -96,7 +109,7 @@ computation_settings = {
 }
 ```
 
-## Multi-Node Example
+### Multi-Node Example
 
 Multi-node is enabled by setting either the MPI or NCCL enabled flag to True in the computation settings. Below shows the script to launch on 2 nodes with 2 GPUs each. $node_list contains the IP of the nodes assigned.
 
