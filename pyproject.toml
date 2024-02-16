@@ -14,8 +14,8 @@ repository = "https://github.com/qiboteam/qibotn/"
 documentation = "https://qibo.science/docs/qibotn/stable"
 keywords = []
 classifiers = [
-	"Programming Language :: Python :: 3",
-	"Topic :: Scientific/Engineering :: Physics",
+  "Programming Language :: Python :: 3",
+  "Topic :: Scientific/Engineering :: Physics",
 ]
 packages = [{ include = "qibotn", from = "src" }]
 
@@ -45,6 +45,11 @@ optional = true
 
 [tool.poetry.group.analysis.dependencies]
 pylint = "^3.0.3"
+
+[tool.poe.tasks]
+test = "pytest"
+lint = "pylint src --errors-only"
+lint-warnings = "pylint src --exit-zero"
 
 [tool.pylint.main]
 ignored-modules = ["cupy", "cuquantum", "mpi4py"]
