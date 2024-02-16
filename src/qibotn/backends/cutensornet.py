@@ -80,7 +80,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         if precision != self.precision:
             super().set_precision(precision)
 
-    def get_cuda_type(self, dtype="complex64"):
+    def cuda_type(self, dtype="complex64"):
         if dtype == "complex128":
             return (
                 self.cuquantum.cudaDataType.CUDA_C_64F,
