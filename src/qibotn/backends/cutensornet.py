@@ -45,7 +45,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 self.MPS_enabled = False
             elif isinstance(mps_enabled_value, dict):
                 self.MPS_enabled = True
-                self.gate_algo = runcard.get("MPS_enabled", {})
+                self.gate_algo = mps_enabled_value
             else:
                 raise TypeError("MPS_enabled has an unexpected type")
 
