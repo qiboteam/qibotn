@@ -41,12 +41,11 @@
 
               languages.python = {
                 enable = true;
-                # poetry = {
-                #   enable = true;
-                #   install.enable = true;
-                #   install.groups = ["dev" "tests"];
-                #   install.allExtras = true;
-                # };
+                poetry = {
+                  enable = true;
+                  install.enable = true;
+                  install.groups = ["dev" "tests"];
+                };
                 version = "3.11";
               };
             }
