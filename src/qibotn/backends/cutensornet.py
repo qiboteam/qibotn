@@ -1,8 +1,8 @@
+import cuquantum  # pylint: disable=import-error
 import numpy as np
 from qibo.backends.numpy import NumpyBackend
 from qibo.config import raise_error
 from qibo.result import CircuitResult
-import cuquantum  # pylint: disable=import-error
 
 CUDA_TYPES = {
     "complex64": (
