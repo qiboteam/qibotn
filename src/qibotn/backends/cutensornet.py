@@ -2,7 +2,7 @@ import cuquantum  # pylint: disable=import-error
 import numpy as np
 from qibo.backends.numpy import NumpyBackend
 from qibo.config import raise_error
-from qibo.result import CircuitResult
+from qibo.result import QuantumState
 
 CUDA_TYPES = {
     "complex64": (
@@ -185,5 +185,5 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
         if return_array:
             return state.flatten()
         else:
-            circuit._final_state = CircuitResult(self, circuit, state.flatten(), nshots)
-            return circuit._final_state
+            return QuantumState(state.flatten())
+            
