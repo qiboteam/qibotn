@@ -186,4 +186,3 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             return state.flatten()
         else:
             return QuantumState(state.flatten())
-            
