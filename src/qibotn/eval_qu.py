@@ -1,38 +1,5 @@
 import numpy as np
 import quimb.tensor as qtn
-from qibo.models import Circuit as QiboCircuit
-
-
-def from_qibo(
-    circuit: QiboCircuit,
-    is_mps: False,
-    psi0=None,
-    method="svd",
-    cutoff=1e-6,
-    cutoff_mode="abs",
-):
-    """Create a tensor network representation of the circuit."""
-
-    nqubits = circuit.nqubits
-    gate_opt = {}
-    if is_mps:
-        tncirc = qtn.CircuitMPS(nqubits, psi0=psi0)
-        gate_opt["method"] = method
-        gate_opt["cutoff"] = cutoff
-        gate_opt["cutoff_mode"] = cutoff_mode
-    else:
-        tncirc = qtn.Circuit(nqubits, psi0=psi0)
-
-    for gate in circuit.queue:
-        tncirc.apply_gate(
-            gate.name,
-            *gate.parameters,
-            *gate.qubits,
-            parametrize=False if is_mps else (len(gate.parameters) > 0),
-            **gate_opt
-        )
-
-    return tncirc
 
 
 def init_state_tn(nqubits, init_state_sv):
@@ -48,10 +15,24 @@ def dense_vector_tn_qu(qasm: str, initial_state, is_mps, backend="numpy"):
 
     backend (quimb): numpy, cupy, jax. Passed to ``opt_einsum``.
     """
-    circuit = QiboCircuit.from_qasm(qasm)
+
     if initial_state is not None:
-        initial_state = init_state_tn(circuit.nqubits, initial_state)
-    circ_quimb = from_qibo(circuit, is_mps, psi0=initial_state)
+        nqubits = int(np.log2(len(initial_state)))
+        initial_state = init_state_tn(nqubits, initial_state)
+
+    if is_mps:
+        gate_opt = {}
+        gate_opt["method"] = "svd"
+        gate_opt["cutoff"] = 1e-6
+        gate_opt["cutoff_mode"] = "abs"
+
+        circ_quimb = qtn.circuit.CircuitMPS.from_openqasm2_str(
+            qasm, psi0=initial_state, gate_opts=gate_opt
+        )
+
+    else:
+        circ_quimb = qtn.circuit.Circuit.from_openqasm2_str(qasm, psi0=initial_state)
+
     interim = circ_quimb.psi.full_simplify(seq="DRC")
     amplitudes = interim.to_dense(backend=backend)
 
