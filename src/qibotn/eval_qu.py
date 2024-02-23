@@ -10,7 +10,7 @@ def init_state_tn(nqubits, init_state_sv):
     return qtn.tensor_1d.MatrixProductState.from_dense(init_state_sv, dims)
 
 
-def dense_vector_tn_qu(qasm: str, initial_state, is_mps, backend="numpy"):
+def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
     """Evaluate QASM with Quimb.
 
     backend (quimb): numpy, cupy, jax. Passed to ``opt_einsum``.
@@ -20,14 +20,9 @@ def dense_vector_tn_qu(qasm: str, initial_state, is_mps, backend="numpy"):
         nqubits = int(np.log2(len(initial_state)))
         initial_state = init_state_tn(nqubits, initial_state)
 
-    if is_mps:
-        gate_opt = {}
-        gate_opt["method"] = "svd"
-        gate_opt["cutoff"] = 1e-6
-        gate_opt["cutoff_mode"] = "abs"
-
+    if mps_opts:
         circ_quimb = qtn.circuit.CircuitMPS.from_openqasm2_str(
-            qasm, psi0=initial_state, gate_opts=gate_opt
+            qasm, psi0=initial_state, gate_opts=mps_opts
         )
 
     else:

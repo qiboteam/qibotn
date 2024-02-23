@@ -50,9 +50,18 @@ def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     qasm_circ = qibo_circ.to_qasm()
 
     # Test quimb
-    result_tn = qibotn.eval_qu.dense_vector_tn_qu(
-        qasm_circ, init_state_tn, is_mps, backend=config.quimb.backend
-    ).flatten()
+    if is_mps:
+        gate_opt = {}
+        gate_opt["method"] = "svd"
+        gate_opt["cutoff"] = 1e-6
+        gate_opt["cutoff_mode"] = "abs"
+        result_tn = qibotn.eval_qu.dense_vector_tn_qu(
+            qasm_circ, init_state_tn, gate_opt, backend=config.quimb.backend
+        ).flatten()
+    else:
+        result_tn = qibotn.eval_qu.dense_vector_tn_qu(
+            qasm_circ, init_state_tn, is_mps, backend=config.quimb.backend
+        ).flatten()
 
     assert np.allclose(
         result_sv, result_tn, atol=tolerance

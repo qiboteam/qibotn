@@ -16,9 +16,11 @@ class QuimbBackend(NumpyBackend):
 
             mps_enabled_value = runcard.get("MPS_enabled")
             if mps_enabled_value is True:
-                self.MPS_enabled = True
+                self.mps_opts = {"method": "svd", "cutoff": 1e-6, "cutoff_mod": "abs"}
             elif mps_enabled_value is False:
-                self.MPS_enabled = False
+                self.mps_opts = False
+            elif isinstance(mps_enabled_value, dict):
+                self.mps_opts = mps_enabled_value
             else:
                 raise TypeError("MPS_enabled has an unexpected type")
 
@@ -74,7 +76,7 @@ class QuimbBackend(NumpyBackend):
             )
 
         state = eval.dense_vector_tn_qu(
-            circuit.to_qasm(), initial_state, is_mps=self.MPS_enabled, backend="numpy"
+            circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
         )
 
         if return_array:
