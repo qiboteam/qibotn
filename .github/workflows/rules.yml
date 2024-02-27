@@ -5,13 +5,17 @@ env:
   CUDA_PATH:
 
 on:
+  workflow_dispatch:
   push:
   pull_request:
     types: [labeled]
 
 jobs:
   build:
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' }} && env.CUDA_PATH != ''
+    env:
+      var_a: ${{ env.CUDA_PATH != ''}}
+      var_b: ${{ contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' }}
+    if: ${{ fromJSON(env.var_a) && fromJSON(env.var_b)}}
     strategy:
       matrix:
         os: [ubuntu-latest]
