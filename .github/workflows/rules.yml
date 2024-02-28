@@ -20,14 +20,12 @@ jobs:
       - id: step2
         run: echo "test=${{ contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' }}" >> "$GITHUB_OUTPUT"
     outputs:
-      cuda_on: ${{ steps.step1.outputs.test }}
-      git_event: ${{ steps.step2.outputs.test }}
-      test_gpu: ${{ fromJSON(steps.step1.outputs.test)  && fromJSON(steps.step2.outputs.test) }}
+      cuda_avail: ${{ fromJSON(steps.step1.outputs.test) && fromJSON(steps.step2.outputs.test) }}
 
   build:
     # job to build
     needs: check
-    if: ${{fromJSON(needs.check.outputs.test_gpu)}}
+    if: ${{fromJSON(needs.check.outputs.cuda_avail)}}
     strategy:
           matrix:
             os: [ubuntu-latest]
