@@ -22,23 +22,19 @@ jobs:
     outputs:
       cuda_on: ${{ steps.step1.outputs.test }}
       git_event: ${{ steps.step2.outputs.test }}
+      test_gpu: ${{ fromJSON(steps.step1.outputs.test)  && fromJSON(steps.step2.outputs.test) }}
 
   build:
     # job to build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: [3.8, 3.9, "3.10", "3.11"]
     needs: check
-    steps:
-      - env:
-          CUDA_ON: ${{needs.check.outputs.cuda_on}}
-          GIT_EVENT: ${{needs.check.outputs.git_event}}
-        if: ${{ fromJSON(env.CUDA_ON) && fromJSON(env.GIT_EVENT)}}
-        uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@main
-        with:
-          os: ${{ matrix.os }}
-          python-version: ${{ matrix.python-version }}
-          poetry-extras: "--with analysis,tests"
-        #secrets: inherit
+    if: ${{fromJSON(needs.check.outputs.test_gpu)}}
+    strategy:
+          matrix:
+            os: [ubuntu-latest]
+            python-version: [3.8, 3.9, "3.10", "3.11"]
+    uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@main
+    with:
+      os: ${{ matrix.os }}
+      python-version: ${{ matrix.python-version }}
+      poetry-extras: "--with analysis,tests"
+    secrets: inherit
