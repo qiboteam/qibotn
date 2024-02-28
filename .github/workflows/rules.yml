@@ -11,18 +11,34 @@ on:
     types: [labeled]
 
 jobs:
+  check:
+    # job to check cuda availability
+    runs-on: ubuntu-latest
+    steps:
+      - id: step1
+        run: echo "test=${{ env.CUDA_PATH != ''}}" >> "$GITHUB_OUTPUT"
+      - id: step2
+        run: echo "test=${{ contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' }}" >> "$GITHUB_OUTPUT"
+    outputs:
+      cuda_on: ${{ steps.step1.outputs.test }}
+      git_event: ${{ steps.step2.outputs.test }}
+
   build:
-    env:
-      var_a: ${{ env.CUDA_PATH != ''}}
-      var_b: ${{ contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' }}
-    if: ${{ fromJSON(env.var_a) && fromJSON(env.var_b)}}
+    # job to build
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.8, 3.9, "3.10", "3.11"]
-    uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@main
-    with:
-      os: ${{ matrix.os }}
-      python-version: ${{ matrix.python-version }}
-      poetry-extras: "--with analysis,tests"
-    secrets: inherit
+    needs: check
+    steps:
+      - env:
+          CUDA_ON: ${{needs.check.outputs.cuda_on}}
+          GIT_EVENT: ${{needs.check.outputs.git_event}}
+        if: ${{ fromJSON(env.CUDA_ON) && fromJSON(env.GIT_EVENT)}}
+        uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@main
+        with:
+          os: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
+          poetry-extras: "--with analysis,tests"
+        #secrets: inherit
