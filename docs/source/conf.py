@@ -11,7 +11,7 @@
 #
 import os
 import sys
-from recommonmark.transform import AutoStructify
+
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -20,7 +20,7 @@ import qibotn
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Qibotn'
+project = "Qibotn"
 copyright = "The Qibo team"
 author = "The Qibo team"
 
@@ -48,14 +48,12 @@ extensions = [
     "sphinxcontrib.katex",
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
-
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "furo"
-html_static_path = ['_static']
-
+html_static_path = ["_static"]

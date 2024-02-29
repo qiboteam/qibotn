@@ -20,4 +20,3 @@ you can use the ``lumache.get_random_ingredients()`` function:
 >>> import lumache
 >>> lumache.get_random_ingredients()
 ['shells', 'gorgonzola', 'parsley']
-
