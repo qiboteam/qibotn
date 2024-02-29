@@ -20,13 +20,10 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
         nqubits = int(np.log2(len(initial_state)))
         initial_state = init_state_tn(nqubits, initial_state)
 
-    if mps_opts:
-        circ_quimb = qtn.circuit.CircuitMPS.from_openqasm2_str(
-            qasm, psi0=initial_state, gate_opts=mps_opts
-        )
-
-    else:
-        circ_quimb = qtn.circuit.Circuit.from_openqasm2_str(qasm, psi0=initial_state)
+    circ_cls = qtn.circuit.CircuitMPS if mps_opts else qtn.circuit.Circuit
+    circ_quimb = circ_cls.from_openqasm2_str(
+        qasm, psi0=initial_state, gate_opts=mps_opts
+    )
 
     interim = circ_quimb.psi.full_simplify(seq="DRC")
     amplitudes = interim.to_dense(backend=backend)
