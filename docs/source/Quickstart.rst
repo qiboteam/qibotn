@@ -9,13 +9,15 @@ QiboTN supports two backends cutensornet (using CuQuantum library) and Quimbback
 For CuQuantum library,
 
 .. testcode::
-   qibo.set_backend(backend="qibotn", platform="cutensornet", runcard=computation_settings)  
+   qibo.set_backend(backend="qibotn", platform="cutensornet", runcard=computation_settings)
 ..
 
 and for Quimb library
 
 .. testcode::
-   qibo.set_backend(backend="qibotn", platform="QuimbBackend", runcard=computation_settings) 
+   qibo.set_backend(
+       backend="qibotn", platform="QuimbBackend", runcard=computation_settings
+   )
 ..
 
 Setting the runcard
@@ -23,7 +25,14 @@ Setting the runcard
 Basic structure of runcard is
 
 .. testcode::
-   computation_settings = {"MPI_enabled": False,"MPS_enabled": False,"NCCL_enabled": False,"expectation_enabled": {"pauli_string_pattern": "IXZ",}}
+   computation_settings = {
+       "MPI_enabled": False,
+       "MPS_enabled": False,
+       "NCCL_enabled": False,
+       "expectation_enabled": {
+           "pauli_string_pattern": "IXZ",
+       },
+   }
 ..
 
 Basic example
