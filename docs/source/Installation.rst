@@ -1,22 +1,10 @@
-Usage
------
------
+Installation instructions
+=========================
 
-Installation
-------------
+QiboTN can be installed directly from the source repository on Github:
 
-To use QiboTn, first install it using pip:
+.. code-block::
 
-.. code-block:: console
-    (.venv) $pip install lumache
-
-Creating recipes
-----------------
-
-To retrieve a list of random ingredients,
-you can use the ``lumache.get_random_ingredients()`` function:
-
-.. autofunction:: lumache.get_random_ingredients
->>> import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
+    git clone https://github.com/qiboteam/qibotn.git
+    cd qibotn
+    poetry install
