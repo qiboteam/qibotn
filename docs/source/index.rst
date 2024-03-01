@@ -34,9 +34,9 @@ Welcome to the comprehensive documentation for QiboTN! This guide will help you 
 
 
 1. **Getting started**: Begin by referring to the
-   :doc:`/Installation/` guide to set up the ``QiboTN`` library in your environment.
+   :doc:`/getting-started/installation/` guide to set up the ``QiboTN`` library in your environment.
 
-2. **Tutorials**: Explore the :doc:`Quickstart/` section for basic usage examples
+2. **Tutorials**: Explore the :doc:`getting-started/quickstart/` section for basic usage examples
 
 
 Contents
