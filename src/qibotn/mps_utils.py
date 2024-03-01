@@ -6,7 +6,7 @@ from cuquantum.cutensornet.experimental import contract_decompose
 
 
 def initial(num_qubits, dtype):
-    """Generate the MPS with an initial state of |00...00>"""
+    r"""Generate the MPS with an initial state of :math:`\ket{00...00}`"""
     state_tensor = cp.asarray([1, 0], dtype=dtype).reshape(1, 2, 1)
     mps_tensors = [state_tensor] * num_qubits
     return mps_tensors
@@ -19,7 +19,7 @@ def mps_site_right_swap(mps_tensors, i, **kwargs):
         "ipj,jqk->iqj,jpk",
         *mps_tensors[i : i + 2],
         algorithm=kwargs.get("algorithm", None),
-        options=kwargs.get("options", None)
+        options=kwargs.get("options", None),
     )
     mps_tensors[i : i + 2] = (a, b)
     return mps_tensors
@@ -64,7 +64,7 @@ def apply_gate(mps_tensors, gate, qubits, **kwargs):
                 *mps_tensors[i : i + 2],
                 gate,
                 algorithm=kwargs.get("algorithm", None),
-                options=kwargs.get("options", None)
+                options=kwargs.get("options", None),
             )
             mps_tensors[i : i + 2] = (a, b)  # in-place update
         else:

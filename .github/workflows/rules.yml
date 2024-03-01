@@ -12,7 +12,7 @@ on:
 
 jobs:
   check:
-    # job to check cuda availability
+    # job to check cuda availability for local gpu host runners
     runs-on: ubuntu-latest
     steps:
       - id: step1

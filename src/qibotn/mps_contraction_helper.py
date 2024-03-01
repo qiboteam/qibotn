@@ -7,15 +7,16 @@ class MPSContractionHelper:
     """A helper class to compute various quantities for a given MPS.
 
     Interleaved format is used to construct the input args for `cuquantum.contract`.
-    A concrete example on how the modes are populated for a 7-site MPS is provided below:
+    A concrete example on how the modes are populated for a 7-site MPS is provided
+    below::
 
-          0     2     4     6     8    10     12    14
-    bra -----A-----B-----C-----D-----E-----F-----G-----
-             |     |     |     |     |     |     |
-            1|    3|    5|    7|    9|   11|   13|
-             |     |     |     |     |     |     |
-    ket -----a-----b-----c-----d-----e-----f-----g-----
-          15    16    17    18    19    20    21    22
+              0     2     4     6     8    10     12    14
+        bra -----A-----B-----C-----D-----E-----F-----G-----
+                 |     |     |     |     |     |     |
+                1|    3|    5|    7|    9|   11|   13|
+                 |     |     |     |     |     |     |
+        ket -----a-----b-----c-----d-----e-----f-----g-----
+              15    16    17    18    19    20    21    22
 
 
     The follwing compute quantities are supported:
