@@ -2,7 +2,8 @@
    QiboTN
 
 What is QiboTN?
-==================================
+===============
+
 QiboTN  is the dedicated `Qibo <https://github.com/qiboteam/qibo>`_ backend to support large-scale simulation of quantum circuits and acceleration.
 
 Supported Computation:
@@ -40,7 +41,6 @@ Welcome to the comprehensive documentation for QiboTN! This guide will help you 
 
 
 Contents
---------
 --------
 
 .. toctree::
