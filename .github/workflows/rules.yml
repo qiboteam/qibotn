@@ -12,7 +12,7 @@ on:
 
 jobs:
   check:
-    # job to check cuda availability
+    # job to check cuda availability for local gpu host runners
     runs-on: ubuntu-latest
     steps:
       - id: step1
@@ -24,8 +24,6 @@ jobs:
 
   build:
     # job to build
-    needs: check
-    if: ${{fromJSON(needs.check.outputs.cuda_avail)}}
     strategy:
           matrix:
             os: [ubuntu-latest]
@@ -34,5 +32,19 @@ jobs:
     with:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
-      poetry-extras: "--with analysis,tests"
+      poetry-extras: "--with docs"
     secrets: inherit
+#local_build
+   # job to build
+   #needs: check
+   #if: ${{fromJSON(needs.check.outputs.cuda_avail)}}
+   #strategy:
+    #matrix:
+      #os: [ubuntu-latest]
+      #python-version: [3.8, 3.9, "3.10", "3.11"]
+#uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@main
+#with:
+#os: ${{ matrix.os }}
+#python-version: ${{ matrix.python-version }}
+#poetry-extras: "--with analysis,tests, docs"
+#secrets: inherit

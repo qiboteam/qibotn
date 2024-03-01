@@ -9,12 +9,14 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath(".."))
+from sphinx.ext import apidoc
 
 import qibotn
+
+# sys.path.insert(0, os.path.abspath(".."))
+
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -56,3 +58,15 @@ exclude_patterns = []
 
 html_theme = "furo"
 html_static_path = ["_static"]
+
+# Adapted this from
+# https://github.com/readthedocs/recommonmark/blob/ddd56e7717e9745f11300059e4268e204138a6b1/docs/conf.py
+# app setup hook
+
+
+def run_apidoc(_):
+    """Extract autodoc directives from package structure."""
+    source = Path(__file__).parent
+    docs_dest = source / "api-reference"
+    package = source.parents[1] / "src" / "qibotn"
+    apidoc.main(["--no-toc", "--module-first", "-o", str(docs_dest), str(package)])

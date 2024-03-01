@@ -48,10 +48,16 @@ Contents
 --------
 
 .. toctree::
-
+   :maxdepth: 2
+   :caption: Introduction
    usage
    api
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Main documentation
+
+    api-reference/modules
 
 Indices and tables
 ==================
