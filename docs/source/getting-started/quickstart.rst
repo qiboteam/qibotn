@@ -20,7 +20,7 @@ and for Quimb library
 ..
 
 Setting the runcard
-""""""""""""""""""""
+"""""""""""""""""""
 Basic structure of runcard is
 
 .. testcode::
@@ -35,7 +35,8 @@ Basic structure of runcard is
 ..
 
 Basic example
-""""""""""""
+"""""""""""""
+
 .. testcode::
    # Construct the circuit
    c = Circuit(2)
