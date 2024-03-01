@@ -38,10 +38,6 @@ Welcome to the comprehensive documentation for QiboTN! This guide will help you 
 
 2. **Tutorials**: Explore the :doc:`Quickstart/` section for basic usage examples
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
 
 Contents
 --------
