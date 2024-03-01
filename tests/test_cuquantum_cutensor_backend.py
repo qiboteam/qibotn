@@ -32,14 +32,16 @@ def test_eval(nqubits: int, dtype="complex128"):
         dtype (str): The data type for precision, 'complex64' for single,
             'complex128' for double.
     """
-    import qibotn.cutn
+    import qibotn.eval
 
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
     qibo_time, (qibo_circ, result_sv) = time(lambda: qibo_qft(nqubits, swaps=True))
 
     # Test Cuquantum
-    cutn_time, result_tn = time(lambda: qibotn.cutn.eval(qibo_circ, dtype).flatten())
+    cutn_time, result_tn = time(
+        lambda: qibotn.eval.dense_vector_tn(qibo_circ, dtype).flatten()
+    )
 
     assert 1e-2 * qibo_time < cutn_time < 1e2 * qibo_time
     assert np.allclose(result_sv, result_tn), "Resulting dense vectors do not match"
@@ -55,7 +57,7 @@ def test_mps(nqubits: int, dtype="complex128"):
         dtype (str): The data type for precision, 'complex64' for single,
             'complex128' for double.
     """
-    import qibotn.cutn
+    import qibotn.eval
 
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
@@ -74,7 +76,7 @@ def test_mps(nqubits: int, dtype="complex128"):
     }
 
     cutn_time, result_tn = time(
-        lambda: qibotn.cutn.eval_mps(circ_qibo, gate_algo, dtype).flatten()
+        lambda: qibotn.eval.dense_vector_mps(circ_qibo, gate_algo, dtype).flatten()
     )
 
     print(f"State vector difference: {abs(result_tn - result_sv_cp).max():0.3e}")

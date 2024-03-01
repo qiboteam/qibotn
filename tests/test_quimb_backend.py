@@ -25,29 +25,41 @@ def qibo_qft(nqubits, init_state, swaps):
     [(1, 1e-6, True), (2, 1e-6, False), (5, 1e-3, True), (10, 1e-3, False)],
 )
 def test_eval(nqubits: int, tolerance: float, is_mps: bool):
+    """Evaluate circuit with Quimb backend.
+
+    Args:
+        nqubits (int): Total number of qubits in the system.
+        tolerance (float): Maximum limit allowed for difference in results
+        is_mps (bool): True if state is MPS and False for tensor network structure
+    """
     # hack quimb to use the correct number of processes
     # TODO: remove completely, or at least delegate to the backend
     # implementation
     os.environ["QUIMB_NUM_PROCS"] = str(os.cpu_count())
-    import qibotn.quimb
+    import qibotn.eval_qu
 
     init_state = create_init_state(nqubits=nqubits)
     init_state_tn = copy.deepcopy(init_state)
 
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
-    # qibo_time, (qibo_circ, result_sv) = time(
-    # lambda: qibo_qft(nqubits, init_state, swaps=True)
-    # )
+
     qibo_circ, result_sv = qibo_qft(nqubits, init_state, swaps=True)
 
     # Convert to qasm for other backends
     qasm_circ = qibo_circ.to_qasm()
 
     # Test quimb
-    result_tn = qibotn.quimb.eval(
-        qasm_circ, init_state_tn, is_mps, backend=config.quimb.backend
-    )
+    if is_mps:
+        gate_opt = {}
+        gate_opt["method"] = "svd"
+        gate_opt["cutoff"] = 1e-6
+        gate_opt["cutoff_mode"] = "abs"
+    else:
+        gate_opt = None
+    result_tn = qibotn.eval_qu.dense_vector_tn_qu(
+        qasm_circ, init_state_tn, gate_opt, backend=config.quimb.backend
+    ).flatten()
 
     assert np.allclose(
         result_sv, result_tn, atol=tolerance

@@ -1,9 +1,10 @@
-from cuquantum import CircuitToEinsum, contract, contract_path, tensor
+from cuquantum import contract, contract_path
+
+# Reference: https://github.com/NVIDIA/cuQuantum/blob/main/python/samples/cutensornet/tn_algorithms/mps_algorithms.ipynb
 
 
 class MPSContractionHelper:
-    """
-    A helper class to compute various quantities for a given MPS.
+    """A helper class to compute various quantities for a given MPS.
 
     Interleaved format is used to construct the input args for `cuquantum.contract`.
     A concrete example on how the modes are populated for a 7-site MPS is provided below:
@@ -41,8 +42,8 @@ class MPSContractionHelper:
         ]
 
     def contract_norm(self, mps_tensors, options=None):
-        """
-        Contract the corresponding tensor network to form the norm of the MPS.
+        """Contract the corresponding tensor network to form the norm of the
+        MPS.
 
         Args:
             mps_tensors: A list of rank-3 ndarray-like tensor objects.
@@ -62,8 +63,8 @@ class MPSContractionHelper:
         return self._contract(interleaved_inputs, options=options).real
 
     def contract_state_vector(self, mps_tensors, options=None):
-        """
-        Contract the corresponding tensor network to form the state vector representation of the MPS.
+        """Contract the corresponding tensor network to form the state vector
+        representation of the MPS.
 
         Args:
             mps_tensors: A list of rank-3 ndarray-like tensor objects.
@@ -84,8 +85,8 @@ class MPSContractionHelper:
     def contract_expectation(
         self, mps_tensors, operator, qubits, options=None, normalize=False
     ):
-        """
-        Contract the corresponding tensor network to form the state vector representation of the MPS.
+        """Contract the corresponding tensor network to form the expectation of
+        the MPS.
 
         Args:
             mps_tensors: A list of rank-3 ndarray-like tensor objects.
