@@ -50,6 +50,13 @@ Contents
    Quickstart
 
 .. toctree::
+    :maxdepth: 2
+    :caption: Main documentation
+
+    api-reference/modules
+    Developer guides <https://qibo.science/qibo/stable/developer-guides/index.html>
+
+.. toctree::
     :maxdepth: 1
     :caption: Documentation links
 
