@@ -34,5 +34,5 @@ jobs:
     with:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
-      poetry-extras: "--with analysis,tests,docs"
+      poetry-extras: "--with analysis,tests"
     secrets: inherit
