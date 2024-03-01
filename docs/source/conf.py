@@ -95,6 +95,8 @@ html_theme_options = {
 # https://github.com/readthedocs/recommonmark/blob/ddd56e7717e9745f11300059e4268e204138a6b1/docs/conf.py
 # app setup hook
 
+autodoc_mock_imports = ["cupy", "cuquantum"]
+
 
 def run_apidoc(_):
     """Extract autodoc directives from package structure."""
