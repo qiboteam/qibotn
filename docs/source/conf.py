@@ -46,7 +46,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "recommonmark",
-    "nbsphinx",
     "sphinxcontrib.katex",
 ]
 
