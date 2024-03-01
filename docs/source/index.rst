@@ -50,14 +50,10 @@ Contents
 .. toctree::
    :maxdepth: 2
    :caption: Introduction
-   usage
-   api
+   Installation
+   Quickstart
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Main documentation
 
-    api-reference/modules
 
 Indices and tables
 ==================
