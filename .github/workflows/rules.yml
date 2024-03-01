@@ -24,6 +24,8 @@ jobs:
 
   build:
     # job to build
+    needs: check
+    if: ${{fromJSON(needs.check.outputs.cuda_avail)}}
     strategy:
           matrix:
             os: [ubuntu-latest]
@@ -32,19 +34,5 @@ jobs:
     with:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
-      poetry-extras: "--with docs"
+      poetry-extras: "--with analysis,tests,docs"
     secrets: inherit
-#local_build
-   # job to build
-   #needs: check
-   #if: ${{fromJSON(needs.check.outputs.cuda_avail)}}
-   #strategy:
-    #matrix:
-      #os: [ubuntu-latest]
-      #python-version: [3.8, 3.9, "3.10", "3.11"]
-#uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@main
-#with:
-#os: ${{ matrix.os }}
-#python-version: ${{ matrix.python-version }}
-#poetry-extras: "--with analysis,tests, docs"
-#secrets: inherit
