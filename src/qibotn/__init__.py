@@ -1,1 +1,4 @@
-__version__ = "0.0.1.dev0"
+import importlib.metadata as im
+
+
+__version__ = im.version(__package__)
