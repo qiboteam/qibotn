@@ -11,6 +11,7 @@
 #
 from pathlib import Path
 
+from recommonmark.transform import AutoStructify
 from sphinx.ext import apidoc
 
 import qibotn
@@ -70,3 +71,14 @@ def run_apidoc(_):
     docs_dest = source / "api-reference"
     package = source.parents[1] / "src" / "qibotn"
     apidoc.main(["--no-toc", "--module-first", "-o", str(docs_dest), str(package)])
+
+
+def setup(app):
+    app.add_config_value("recommonmark_config", {"enable_eval_rst": True}, True)
+    app.add_transform(AutoStructify)
+    app.add_css_file("css/style.css")
+
+    app.connect("builder-inited", run_apidoc)
+
+
+html_show_sourcelink = False
