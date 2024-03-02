@@ -480,22 +480,22 @@ tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.1
 toml = ["tomli"]
 
 [[package]]
-name = "cupy-cuda12x"
+name = "cupy-cuda11x"
 version = "11.6.0"
 description = "CuPy: NumPy & SciPy for GPU"
 optional = true
 python-versions = ">=3.7"
 files = [
-    {file = "cupy_cuda12x-11.6.0-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:33fb03f3680c01fe2ba5f7dc1af925fde524c60d77a8c3e7ee365549dd7b922b"},
-    {file = "cupy_cuda12x-11.6.0-cp310-cp310-win_amd64.whl", hash = "sha256:c52f05fab38f77e53379861834beab549ee2aa54092f40e460f8a6208880dbce"},
-    {file = "cupy_cuda12x-11.6.0-cp311-cp311-manylinux1_x86_64.whl", hash = "sha256:4edf5ad7af897627ab22b15cf2340f484e29790bdfa0a95feca4bf87fb81a3b6"},
-    {file = "cupy_cuda12x-11.6.0-cp311-cp311-win_amd64.whl", hash = "sha256:5678e99ede8a66559af55c7851b309d56b8d38b64a8552e38decf1468f7fa29c"},
-    {file = "cupy_cuda12x-11.6.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:f8c1abc7bdd58f81582c2737c34accac65bb45f314962b71fcc7e97da3b1c0bd"},
-    {file = "cupy_cuda12x-11.6.0-cp37-cp37m-win_amd64.whl", hash = "sha256:472c24e966e7f0494ce939d7d2b75be9815b7dd6c64cb6c996f235ff4365020b"},
-    {file = "cupy_cuda12x-11.6.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:b1c61c8db0414a14968937b0e6419eda0d1b7366ff1a299aaaddd104ac40d356"},
-    {file = "cupy_cuda12x-11.6.0-cp38-cp38-win_amd64.whl", hash = "sha256:d5de5a94a5ddfa5182a6411462e788facbf49c7d531dc7343d9fcc7f4758039f"},
-    {file = "cupy_cuda12x-11.6.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:2bc5da0f5e3c03dcf50bfa1442add74e1ec62891894dbd4def9686f47a1cb882"},
-    {file = "cupy_cuda12x-11.6.0-cp39-cp39-win_amd64.whl", hash = "sha256:943ac0847284a16b7812361a324ee732c64581f295f072aad50d4fd06a4ea084"},
+    {file = "cupy_cuda11x-11.6.0-cp310-cp310-manylinux1_x86_64.whl", hash = "sha256:1b9914f57868a1559e9bfabfbae8c724585914e8e1f277acb9cdb6aa0756eaa4"},
+    {file = "cupy_cuda11x-11.6.0-cp310-cp310-win_amd64.whl", hash = "sha256:ac8dd082ddb00996bc4d37cc5765907048f467aadb61bcbff25f3c2a88c50583"},
+    {file = "cupy_cuda11x-11.6.0-cp311-cp311-manylinux1_x86_64.whl", hash = "sha256:bf7496340dfbc2eaa3e0ebfd03c4ab8b1fc36d7d14f68718c33eeb395aaa6eed"},
+    {file = "cupy_cuda11x-11.6.0-cp311-cp311-win_amd64.whl", hash = "sha256:e3bbd55c26d60069d7e5af2200fb47e7c42ca6437acac297637a2d3c00f6fe46"},
+    {file = "cupy_cuda11x-11.6.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:0d7ebcfd7234946719ad28890593d9fc78fad5753ef4b073e0d7bdb7da2f5640"},
+    {file = "cupy_cuda11x-11.6.0-cp37-cp37m-win_amd64.whl", hash = "sha256:3bc3f81fbc5a86c7155c6036809f2ada4023fc0870dce158d3d9f6d0b575727f"},
+    {file = "cupy_cuda11x-11.6.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:1d6810568e683cb153972b3019ddb5efc369036511122117d9eda09cf84d1042"},
+    {file = "cupy_cuda11x-11.6.0-cp38-cp38-win_amd64.whl", hash = "sha256:31c1ec72ffe9ad6fda9fb0a2aff1fcca38da66a8e521e333bae0d67ebc80ead0"},
+    {file = "cupy_cuda11x-11.6.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:6a4822daadfce0464cb619099eb82c7ba30ae7755d6869ba5eba1c675a9eed67"},
+    {file = "cupy_cuda11x-11.6.0-cp39-cp39-win_amd64.whl", hash = "sha256:3d0f44d747b38ce2b213d64270265f953b68cf29860ec5fa65848b9faaea3fc1"},
 ]
 
 [package.dependencies]
@@ -3442,9 +3442,9 @@ docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.link
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy (>=0.9.1)", "pytest-ruff"]
 
 [extras]
-cuda = ["cupy-cuda12x", "cuquantum-python-cu11", "mpi4py"]
+cuda = ["cupy-cuda11x", "cuquantum-python-cu11", "mpi4py"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.12"
-content-hash = "175da6885f4a86d8125faff80d9c9d82d77309183cfeadf972ee122f33d3587c"
+content-hash = "5629ddb7a292e9d1735803e90b390dc95bb2c22ecf41e2970e011f03119657e5"
