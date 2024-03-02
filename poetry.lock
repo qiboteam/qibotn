@@ -3442,9 +3442,9 @@ docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.link
 testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy (>=0.9.1)", "pytest-ruff"]
 
 [extras]
-cuda = ["cuquantum-python-cu11", "mpi4py"]
+cuda = ["cupy-cuda12x", "cuquantum-python-cu11", "mpi4py"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.12"
-content-hash = "0e33528984c4f941f89625b2f3cf8538630eb9e82c7f72eb9dbfdbcd1c14b989"
+content-hash = "175da6885f4a86d8125faff80d9c9d82d77309183cfeadf972ee122f33d3587c"
