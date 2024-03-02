@@ -28,7 +28,7 @@ cuquantum-python-cu11 = { version = "^23.3.0", optional = true }
 mpi4py = { version = "^3.1.5", optional = true }
 
 [tool.poetry.extras]
-cuda = ["cupy", "cuquantum-python-cu11", "mpi4py"]
+cuda = ["cupy-cuda12x", "cuquantum-python-cu11", "mpi4py"]
 
 [tool.poetry.group.docs]
 optional = true
