@@ -50,10 +50,10 @@ Contents
    getting-started/index
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Main documentation
 
-    api-reference/modules
+    api-reference/qibotn
     Developer guides <https://qibo.science/qibo/stable/developer-guides/index.html>
 
 .. toctree::
