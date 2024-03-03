@@ -6,17 +6,13 @@ Setting the backend
 
 QiboTN supports two backends: cutensornet (using cuQuantum library) and QuimbBackend (using Quimb library) for tensor network based simulations. The backend can be set using the following command line.
 
-To use cuQuantum library, cutensornet can be specified as follows:
-
-.. code-block:: bash
+To use cuQuantum library, cutensornet can be specified as follows::
 
    qibo.set_backend(
       backend="qibotn", platform="cutensornet", runcard=computation_settings
    )
 
-Similarly, to use Quimb library, QuimbBackend can be as follows:
-
-.. code-block:: bash
+Similarly, to use Quimb library, QuimbBackend can be as follows::
 
    qibo.set_backend(
        backend="qibotn", platform="QuimbBackend", runcard=computation_settings
@@ -25,9 +21,7 @@ Similarly, to use Quimb library, QuimbBackend can be as follows:
 Setting the runcard
 """""""""""""""""""
 
-The basic structure of the runcard is as follows:
-
-.. code-block:: bash
+The basic structure of the runcard is as follows::
 
    computation_settings = {
        "MPI_enabled": False,
@@ -41,9 +35,7 @@ The basic structure of the runcard is as follows:
 Basic example
 """""""""""""
 
-The following is a basic example:
-
-.. code-block:: bash
+The following is a basic example::
 
    # Construct the circuit
    c = Circuit(2)
