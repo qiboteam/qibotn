@@ -59,7 +59,7 @@ class QuimbBackend(NumpyBackend):
                 If ``None`` the default ``|00...0>`` state is used.
 
         Returns:
-            xxx.
+            list: Final state in the dense vector form after simulation of the circuit.
         """
 
         import qibotn.eval_qu as eval
