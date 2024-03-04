@@ -14,9 +14,6 @@ class QiboCircuitToMPS:
         gate_algo(dict): Dictionary for SVD and QR settings.
         datatype (str): Either single ("complex64") or double (complex128) precision.
         rand_seed(int): Seed for random number generator.
-
-    Return:
-        None.
     """
 
     def __init__(

@@ -29,9 +29,6 @@ class QiboCircuitToEinsum:
         """Create the operands for dense vector computation in the interleave
         format.
 
-        Parameters:
-            None
-
         Returns:
             Operands for the contraction in the interleave format.
         """
@@ -106,9 +103,6 @@ class QiboCircuitToEinsum:
 
         Parameters:
             circuit (object): The quantum circuit object.
-
-        Returns:
-            None
         """
         self.gate_tensors = []
         gates_qubits = []
@@ -139,9 +133,6 @@ class QiboCircuitToEinsum:
         Parameters:
             backend (object): The backend object providing the array conversion method.
             dtype (object): The data type for the quantum state vectors.
-
-        Returns:
-            None
         """
         asarray = backend.asarray
         state_0 = asarray([1, 0], dtype=dtype)
@@ -157,9 +148,6 @@ class QiboCircuitToEinsum:
 
         Parameters:
             circuit (object): The quantum circuit object.
-
-        Returns:
-            None
         """
         self.gate_tensors_inverse = []
         gates_qubits_inverse = []
