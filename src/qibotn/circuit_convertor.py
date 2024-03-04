@@ -26,7 +26,8 @@ class QiboCircuitToEinsum:
         self.circuit = circuit
 
     def state_vector_operands(self):
-        """Create the operands for expectation computation in the interleave format.
+        """Create the operands for expectation computation in the interleave
+        format.
 
         Returns:
             Operands for the contraction in the interleave format.
@@ -198,7 +199,8 @@ class QiboCircuitToEinsum:
         return gates
 
     def expectation_operands(self, pauli_string):
-        """Create the operands for pauli string expectation computation in the interleave format.
+        """Create the operands for pauli string expectation computation in the
+        interleave format.
 
         Args:
             pauli_string: A string representating the list of pauli gates.

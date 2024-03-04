@@ -18,9 +18,8 @@ CUDA_TYPES = {
 
 class CuTensorNet(NumpyBackend):  # pragma: no cover
     # CI does not test for GPU
-    """Creates CuQuantum backend for QiboTN.
+    """Creates CuQuantum backend for QiboTN."""
 
-    """
     def __init__(self, runcard):
         super().__init__()
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
@@ -94,7 +93,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             super().set_precision(precision)
 
     def cuda_type(self, dtype="complex64"):
-        """Get CUDA Type
+        """Get CUDA Type.
 
         Args:
             dtype (str, optional): Either single ("complex64") or double (complex128) precision. Defaults to "complex64".
