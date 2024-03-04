@@ -54,7 +54,7 @@ The following is a basic example to execute a two qubit circuit and print the fi
        backend="qibotn", platform="qutensornet", runcard=computation_settings
    )
 
-   # Set the runcard 
+   # Set the runcard
    computation_settings = {
        "MPI_enabled": False,
        "MPS_enabled": False,
@@ -74,4 +74,3 @@ The following is a basic example to execute a two qubit circuit and print the fi
 
    # Print the final state
    print(result.state())
-
