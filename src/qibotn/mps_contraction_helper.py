@@ -7,17 +7,8 @@ class MPSContractionHelper:
     """A helper class to compute various quantities for a given MPS.
 
     Interleaved format is used to construct the input args for `cuquantum.contract`.
-    A concrete example on how the modes are populated for a 7-site MPS is provided
-    below::
-
-              0     2     4     6     8    10     12    14
-        bra -----A-----B-----C-----D-----E-----F-----G-----
-                 |     |     |     |     |     |     |
-                1|    3|    5|    7|    9|   11|   13|
-                 |     |     |     |     |     |     |
-        ket -----a-----b-----c-----d-----e-----f-----g-----
-              15    16    17    18    19    20    21    22
-
+    
+    Reference: https://github.com/NVIDIA/cuQuantum/blob/main/python/samples/cutensornet/tn_algorithms/mps_algorithms.ipynb
 
     The follwing compute quantities are supported:
 
@@ -25,10 +16,6 @@ class MPSContractionHelper:
         - the equivalent state vector from the MPS.
         - the expectation value for a given operator.
         - the equivalent state vector after multiplying an MPO to an MPS.
-
-    Note that for the nth MPS tensor (rank-3), the modes of the tensor are expected to be `(i,p,j)`
-    where i denotes the bonding mode with the (n-1)th tensor, p denotes the physical mode for the qubit and
-    j denotes the bonding mode with the (n+1)th tensor.
 
     Args:
         num_qubits: The number of qubits for the MPS.
