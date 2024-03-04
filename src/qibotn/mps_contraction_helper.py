@@ -19,7 +19,7 @@ class MPSContractionHelper:
 
     Parameters:
         num_qubits: The number of qubits for the MPS.
-        
+
     Return:
         None.
     """

@@ -5,11 +5,11 @@ from cuquantum.cutensornet.experimental import contract_decompose
 
 def initial(num_qubits, dtype):
     r"""Generate the MPS with an initial state of :math:`\ket{00...00}`
-    
+
     Parameters:
         num_qubits: Number of qubits in the Quantum Circuit.
         dtype: Either single ("complex64") or double (complex128) precision.
-    
+
     Returns:
         The initial MPS tensors.
     """
@@ -20,11 +20,11 @@ def initial(num_qubits, dtype):
 
 def mps_site_right_swap(mps_tensors, i, **kwargs):
     """Perform the swap operation between the ith and i+1th MPS tensors.
-    
+
     Parameters:
         mps_tensors: Tensors representing MPS
         i (int): index of the tensor to swap
-    
+
     Returns:
         The updated MPS tensors.
     """
