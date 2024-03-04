@@ -4,14 +4,30 @@ from cuquantum.cutensornet.experimental import contract_decompose
 
 
 def initial(num_qubits, dtype):
-    r"""Generate the MPS with an initial state of :math:`\ket{00...00}`"""
+    r"""Generate the MPS with an initial state of :math:`\ket{00...00}`
+    
+    Parameters:
+        num_qubits: Number of qubits in the Quantum Circuit.
+        dtype: Either single ("complex64") or double (complex128) precision.
+    
+    Returns:
+        The initial MPS tensors.
+    """
     state_tensor = cp.asarray([1, 0], dtype=dtype).reshape(1, 2, 1)
     mps_tensors = [state_tensor] * num_qubits
     return mps_tensors
 
 
 def mps_site_right_swap(mps_tensors, i, **kwargs):
-    """Perform the swap operation between the ith and i+1th MPS tensors."""
+    """Perform the swap operation between the ith and i+1th MPS tensors.
+    
+    Parameters:
+        mps_tensors: Tensors representing MPS
+        i (int): index of the tensor to swap
+    
+    Returns:
+        The updated MPS tensors.
+    """
     # contraction followed by QR decomposition
     a, _, b = contract_decompose(
         "ipj,jqk->iqj,jpk",
@@ -28,7 +44,7 @@ def apply_gate(mps_tensors, gate, qubits, **kwargs):
 
     # Reference: https://github.com/NVIDIA/cuQuantum/blob/main/python/samples/cutensornet/tn_algorithms/mps_algorithms.ipynb
 
-    Args:
+    Parameters:
         mps_tensors: A list of rank-3 ndarray-like tensor objects.
             The indices of the ith tensor are expected to be the bonding index to the i-1 tensor,
             the physical mode, and then the bonding index to the i+1th tensor.

@@ -17,8 +17,11 @@ class MPSContractionHelper:
         - the expectation value for a given operator.
         - the equivalent state vector after multiplying an MPO to an MPS.
 
-    Args:
+    Parameters:
         num_qubits: The number of qubits for the MPS.
+        
+    Return:
+        None.
     """
 
     def __init__(self, num_qubits):
@@ -33,7 +36,7 @@ class MPSContractionHelper:
         """Contract the corresponding tensor network to form the norm of the
         MPS.
 
-        Args:
+        Parameters:
             mps_tensors: A list of rank-3 ndarray-like tensor objects.
                 The indices of the ith tensor are expected to be bonding index to the i-1 tensor,
                 the physical mode, and then the bonding index to the i+1th tensor.
@@ -54,7 +57,7 @@ class MPSContractionHelper:
         """Contract the corresponding tensor network to form the state vector
         representation of the MPS.
 
-        Args:
+        Parameters:
             mps_tensors: A list of rank-3 ndarray-like tensor objects.
                 The indices of the ith tensor are expected to be bonding index to the i-1 tensor,
                 the physical mode, and then the bonding index to the i+1th tensor.
@@ -76,7 +79,7 @@ class MPSContractionHelper:
         """Contract the corresponding tensor network to form the expectation of
         the MPS.
 
-        Args:
+        Parameters:
             mps_tensors: A list of rank-3 ndarray-like tensor objects.
                 The indices of the ith tensor are expected to be bonding index to the i-1 tensor,
                 the physical mode, and then the bonding index to the i+1th tensor.
