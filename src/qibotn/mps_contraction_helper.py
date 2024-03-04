@@ -10,7 +10,7 @@ class MPSContractionHelper:
     
     Reference: https://github.com/NVIDIA/cuQuantum/blob/main/python/samples/cutensornet/tn_algorithms/mps_algorithms.ipynb
 
-    The follwing compute quantities are supported:
+    The following compute quantities are supported:
 
         - the norm of the MPS.
         - the equivalent state vector from the MPS.

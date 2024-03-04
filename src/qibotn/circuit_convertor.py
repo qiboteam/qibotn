@@ -26,9 +26,12 @@ class QiboCircuitToEinsum:
         self.circuit = circuit
 
     def state_vector_operands(self):
-        """Create the operands for expectation computation in the interleave
+        """Create the operands for dense vector computation in the interleave
         format.
-
+        
+        Parameters:
+            None
+            
         Returns:
             Operands for the contraction in the interleave format.
         """
@@ -85,8 +88,14 @@ class QiboCircuitToEinsum:
         return mode_labels, operands
 
     def op_shape_from_qubits(self, nqubits):
-        """Modify tensor to cuQuantum shape (qubit_states,input_output) *
-        qubits_involved."""
+        """Modify tensor to cuQuantum shape 
+        
+        Parameters:
+            nqubits (int): The number of qubits in quantum circuit.
+        
+        Returns:
+            (qubit_states,input_output) * nqubits
+        """
         return (2, 2) * nqubits
 
     def init_intermediate_circuit(self, circuit):
@@ -175,7 +184,7 @@ class QiboCircuitToEinsum:
     def get_pauli_gates(self, pauli_map, dtype="complex128", backend=cp):
         """Populate the gates for all pauli operators.
 
-        Args:
+        Parameters:
             pauli_map: A dictionary mapping qubits to pauli operators.
             dtype: Data type for the tensor operands.
             backend: The package the tensor operands belong to.
@@ -202,7 +211,7 @@ class QiboCircuitToEinsum:
         """Create the operands for pauli string expectation computation in the
         interleave format.
 
-        Args:
+        Parameters:
             pauli_string: A string representating the list of pauli gates.
 
         Returns:
