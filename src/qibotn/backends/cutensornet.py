@@ -18,6 +18,7 @@ CUDA_TYPES = {
 
 class CuTensorNet(NumpyBackend):  # pragma: no cover
     # CI does not test for GPU
+    """Creates CuQuantum backend for QiboTN."""
 
     def __init__(self, runcard):
         super().__init__()
@@ -92,6 +93,14 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
             super().set_precision(precision)
 
     def cuda_type(self, dtype="complex64"):
+        """Get CUDA Type.
+
+        Parameters:
+            dtype (str, optional): Either single ("complex64") or double (complex128) precision. Defaults to "complex64".
+
+        Returns:
+            CUDA Type: tuple of cuquantum.cudaDataType and cuquantum.ComputeType
+        """
         if dtype in CUDA_TYPES:
             return CUDA_TYPES[dtype]
         else:
@@ -100,15 +109,15 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
     def execute_circuit(
         self, circuit, initial_state=None, nshots=None, return_array=False
     ):  # pragma: no cover
-        """Executes a quantum circuit.
+        """Executes a quantum circuit using selected TN backend.
 
-        Args:
+        Parameters:
             circuit (:class:`qibo.models.circuit.Circuit`): Circuit to execute.
             initial_state (:class:`qibo.models.circuit.Circuit`): Circuit to prepare the initial state.
                 If ``None`` the default ``|00...0>`` state is used.
 
         Returns:
-            xxx.
+            QuantumState or numpy.ndarray: If `return_array` is False, returns a QuantumState object representing the quantum state. If `return_array` is True, returns a numpy array representing the quantum state.
         """
 
         import qibotn.eval as eval

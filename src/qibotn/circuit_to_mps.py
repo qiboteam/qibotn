@@ -7,6 +7,15 @@ from qibotn.mps_utils import apply_gate, initial
 
 
 class QiboCircuitToMPS:
+    """A helper class to convert Qibo circuit to MPS.
+
+    Parameters:
+        circ_qibo: The quantum circuit object.
+        gate_algo(dict): Dictionary for SVD and QR settings.
+        datatype (str): Either single ("complex64") or double (complex128) precision.
+        rand_seed(int): Seed for random number generator.
+    """
+
     def __init__(
         self,
         circ_qibo,

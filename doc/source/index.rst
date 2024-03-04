@@ -25,8 +25,8 @@ The supported HPC configurations are:
 
 Currently, the supported tensor network libraries are:
 
-- [cuQuantum](https://github.com/NVIDIA/cuQuantum), an NVIDIA SDK of optimized libraries and tools for accelerating quantum computing workflows.
-- [quimb](https://quimb.readthedocs.io/en/latest/), an easy but fast python library for ‘quantum information many-body’ calculations, focusing primarily on tensor networks.
+- `cuQuantum <https://github.com/NVIDIA/cuQuantum>`_, an NVIDIA SDK of optimized libraries and tools for accelerating quantum computing workflows.
+- `quimb <https://quimb.readthedocs.io/en/latest/>`_, an easy but fast python library for ‘quantum information many-body’ calculations, focusing primarily on tensor networks.
 
 How to Use the Documentation
 ============================
@@ -50,10 +50,10 @@ Contents
    getting-started/index
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Main documentation
 
-    api-reference/modules
+    api-reference/qibotn
     Developer guides <https://qibo.science/qibo/stable/developer-guides/index.html>
 
 .. toctree::
@@ -64,6 +64,9 @@ Contents
     Qibolab docs <https://qibo.science/qibolab/stable/>
     Qibocal docs <https://qibo.science/qibocal/stable/>
     Qibosoq docs <https://qibo.science/qibosoq/stable/>
+    Qibochem docs <https://qibo.science/qibochem/stable/>
+    Qibotn docs <https://qibo.science/qibotn/stable/>
+    Qibo-cloud-backends docs <https://qibo.science/qibo-cloud-backends/stable/>
 
 Indices and tables
 ==================

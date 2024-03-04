@@ -59,7 +59,7 @@ class QuimbBackend(NumpyBackend):
                 If ``None`` the default ``|00...0>`` state is used.
 
         Returns:
-            xxx.
+            QuantumState or numpy.ndarray: If `return_array` is False, returns a QuantumState object representing the quantum state. If `return_array` is True, returns a numpy array representing the quantum state.
         """
 
         import qibotn.eval_qu as eval
