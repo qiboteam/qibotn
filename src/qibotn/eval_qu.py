@@ -5,12 +5,12 @@ import quimb.tensor as qtn
 def init_state_tn(nqubits, init_state_sv):
     """Create a matrix product state directly from a dense vector.
 
-        Args:
-            nqubits (int): Total number of qubits in the circuit.
-            init_state_sv (list): Initial state in the dense vector form.
+    Args:
+        nqubits (int): Total number of qubits in the circuit.
+        init_state_sv (list): Initial state in the dense vector form.
 
-        Returns:
-            list: Matrix product state representation of the dense vector.
+    Returns:
+        list: Matrix product state representation of the dense vector.
     """
 
     dims = tuple(2 * np.ones(nqubits, dtype=int))
@@ -21,15 +21,14 @@ def init_state_tn(nqubits, init_state_sv):
 def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
     """Evaluate circuit in QASM format with Quimb.
 
-        Args:
-            qasm (str): QASM program.
-            initial_state (list): Initial state in the dense vector form. If ``None`` the default ``|00...0>`` state is used.
-            mps_opts (dict): Parameters to tune the gate_opts for mps settings in ``class quimb.tensor.circuit.CircuitMPS``. 
-            backend (str):  Backend to perform the contraction with, e.g. ``numpy``, ``cupy``, ``jax``. Passed to ``opt_einsum``.
+    Args:
+        qasm (str): QASM program.
+        initial_state (list): Initial state in the dense vector form. If ``None`` the default ``|00...0>`` state is used.
+        mps_opts (dict): Parameters to tune the gate_opts for mps settings in ``class quimb.tensor.circuit.CircuitMPS``.
+        backend (str):  Backend to perform the contraction with, e.g. ``numpy``, ``cupy``, ``jax``. Passed to ``opt_einsum``.
 
-        Returns:
-            list: Amplitudes of final state after the simulation of the circuit.
-   
+    Returns:
+        list: Amplitudes of final state after the simulation of the circuit.
     """
 
     if initial_state is not None:
