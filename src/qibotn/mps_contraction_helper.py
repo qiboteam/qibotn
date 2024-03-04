@@ -7,7 +7,7 @@ class MPSContractionHelper:
     """A helper class to compute various quantities for a given MPS.
 
     Interleaved format is used to construct the input args for `cuquantum.contract`.
-    
+
     Reference: https://github.com/NVIDIA/cuQuantum/blob/main/python/samples/cutensornet/tn_algorithms/mps_algorithms.ipynb
 
     The following compute quantities are supported:
