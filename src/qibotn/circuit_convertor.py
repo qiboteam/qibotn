@@ -28,10 +28,10 @@ class QiboCircuitToEinsum:
     def state_vector_operands(self):
         """Create the operands for dense vector computation in the interleave
         format.
-        
+
         Parameters:
             None
-            
+
         Returns:
             Operands for the contraction in the interleave format.
         """
@@ -88,11 +88,11 @@ class QiboCircuitToEinsum:
         return mode_labels, operands
 
     def op_shape_from_qubits(self, nqubits):
-        """Modify tensor to cuQuantum shape 
-        
+        """Modify tensor to cuQuantum shape.
+
         Parameters:
             nqubits (int): The number of qubits in quantum circuit.
-        
+
         Returns:
             (qubit_states,input_output) * nqubits
         """

@@ -10,7 +10,7 @@ from qibotn.mps_contraction_helper import MPSContractionHelper
 def dense_vector_tn(qibo_circ, datatype):
     """Convert qibo circuit to tensornet (TN) format and perform contraction to
     dense vector.
-    
+
     Parameters:
         qibo_circ: The quantum circuit object.
         datatype (str): Either single ("complex64") or double (complex128) precision.
@@ -25,12 +25,12 @@ def dense_vector_tn(qibo_circ, datatype):
 def expectation_pauli_tn(qibo_circ, datatype, pauli_string_pattern):
     """Convert qibo circuit to tensornet (TN) format and perform contraction to
     expectation of given Pauli string.
-                 
+
     Parameters:
         qibo_circ: The quantum circuit object.
         datatype (str): Either single ("complex64") or double (complex128) precision.
         pauli_string_pattern(str): pauli string pattern.
-        
+
     Returns:
         Expectation of quantum circuit due to pauli string.
     """
@@ -52,12 +52,12 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
     the least costly contraction path. This is sped up with multi
     thread. After pathfinding the optimal path is used in the actual
     contraction to give a dense vector representation of the TN.
-    
+
     Parameters:
         qibo_circ: The quantum circuit object.
         datatype (str): Either single ("complex64") or double (complex128) precision.
         n_samples(int): Number of samples for pathfinding.
-        
+
     Returns:
         Dense vector of quantum circuit.
     """
@@ -127,12 +127,12 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     the least costly contraction path. This is sped up with multi
     thread. After pathfinding the optimal path is used in the actual
     contraction to give a dense vector representation of the TN.
-         
+
     Parameters:
         qibo_circ: The quantum circuit object.
         datatype (str): Either single ("complex64") or double (complex128) precision.
         n_samples(int): Number of samples for pathfinding.
-        
+
     Returns:
         Dense vector of quantum circuit.
     """
@@ -216,13 +216,13 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
     select the least costly contraction path. This is sped up with multi
     thread. After pathfinding the optimal path is used in the actual
     contraction to give an expectation value.
-             
+
     Parameters:
         qibo_circ: The quantum circuit object.
         datatype (str): Either single ("complex64") or double (complex128) precision.
         pauli_string_pattern(str): pauli string pattern.
         n_samples(int): Number of samples for pathfinding.
-        
+
     Returns:
         Expectation of quantum circuit due to pauli string.
     """
@@ -308,13 +308,13 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
     select the least costly contraction path. This is sped up with multi
     thread. After pathfinding the optimal path is used in the actual
     contraction to give an expectation value.
-                 
+
     Parameters:
         qibo_circ: The quantum circuit object.
         datatype (str): Either single ("complex64") or double (complex128) precision.
         pauli_string_pattern(str): pauli string pattern.
         n_samples(int): Number of samples for pathfinding.
-        
+
     Returns:
         Expectation of quantum circuit due to pauli string.
     """
@@ -378,12 +378,12 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
 def dense_vector_mps(qibo_circ, gate_algo, datatype):
     """Convert qibo circuit to matrix product state (MPS) format and perform
     contraction to dense vector.
-                 
+
     Parameters:
         qibo_circ: The quantum circuit object.
         gate_algo(dict): Dictionary for SVD and QR settings.
         datatype (str): Either single ("complex64") or double (complex128) precision.
-        
+
     Returns:
         Dense vector of quantum circuit.
     """
@@ -402,10 +402,10 @@ def pauli_string_gen(nqubits, pauli_string_pattern):
     Parameters:
         nqubits(int): Number of qubits of Quantum Circuit
         pauli_string_pattern(str): Strings representing sequence of pauli gates.
-        
+
     Returns:
         String representation of the actual pauli string from the pattern.
-        
+
     Example: pattern: "XZ", number of qubit: 7, output = XZXZXZX
     """
     if nqubits <= 0:
