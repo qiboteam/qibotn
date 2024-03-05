@@ -31,10 +31,10 @@ Currently, the supported tensor network libraries are:
 To get started:
 
 ```sh
-python setup.py install
+pip install .
 ```
 
-to install the tools and dependencies. A few extras are provided, check `setup.py` in
+to install the tools and dependencies. A few extras are provided, check `pyproject.toml` in
 case you need them.
 
 <!-- TODO: describe extras, after Poetry adoption and its groups -->
