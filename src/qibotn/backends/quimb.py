@@ -16,9 +16,9 @@ class QuimbBackend(NumpyBackend):
 
             mps_enabled_value = runcard.get("MPS_enabled")
             if mps_enabled_value is True:
-                self.mps_opts = {"method": "svd", "cutoff": 1e-6, "cutoff_mod": "abs"}
+                self.mps_opts = {"method": "svd", "cutoff": 1e-6, "cutoff_mode": "abs"}
             elif mps_enabled_value is False:
-                self.mps_opts = False
+                self.mps_opts = None
             elif isinstance(mps_enabled_value, dict):
                 self.mps_opts = mps_enabled_value
             else:
@@ -29,6 +29,7 @@ class QuimbBackend(NumpyBackend):
             self.MPS_enabled = False
             self.NCCL_enabled = False
             self.expectation_enabled = False
+            self.mps_opts = None
 
         self.name = "qibotn"
         self.quimb = quimb
