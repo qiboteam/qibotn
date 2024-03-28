@@ -44,3 +44,71 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
     amplitudes = interim.to_dense(backend=backend)
 
     return amplitudes
+
+
+def dense_vector_tn_mpi_qu(
+    qasm: str, nqubits, initial_state, mps_opts, backend="numpy"
+):
+    """Evaluate circuit in QASM format with Quimb using multi node multi cpu.
+
+    Args:
+        qasm (str): QASM program.
+        nqubits (int): Number of qubits in the circuit
+        initial_state (list): Initial state in the dense vector form. If ``None`` the default ``|00...0>`` state is used.
+        mps_opts (dict): Parameters to tune the gate_opts for mps settings in ``class quimb.tensor.circuit.CircuitMPS``.
+        backend (str):  Backend to perform the contraction with, e.g. ``numpy``, ``cupy``, ``jax``. Passed to ``opt_einsum``.
+
+    Returns:
+        list: Amplitudes of final state after the simulation of the circuit.
+    """
+    from mpi4py import MPI
+    from mpi4py.futures import MPICommExecutor
+
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    target_size = int(2**nqubits / comm.size)
+    amplitudes = []
+
+    with MPICommExecutor() as pool:
+        # only need to make calls from the root process
+        if pool is not None:
+
+            if initial_state is not None:
+                initial_state = init_state_tn(nqubits, initial_state)
+
+            circ_cls = qtn.circuit.CircuitMPS if mps_opts else qtn.circuit.Circuit
+            circ_quimb = circ_cls.from_openqasm2_str(
+                qasm, psi0=initial_state, gate_opts=mps_opts
+            )
+
+            # options to perform the slicing and finding contraction path usign Cotengra
+            opt = ctg.HyperOptimizer(
+                parallel=pool,
+                # make sure we generate at least 1 slice per process
+                # slicing_opts={'target_slices': comm.size},
+                slicing_reconf_opts={"target_size": target_size},
+                # nevergrad is suited to generating many trials quickly
+                optlib="random",
+                max_repeats=512,
+                progbar=True,
+            )
+            # run the optimizer and extract the contraction tree
+            interim = circ_quimb.to_dense(
+                simplify_sequence="DRC", optimize=opt, rehearse=True
+            )
+            tree = interim["tree"]
+            tensor_network = interim["tn"]
+            arrays = [t.data for t in tensor_network]
+
+            # ------------- STAGE 2: perform contraction on workers ------------- #
+
+            # root process just submits and gather results - workers contract
+            # submit contractions eagerly
+            fa = [
+                pool.submit(tree.contract_slice, arrays, i) for i in range(tree.nslices)
+            ]
+
+            # gather results lazily (i.e. using generator)
+            amplitudes = [(c.result()).flatten() for c in fa]
+
+    return np.array(amplitudes), rank
