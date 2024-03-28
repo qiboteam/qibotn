@@ -12,7 +12,11 @@ class QuimbBackend(NumpyBackend):
         if runcard is not None:
             self.MPI_enabled = runcard.get("MPI_enabled", False)
             self.NCCL_enabled = runcard.get("NCCL_enabled", False)
-            self.expectation_enabled = runcard.get("expectation_enabled", False)
+            self.expectation_enabled = True
+            expectation_enabled_dict = runcard.get("expectation_enabled", {})
+            self.pauli_string_pattern = expectation_enabled_dict.get(
+                "pauli_string_pattern", None
+            )
 
             mps_enabled_value = runcard.get("MPS_enabled")
             if mps_enabled_value is True:
@@ -72,13 +76,19 @@ class QuimbBackend(NumpyBackend):
                 NotImplementedError, "QiboTN quimb backend cannot support NCCL."
             )
         if self.expectation_enabled == True:
-            raise_error(
-                NotImplementedError, "QiboTN quimb backend cannot support expectation"
+            state = eval.expectation_qu(
+                circuit.to_qasm(),
+                self.pauli_string_pattern,
+                initial_state,
+                self.mps_opts,
+                backend="numpy",
             )
 
-        state = eval.dense_vector_tn_qu(
-            circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
-        )
+        else:
+
+            state = eval.dense_vector_tn_qu(
+                circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
+            )
 
         if return_array:
             return state.flatten()
