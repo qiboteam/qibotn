@@ -43,6 +43,7 @@ The basic structure of the runcard is as follows::
 
 **expectation_enabled:** This option is set *True* while calculating expecation value of the circuit. Observable whose expectation value is to be calculated is passed as a string in the dict format as {"pauli_string_pattern": "observable"}. When the option is set *False*, the dense vector state of the circuit is calculated.
 
+***Note:*** Note that either MPS_enabled or expectation_enabled must be set to *True* to be able to perform any useful calulations with the QuimbBackend. Thus, it is compulsary to set one of them to true according to whether the user wants to calculate the dense vector or expectation value.
 
 Basic example
 """""""""""""
