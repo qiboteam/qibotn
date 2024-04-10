@@ -11,7 +11,6 @@
 #
 from pathlib import Path
 
-from recommonmark.transform import AutoStructify
 from sphinx.ext import apidoc
 
 import qibotn
@@ -45,7 +44,6 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
-    "recommonmark",
     "sphinxcontrib.katex",
 ]
 
@@ -91,10 +89,6 @@ html_theme_options = {
     ],
 }
 
-# Adapted this from
-# https://github.com/readthedocs/recommonmark/blob/ddd56e7717e9745f11300059e4268e204138a6b1/docs/conf.py
-# app setup hook
-
 autodoc_mock_imports = ["cupy", "cuquantum"]
 
 
@@ -107,8 +101,6 @@ def run_apidoc(_):
 
 
 def setup(app):
-    app.add_config_value("recommonmark_config", {"enable_eval_rst": True}, True)
-    app.add_transform(AutoStructify)
     app.add_css_file("css/style.css")
 
     app.connect("builder-inited", run_apidoc)
