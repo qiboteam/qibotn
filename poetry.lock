@@ -2015,7 +2015,7 @@ torch = ["torch (>=2.1.1,<3.0.0)"]
 type = "git"
 url = "https://github.com/qiboteam/qibo.git"
 reference = "py3.12"
-resolved_reference = "31a5a3edb61945f0b84f54e851538a15c672eef0"
+resolved_reference = "edd0b56b5b02e08fb7a1281e7b383daa5089c2fb"
 
 [[package]]
 name = "quimb"
