@@ -1,5 +1,7 @@
 from typing import Union
 
+from qibo.config import raise_error
+
 from qibotn.backends.cutensornet import CuTensorNet  # pylint: disable=E0401
 from qibotn.backends.quimb import QuimbBackend  # pylint: disable=E0401
 
