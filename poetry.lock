@@ -323,13 +323,13 @@ test-no-images = ["pytest", "pytest-cov", "pytest-xdist", "wurlitzer"]
 
 [[package]]
 name = "cotengra"
-version = "0.5.6"
+version = "0.6.0"
 description = "Hyper optimized contraction trees for large tensor networks and einsums."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "cotengra-0.5.6-py3-none-any.whl", hash = "sha256:d2e1fa9f39e80e9e02fd750112d6722cc22538ce9a60d3aa247143f3db0e59f3"},
-    {file = "cotengra-0.5.6.tar.gz", hash = "sha256:4e8ab61ea569eced25b602ca72aae0854f8825da76190664fe9c1414a55499cb"},
+    {file = "cotengra-0.6.0-py3-none-any.whl", hash = "sha256:39b564cecc71b4b54b555854aacb06c32c74555dbcfb4c102634130709b043a0"},
+    {file = "cotengra-0.6.0.tar.gz", hash = "sha256:dbd2d682d5eb40177246e8646dbabf0235650ca11f4986967b6ea9ee63549273"},
 ]
 
 [package.dependencies]
@@ -883,13 +883,13 @@ sparktrials = ["pyspark"]
 
 [[package]]
 name = "idna"
-version = "3.6"
+version = "3.7"
 description = "Internationalized Domain Names in Applications (IDNA)"
 optional = false
 python-versions = ">=3.5"
 files = [
-    {file = "idna-3.6-py3-none-any.whl", hash = "sha256:c05567e9c24a6b9faaa835c4821bad0590fbb9d5779e7caa6e1cc4978e7eb24f"},
-    {file = "idna-3.6.tar.gz", hash = "sha256:9ecdbbd083b06798ae1e86adcbfe8ab1479cf864e4ee30fe4e46a003d12491ca"},
+    {file = "idna-3.7-py3-none-any.whl", hash = "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"},
+    {file = "idna-3.7.tar.gz", hash = "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc"},
 ]
 
 [[package]]
@@ -1344,13 +1344,13 @@ python-dateutil = ">=2.7"
 
 [[package]]
 name = "matplotlib-inline"
-version = "0.1.6"
+version = "0.1.7"
 description = "Inline Matplotlib backend for Jupyter"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.8"
 files = [
-    {file = "matplotlib-inline-0.1.6.tar.gz", hash = "sha256:f887e5f10ba98e8d2b150ddcf4702c1e5f8b3a20005eb0f74bfdbd360ee6f304"},
-    {file = "matplotlib_inline-0.1.6-py3-none-any.whl", hash = "sha256:f1f41aab5328aa5aaea9b16d083b128102f8712542f819fe7e6a420ff581b311"},
+    {file = "matplotlib_inline-0.1.7-py3-none-any.whl", hash = "sha256:df192d39a4ff8f21b1895d72e6a13f5fcc5099f00fa84384e0ea28c2cc0653ca"},
+    {file = "matplotlib_inline-0.1.7.tar.gz", hash = "sha256:8423b23ec666be3d16e16b60bdd8ac4e86e840ebd1dd11a30b9f117f2fa0ab90"},
 ]
 
 [package.dependencies]
@@ -1369,30 +1369,30 @@ files = [
 
 [[package]]
 name = "mpi4py"
-version = "3.1.5"
+version = "3.1.6"
 description = "Python bindings for MPI"
 optional = true
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 files = [
-    {file = "mpi4py-3.1.5-cp27-cp27m-win32.whl", hash = "sha256:dbc47296a560d2a5aa50d716cb9bf90552349687ee068a493d646e3f6c20a9a4"},
-    {file = "mpi4py-3.1.5-cp27-cp27m-win_amd64.whl", hash = "sha256:b3e06c9ef1d0a2da3d5c7431bbf4af50a01ac9915fb4ab33409a21cd9e67be9c"},
-    {file = "mpi4py-3.1.5-cp310-cp310-win32.whl", hash = "sha256:f39df0d985cb6fb342ee6c6902cadf21b2d828d7df00b182573da0242646b715"},
-    {file = "mpi4py-3.1.5-cp310-cp310-win_amd64.whl", hash = "sha256:aec0e6238ed76c930c07df7dcea19f3be5ca958fb76353e668b19511ed4c86d7"},
-    {file = "mpi4py-3.1.5-cp311-cp311-win32.whl", hash = "sha256:f73686e3ff8f76bacb9ecacba0515f84392ad4c561b76603f9680f0fe64ef0ed"},
-    {file = "mpi4py-3.1.5-cp311-cp311-win_amd64.whl", hash = "sha256:d854dae2e62042a0355fa24ef7bea50b5380414806319240a57e654be1e59d9c"},
-    {file = "mpi4py-3.1.5-cp312-cp312-win32.whl", hash = "sha256:17cc793bf2fe3921f2c3cda59a2a708d2e0c68ce07c8b9d2b6ee1a9adc28fe3d"},
-    {file = "mpi4py-3.1.5-cp312-cp312-win_amd64.whl", hash = "sha256:8b38ad45a843bcbd7d11e23fd901016bb8069f35a9d4500666090465a2f734f2"},
-    {file = "mpi4py-3.1.5-cp35-cp35m-win32.whl", hash = "sha256:61d6c5df1803002cf6c61523417d48f9ecf64b55808e3d9d47815c174d7125dd"},
-    {file = "mpi4py-3.1.5-cp35-cp35m-win_amd64.whl", hash = "sha256:de6291eb7587e09637bc56f0e00d94863a1253f9d06b2ee97937bb9d49b53615"},
-    {file = "mpi4py-3.1.5-cp36-cp36m-win32.whl", hash = "sha256:dd7ebe2d9c52330670e2424ba3a535df999e57bdaf3a93a8967fede1d2d5927d"},
-    {file = "mpi4py-3.1.5-cp36-cp36m-win_amd64.whl", hash = "sha256:0de523428e15b453539da14208489a19f9fc7570cc8f9d1a3365175e441bba8e"},
-    {file = "mpi4py-3.1.5-cp37-cp37m-win32.whl", hash = "sha256:9cc87b70ce7164fbc521c45bbc4f5fb9acce8ea70d3503da0768ef67ba52186a"},
-    {file = "mpi4py-3.1.5-cp37-cp37m-win_amd64.whl", hash = "sha256:8574fe09d34d89531be6e640d18b54f7b7a046514de069f18c181bafeff51108"},
-    {file = "mpi4py-3.1.5-cp38-cp38-win32.whl", hash = "sha256:265f4c0a9cfdd606701fa36e0b373afae5930bedbf03c8360fd62f8c38639bf6"},
-    {file = "mpi4py-3.1.5-cp38-cp38-win_amd64.whl", hash = "sha256:edf2224fa9c4416f891ac87f8e5b8a754ab45bc31dcfc4fbc8e29d6c643084c9"},
-    {file = "mpi4py-3.1.5-cp39-cp39-win32.whl", hash = "sha256:c4e6e776e183dbf3aa0945679303120716bb3f0826faeeb740dc5a055fcff3a8"},
-    {file = "mpi4py-3.1.5-cp39-cp39-win_amd64.whl", hash = "sha256:3a2853b7b41899a17c3f1e6ad27e48a30e98d49d12830b345672fef3a6dcc8d6"},
-    {file = "mpi4py-3.1.5.tar.gz", hash = "sha256:a706e76db9255135c2fb5d1ef54cb4f7b0e4ad9e33cbada7de27626205f2a153"},
+    {file = "mpi4py-3.1.6-cp27-cp27m-win32.whl", hash = "sha256:95f27e00f3951f9c1533cd99ffeae2f384f7ba53cc3870ee06c3c88f9e5bd6c3"},
+    {file = "mpi4py-3.1.6-cp27-cp27m-win_amd64.whl", hash = "sha256:ea8a65f74707e1be5a0125ae3f4f6c0c475c3d845d623b9f5686a919c1119439"},
+    {file = "mpi4py-3.1.6-cp310-cp310-win32.whl", hash = "sha256:57cb8cc5e4f5730ca2116b4918fddb158bdac3852b57b0fb799278bcd2f9df03"},
+    {file = "mpi4py-3.1.6-cp310-cp310-win_amd64.whl", hash = "sha256:242459fcfd18c50b2ad6cd15f433efbaad1f12f4a343bdff5fa1720f4797317d"},
+    {file = "mpi4py-3.1.6-cp311-cp311-win32.whl", hash = "sha256:33d16f85d827417fd451ae61c304a26f5a1c3e881d9555c58fc8d5c7ac171034"},
+    {file = "mpi4py-3.1.6-cp311-cp311-win_amd64.whl", hash = "sha256:542fa0b3caa69fbb8f5e8ea60fea3414eef1444d93af28b4ee6486a3f8f27640"},
+    {file = "mpi4py-3.1.6-cp312-cp312-win32.whl", hash = "sha256:6662ffa622ee21041dcfd95bffd4b81906349e22d993239cc0abd17ebca6bed0"},
+    {file = "mpi4py-3.1.6-cp312-cp312-win_amd64.whl", hash = "sha256:606264e22c315de6250745fa84267c18a7370a16bd6c51acf226cbb977d0a10b"},
+    {file = "mpi4py-3.1.6-cp35-cp35m-win32.whl", hash = "sha256:1de7f6bd22ea6c9b1d6cb42e9d8092217552ffc8267f81df884b61f46aef557c"},
+    {file = "mpi4py-3.1.6-cp35-cp35m-win_amd64.whl", hash = "sha256:8dfadb2d7b50bda0f5c8538f8b5af5b2f830babc7c43a267102407a29616c38f"},
+    {file = "mpi4py-3.1.6-cp36-cp36m-win32.whl", hash = "sha256:757e324084c41f84b257b6d03850e73803bafea1b5e94dd6f9ebb3a149764299"},
+    {file = "mpi4py-3.1.6-cp36-cp36m-win_amd64.whl", hash = "sha256:76ecc87605193ef906597cadef571cabc8731ed1848a8c92320385c10ed41168"},
+    {file = "mpi4py-3.1.6-cp37-cp37m-win32.whl", hash = "sha256:67d28b5e5102a9d44eac6bc2765c2e28966b6b79cd54e0ea432403e054c70946"},
+    {file = "mpi4py-3.1.6-cp37-cp37m-win_amd64.whl", hash = "sha256:c0dfd9dbbcfa2fe61031eaba714f1f814e59439188b0a5ac063b2edc42daa234"},
+    {file = "mpi4py-3.1.6-cp38-cp38-win32.whl", hash = "sha256:8f9810decd319110b7dcf7a210a76d7db6a39d4c2b33c750ac4dc4638d7ce012"},
+    {file = "mpi4py-3.1.6-cp38-cp38-win_amd64.whl", hash = "sha256:ac671aa8c512fff432e0c1670c94eabd5571f5085c61579fee534b5b9e41bcf4"},
+    {file = "mpi4py-3.1.6-cp39-cp39-win32.whl", hash = "sha256:e8bd3fd0056580b1aaa4966ab9e54566bf6d6b35ff94c0ee7ceba83d55d039ac"},
+    {file = "mpi4py-3.1.6-cp39-cp39-win_amd64.whl", hash = "sha256:f9a35e23deadf7de9063523f19863957f379d0f13afc2b9787eafc9d570ab868"},
+    {file = "mpi4py-3.1.6.tar.gz", hash = "sha256:c8fa625e0f92b082ef955bfb52f19fa6691d29273d7d71135d295aa143dee6cb"},
 ]
 
 [[package]]
@@ -1950,7 +1950,6 @@ files = [
     {file = "PyYAML-6.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:bf07ee2fef7014951eeb99f56f39c9bb4af143d8aa3c21b1677805985307da34"},
     {file = "PyYAML-6.0.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:855fb52b0dc35af121542a76b9a84f8d1cd886ea97c84703eaa6d88e37a2ad28"},
     {file = "PyYAML-6.0.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:40df9b996c2b73138957fe23a16a4f0ba614f4c0efce1e9406a184b6d07fa3a9"},
-    {file = "PyYAML-6.0.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a08c6f0fe150303c1c6b71ebcd7213c2858041a7e01975da3a99aed1e7a378ef"},
     {file = "PyYAML-6.0.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6c22bec3fbe2524cde73d7ada88f6566758a8f7227bfbf93a408a9d86bcc12a0"},
     {file = "PyYAML-6.0.1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:8d4e9c88387b0f5c7d5f281e55304de64cf7f9c0021a3525bd3b1c542da3b0e4"},
     {file = "PyYAML-6.0.1-cp312-cp312-win32.whl", hash = "sha256:d483d2cdf104e7c9fa60c544d92981f12ad66a457afae824d146093b8c294c54"},
@@ -2015,17 +2014,17 @@ torch = ["torch (>=2.1.1,<3.0.0)"]
 type = "git"
 url = "https://github.com/qiboteam/qibo.git"
 reference = "py3.12"
-resolved_reference = "edd0b56b5b02e08fb7a1281e7b383daa5089c2fb"
+resolved_reference = "0006411bb3ca604ce4504fc1245358c7857d3bcf"
 
 [[package]]
 name = "quimb"
-version = "1.7.3"
+version = "1.8.0"
 description = "Quantum information and many-body library."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "quimb-1.7.3-py3-none-any.whl", hash = "sha256:5fb94a562808712c09f4ee52f012fbf1bbab286ea4aaab5c251570d859afcbc3"},
-    {file = "quimb-1.7.3.tar.gz", hash = "sha256:f7157270b9ace44aedbeb24769a5413f2b66e6df1b52fb23374c33108760b7a4"},
+    {file = "quimb-1.8.0-py3-none-any.whl", hash = "sha256:ce158debf65676fe0bf982c09085909478106929a2497ea20c696ac8c46ed244"},
+    {file = "quimb-1.8.0.tar.gz", hash = "sha256:d5f2c696b2cfaf78c98b3b905db6f7615809c15193a7d4fe98055f037ec50a24"},
 ]
 
 [package.dependencies]
@@ -2111,18 +2110,18 @@ test = ["array-api-strict", "asv", "gmpy2", "hypothesis (>=6.30)", "mpmath", "po
 
 [[package]]
 name = "setuptools"
-version = "69.2.0"
+version = "69.5.1"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "setuptools-69.2.0-py3-none-any.whl", hash = "sha256:c21c49fb1042386df081cb5d86759792ab89efca84cf114889191cd09aacc80c"},
-    {file = "setuptools-69.2.0.tar.gz", hash = "sha256:0ff4183f8f42cd8fa3acea16c45205521a4ef28f73c6391d8a25e92893134f2e"},
+    {file = "setuptools-69.5.1-py3-none-any.whl", hash = "sha256:c636ac361bc47580504644275c9ad802c50415c7522212252c033bd15f301f32"},
+    {file = "setuptools-69.5.1.tar.gz", hash = "sha256:6c1fccdac05a97e598fb0ae3bbed5904ccb317337a51139dcd51453611bbb987"},
 ]
 
 [package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (<7.2.5)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
-testing = ["build[virtualenv]", "filelock (>=3.4.0)", "importlib-metadata", "ini2toml[lite] (>=0.9)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mypy (==1.9)", "packaging (>=23.2)", "pip (>=19.1)", "pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-ruff (>=0.2.1)", "pytest-timeout", "pytest-xdist (>=3)", "tomli", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
+docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
+testing = ["build[virtualenv]", "filelock (>=3.4.0)", "importlib-metadata", "ini2toml[lite] (>=0.9)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mypy (==1.9)", "packaging (>=23.2)", "pip (>=19.1)", "pytest (>=6,!=8.1.1)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy", "pytest-perf", "pytest-ruff (>=0.2.1)", "pytest-timeout", "pytest-xdist (>=3)", "tomli", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
 testing-integration = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "packaging (>=23.2)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
 
 [[package]]
