@@ -61,6 +61,7 @@ def dense_vector_tn_mpi_qu(
     Returns:
         list: Amplitudes of final state after the simulation of the circuit.
     """
+    import cotengra as ctg
     from mpi4py import MPI
     from mpi4py.futures import MPICommExecutor
 
