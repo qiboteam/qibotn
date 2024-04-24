@@ -12,11 +12,21 @@ class QuimbBackend(NumpyBackend):
         if runcard is not None:
             self.MPI_enabled = runcard.get("MPI_enabled", False)
             self.NCCL_enabled = runcard.get("NCCL_enabled", False)
-            self.expectation_enabled = True
-            expectation_enabled_dict = runcard.get("expectation_enabled", {})
-            self.pauli_string_pattern = expectation_enabled_dict.get(
-                "pauli_string_pattern", None
-            )
+
+            expectation_enabled_value = runcard.get("expectation_enabled")
+            if expectation_enabled_value is True:
+                self.expectation_enabled = True
+                self.pauli_string_pattern = "ZZZZ"
+            elif expectation_enabled_value is False:
+                self.expectation_enabled = False
+            elif isinstance(expectation_enabled_value, dict):
+                self.expectation_enabled = True
+                expectation_enabled_dict = runcard.get("expectation_enabled", {})
+                self.pauli_string_pattern = expectation_enabled_dict.get(
+                    "pauli_string_pattern", None
+                )
+            else:
+                raise TypeError("expectation_enabled has an unexpected type")
 
             mps_enabled_value = runcard.get("MPS_enabled")
             if mps_enabled_value is True:
