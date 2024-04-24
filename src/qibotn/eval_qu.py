@@ -83,15 +83,21 @@ def dense_vector_tn_mpi_qu(
             )
 
             # options to perform the slicing and finding contraction path usign Cotengra
-            opt = ctg.HyperOptimizer(
+
+            opt = ctg.ReusableHyperOptimizer(
                 parallel=pool,
                 # make sure we generate at least 1 slice per process
-                # slicing_opts={'target_slices': comm.size},
                 slicing_reconf_opts={"target_size": target_size},
-                # nevergrad is suited to generating many trials quickly
+                # uses basic greedy search algorithm to find optimal contraction path
+                methods=["greedy"],
+                # terminate search if contraction is cheap
+                max_time="rate:1e6",
+                # just uniformly sample the space
                 optlib="random",
-                max_repeats=512,
-                progbar=True,
+                # maximum number of trial contraction trees to generate
+                max_repeats=128,
+                # show the live progress of the best contraction found so far
+                progbar=False,
             )
             # run the optimizer and extract the contraction tree
             interim = circ_quimb.to_dense(

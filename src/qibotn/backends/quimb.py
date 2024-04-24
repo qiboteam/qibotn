@@ -83,6 +83,7 @@ class QuimbBackend(NumpyBackend):
                 self.mps_opts,
                 backend="numpy",
             )
+
             if rank > 0:
                 state = np.array(0)
         else:
