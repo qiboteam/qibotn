@@ -17,11 +17,6 @@ qibo.set_backend(backend="qibotn", platform="qutensornet", runcard=computation_s
 ham = hamiltonians.XXZ(nqubits=nqubits, dense=False)
 circuit = ham.circuit(dt=dt)
 
-# trying to run as independent function
-import qibotn.backends.quimb as qmb
-print(qmb.independent_tebd(circuit, "00000"))
-
-'''
 result = circuit()
 print(result.state())
-'''
+

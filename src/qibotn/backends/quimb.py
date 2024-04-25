@@ -59,11 +59,6 @@ class QuimbBackend(NumpyBackend):
         if precision != self.precision:
             super().set_precision(precision)
 
-    def independent_tebd(circuit, initial_state):
-        if self.tebd_enabled_value == True: # type: ignore
-            nqubits = circuit.nqubits
-            state = eval.tebd_tn_qu(self.tebd_opts, initial_state, nqubits) # type: ignore
-
     def execute_circuit(
         self, circuit, initial_state=None, nshots=None, return_array=False
     ):  # pragma: no cover
