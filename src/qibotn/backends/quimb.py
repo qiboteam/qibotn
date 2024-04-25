@@ -23,13 +23,23 @@ class QuimbBackend(NumpyBackend):
                 self.mps_opts = mps_enabled_value
             else:
                 raise TypeError("MPS_enabled has an unexpected type")
+            
+            tebd_enabled_value = runcard.get("TEBD_enabled")
+            if tebd_enabled_value is True:
+                self.tebd_opts = {"dt":1e-4, "hamiltonian": "XXZ", "initial_state": "00000", "tot_time":1}
+            elif tebd_enabled_value is False:
+                self.tebd_opts = None
+            elif isinstance(tebd_enabled_value, dict):
+                self.tebd_opts = tebd_enabled_value
 
         else:
             self.MPI_enabled = False
+            self.TEBD_enabled = False
             self.MPS_enabled = False
             self.NCCL_enabled = False
             self.expectation_enabled = False
             self.mps_opts = None
+            self.tebd_opts = None
 
         self.name = "qibotn"
         self.quimb = quimb
@@ -48,6 +58,11 @@ class QuimbBackend(NumpyBackend):
     def set_precision(self, precision):
         if precision != self.precision:
             super().set_precision(precision)
+
+    def independent_tebd(circuit, initial_state):
+        if self.tebd_enabled_value == True: # type: ignore
+            nqubits = circuit.nqubits
+            state = eval.tebd_tn_qu(self.tebd_opts, initial_state, nqubits) # type: ignore
 
     def execute_circuit(
         self, circuit, initial_state=None, nshots=None, return_array=False
@@ -76,11 +91,18 @@ class QuimbBackend(NumpyBackend):
                 NotImplementedError, "QiboTN quimb backend cannot support expectation"
             )
 
-        state = eval.dense_vector_tn_qu(
+        if self.tebd_enabled_value == True:
+
+            nqubits = circuit.nqubits
+            state = eval.tebd_tn_qu(self.tebd_opts, initial_state, nqubits)
+            return state
+        
+        
+        '''state = eval.dense_vector_tn_qu(
             circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
         )
 
         if return_array:
             return state.flatten()
         else:
-            return QuantumState(state.flatten())
+            return QuantumState(state.flatten())'''
