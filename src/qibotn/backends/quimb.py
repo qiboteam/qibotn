@@ -88,6 +88,7 @@ class QuimbBackend(NumpyBackend):
         if self.expectation_enabled == True:
             state = eval.expectation_qu(
                 circuit.to_qasm(),
+                circuit.nqubits,
                 self.pauli_string_pattern,
                 initial_state,
                 self.mps_opts,

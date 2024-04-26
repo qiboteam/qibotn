@@ -47,7 +47,7 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
 
 
 def expectation_qu(
-    qasm: str, pauli_string_pattern, initial_state, mps_opts, backend="numpy"
+    qasm: str, nqubits, pauli_string_pattern, initial_state, mps_opts, backend="numpy"
 ):
     """Calculates the expectation value of a given global observable as pauli
     string pattern.
@@ -65,7 +65,7 @@ def expectation_qu(
     # use cotengra package for tensor contractions
     import cotengra as ctg
 
-    nqubits = int(np.log2(len(initial_state)))
+    # nqubits = int(np.log2(len(initial_state)))
 
     if initial_state is not None:
         initial_state = init_state_tn(nqubits, initial_state)

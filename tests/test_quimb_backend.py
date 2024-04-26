@@ -126,7 +126,12 @@ def test_eval_expectation(nqubits: int, tolerance: float, is_mps: bool):
         gate_opt = None
 
     qibotn_exp = qibotn.eval_qu.expectation_qu(
-        qasm_circ, "XXXY", init_state_tn, gate_opt, backend=config.quimb.backend
+        qasm_circ,
+        nqubits,
+        "XXXY",
+        init_state_tn,
+        gate_opt,
+        backend=config.quimb.backend,
     )
 
     assert np.allclose(
