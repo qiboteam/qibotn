@@ -65,8 +65,7 @@ def expectation_qu(
     # use cotengra package for tensor contractions
     import cotengra as ctg
 
-    # used to add one more qubit to the circuit to make the observable local
-    qasm_mod, nqubits = modify_qasm(qasm)
+    nqubits = int(np.log2(len(initial_state)))
 
     if initial_state is not None:
         initial_state = init_state_tn(nqubits, initial_state)
@@ -77,7 +76,7 @@ def expectation_qu(
     )
 
     # generates the global observable
-    obs = pauli_string_gen(nqubits - 1, pauli_string_pattern)
+    obs = pauli_string_gen(nqubits, pauli_string_pattern)
 
     # parameters to find the contraction path using cotengra
     opt = ctg.ReusableHyperOptimizer(
@@ -99,39 +98,10 @@ def expectation_qu(
 
     # expectation value
     expectation = circ_quimb.local_expectation(
-        obs, where=list(range(nqubits - 1)), optimize=opt, simplify_sequence="DRC"
+        obs, where=list(range(nqubits)), optimize=opt, simplify_sequence="DRC"
     )
 
     return expectation
-
-
-def modify_qasm(qasm_circ):
-    """Generate a modified qasm string.
-
-    Args:
-        qasm (str): QASM program.
-
-    Returns:
-        string: QASM program with an additional auxillary qubit for the calculation of expectation
-    """
-
-    import re
-
-    lines = qasm_circ.split("\n")
-
-    qasm_circ_mod = []
-    while lines:
-        line = lines.pop(0).strip()
-        sta = re.compile(r"qreg\s+(\w+)\s*\[(\d+)\];")
-        match = sta.match(line)
-        if match:
-            name, nqubits = match.groups()
-            qasm_circ_mod.append(f"qreg q[{int(nqubits)+1}];")
-        else:
-            qasm_circ_mod.append(line)
-    qasm_circ_mod = "\n".join(qasm_circ_mod)
-
-    return qasm_circ_mod, int(nqubits) + 1
 
 
 def pauli_string_gen(nqubits, pauli_string_pattern):
