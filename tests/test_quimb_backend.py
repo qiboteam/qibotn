@@ -64,3 +64,64 @@ def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     assert np.allclose(
         result_sv, result_tn, atol=tolerance
     ), "Resulting dense vectors do not match"
+
+
+@pytest.mark.mpi
+@pytest.mark.parametrize(
+    "nqubits, tolerance, is_mps",
+    [(5, 1e-6, True), (8, 1e-6, False), (10, 1e-3, True), (11, 1e-3, False)],
+)
+def test_eval_mpi(nqubits: int, tolerance: float, is_mps: bool):
+    """Evaluate circuit with Quimb backend using mpi.
+
+    Args:
+        nqubits (int): Total number of qubits in the system.
+        tolerance (float): Maximum limit allowed for difference in results
+        is_mps (bool): True if state is MPS and False for tensor network structure
+    """
+    # import mpi
+    # pytests can be checked by command mpirun -n 2 python -m pytest tests/test_quimb_backend.py --with-mpi
+
+    from mpi4py import MPI
+
+    comm = MPI.COMM_WORLD
+
+    # hack quimb to use the correct number of processes
+    # TODO: remove completely, or at least delegate to the backend
+    # implementation
+
+    os.environ["QUIMB_NUM_PROCS"] = str(os.cpu_count())
+    import qibotn.eval_qu
+
+    # Test qibo
+    qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
+
+    qibo_circ, result_sv = qibo_qft(nqubits, init_state=None, swaps=True)
+
+    # Convert to qasm for other backends
+    qasm_circ = qibo_circ.to_qasm()
+
+    # Test quimb
+    if is_mps:
+        gate_opt = {}
+        gate_opt["method"] = "svd"
+        gate_opt["cutoff"] = 1e-6
+        gate_opt["cutoff_mode"] = "abs"
+    else:
+        gate_opt = None
+
+    result_tna, rank = qibotn.eval_qu.dense_vector_tn_mpi_qu(
+        qasm_circ,
+        nqubits,
+        initial_state=None,
+        mps_opts=gate_opt,
+        backend=config.quimb.backend,
+    )
+
+    if comm.rank == 0:
+        result_tn = result_tna.flatten()
+        assert np.allclose(
+            result_sv, result_tn, atol=tolerance
+        ), "Resulting dense vectors do not match"
+    else:
+        assert comm.size > 0
