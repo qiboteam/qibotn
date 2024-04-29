@@ -80,7 +80,7 @@ def test_eval_mpi(nqubits: int, tolerance: float, is_mps: bool):
         is_mps (bool): True if state is MPS and False for tensor network structure
     """
     # import mpi
-    # pytests can be checked by command mpirun -n 2 python -m pytest tests/test_quimb_backend.py --with-mpi
+    # pytests can be checked by command pytest -v -m mpi
 
     from mpi4py import MPI
 
