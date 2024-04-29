@@ -55,13 +55,13 @@ def tebd_tn_qu(tebd_opts, initial_state, nqubits):
     print("Entered TEBD function")
     from qibo.hamiltonians import SymbolicHamiltonian
 
-    init_state = init_state_tn_tebd(initial_state)
-    from qibo import hamiltonians
-
     hamiltonian = tebd_opts["hamiltonian"]
     dt = tebd_opts["dt"]
     initial_state = tebd_opts["initial_state"]
     tot_time = tebd_opts["tot_time"]
+
+    init_state = init_state_tn_tebd(initial_state)
+    from qibo import hamiltonians
 
     if hamiltonian == "TFIM":
         ham = hamiltonians.TFIM(nqubits=nqubits, dense=False)
@@ -92,15 +92,11 @@ def tebd_tn_qu(tebd_opts, initial_state, nqubits):
     tebd = qtn.TEBD(init_state, H)
     ts = np.arange(0, tot_time, dt)
 
-    file_path = "tebd_qibotn.txt"
-    with open(file_path, 'w') as file:
-        for t in tebd.at_times(ts, tol=1e-3):
-            file.write(+str(t.to_dense()))
+    states = {}
+    for t in tebd.at_times(ts, tol=1e-3):
+        states.update({None: t.to_dense()}) 
+
+    state = np.array(list(states.values()))[-1]
     
-    with open(file_path, 'r') as file:
-        content = file.read()
-
-    state_str = (content.rsplit(']]',2)[-2])+"]]"
-
-    state = np.array(eval(state_str))
+    print("Printing statement: ",state)
     return state

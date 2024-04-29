@@ -1,5 +1,5 @@
+import eval_qu as eval
 import qibo
-from qibo import hamiltonians, gates, models
 
 dt = 1e-4
 nqubits = 5
@@ -14,9 +14,9 @@ computation_settings = {
 
 qibo.set_backend(backend="qibotn", platform="qutensornet", runcard=computation_settings)
 
-ham = hamiltonians.XXZ(nqubits=nqubits, dense=False)
-circuit = ham.circuit(dt=dt)
+initial_state = '10101'
+tebd_opts = {"dt":1e-4, "hamiltonian": "XXZ", "initial_state": "10101", "tot_time":1}
+nqubits = 5
 
-result = circuit()
-print(result.state())
+print(eval.tebd_tn_qu(tebd_opts, initial_state, nqubits))
 
