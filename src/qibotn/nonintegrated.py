@@ -16,8 +16,7 @@ ham = hamiltonians.XXZ(nqubits=nqubits, dense=False)
 circuit = ham.circuit(dt=dt)
 
 # openqasm workaround experiments
-
-print(circuit.decompose()) # decompose doc says it Returns: Circuit that contains only gates that are supported by OpenQASM and has the same effect as the original circuit.
+#print(circuit.decompose()) # decompose doc says it Returns: Circuit that contains only gates that are supported by OpenQASM and has the same effect as the original circuit.
 
 # build initial state
 psi0 = qtn.MPS_computational_state(init_state)

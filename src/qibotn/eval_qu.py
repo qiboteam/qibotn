@@ -50,7 +50,7 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
 
     return amplitudes
 
-def tebd_tn_qu(tebd_opts, initial_state, nqubits):
+def tebd_tn_qu(circuit, tebd_opts, initial_state, nqubits):
 
     print("Entered TEBD function")
     from qibo.hamiltonians import SymbolicHamiltonian
@@ -98,5 +98,4 @@ def tebd_tn_qu(tebd_opts, initial_state, nqubits):
 
     state = np.array(list(states.values()))[-1]
     
-    print("Printing statement: ",state)
     return state
