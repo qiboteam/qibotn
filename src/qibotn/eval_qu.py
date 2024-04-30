@@ -97,5 +97,5 @@ def tebd_tn_qu(circuit, tebd_opts, initial_state, nqubits):
         states.update({None: t.to_dense()}) 
 
     state = np.array(list(states.values()))[-1]
-    
+
     return state
