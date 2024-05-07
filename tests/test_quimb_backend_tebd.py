@@ -53,7 +53,7 @@ def test_eval(nqubits: int, tolerance: float, is_tebd: bool):
         gate_opt["tot_time"] = 1
     else:
         gate_opt = None
-    result_tn = qibotn.eval_qu.tebd_tn_qu(
+    result_tn = qibotn.tebd.tebd_quimb(
         qibo_circ, init_state_tn, gate_opt, backend=config.quimb.backend
     ).flatten()
     
