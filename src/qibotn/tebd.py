@@ -1,4 +1,4 @@
-"Playground for TEBD related functions"
+"TEBD functions"
 
 import quimb.tensor as qtn
 from qibo.config import raise_error
