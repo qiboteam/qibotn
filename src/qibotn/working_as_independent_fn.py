@@ -5,7 +5,6 @@ from qibo import hamiltonians
 
 qibo.set_backend(backend="qibotn", platform="qutensornet", runcard=None)
 
-initial_state = '10101'
 tebd_opts = {"dt":1e-4, "hamiltonian": "XXZ", "initial_state": "10101", "tot_time":1}
 
 ham = hamiltonians.XXZ(nqubits=5, dense=False)
