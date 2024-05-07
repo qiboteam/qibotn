@@ -1,4 +1,4 @@
-""" TEBD usage """
+""" TEBD usage : An independent algorithm function"""
 import eval_qu as eval
 import qibo
 from qibo import hamiltonians
