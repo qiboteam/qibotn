@@ -91,9 +91,10 @@ class QuimbBackend(NumpyBackend):
             nqubits = circuit.nqubits
             state = eval.tebd_tn_qu(circuit, self.tebd_opts, initial_state, nqubits)
         
-        state = eval.dense_vector_tn_qu(
+        else:
+            state = eval.dense_vector_tn_qu(
             circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
-        )
+            )
 
         if return_array:
             return state.flatten()
