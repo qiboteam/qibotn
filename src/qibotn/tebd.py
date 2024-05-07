@@ -1,5 +1,3 @@
-"TEBD functions"
-
 import quimb.tensor as qtn
 from qibo.config import raise_error
 import numpy as np
