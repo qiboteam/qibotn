@@ -12,7 +12,7 @@ def create_init_state(nqubits):
     init_state = np.ones(nqubits)
     return init_state
 
-def qibo_tebd(nqubits, init_state, dt):
+def qibo_trotter(nqubits, init_state, dt):
     ham = hamiltonians.XXZ(nqubits=nqubits)
     circ_qibo = ham.circuit(dt=dt)
     state_vec = circ_qibo(init_state).state(numpy=True)
@@ -42,7 +42,7 @@ def test_eval(nqubits: int, tolerance: float, is_tebd: bool):
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
 
-    qibo_circ, result_sv = qibo_tebd(nqubits, init_state, dt=1e-4)
+    qibo_circ, result_sv = qibo_trotter(nqubits, init_state, dt=1e-4)
 
     # Test quimb
     if is_tebd:
