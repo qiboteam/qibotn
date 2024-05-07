@@ -6,10 +6,14 @@ import numpy as np
 
 def init_state_tn_tebd(initial_state):
 
+    '''Creates a inital MPS from a binary string'''
+
     initial_state = qtn.MPS_computational_state(initial_state)
     return initial_state
 
 def tebd_quimb(circuit, tebd_opts):
+
+    '''Symbolic Hamiltonian based TEBD which returns the final evolved state as a dense vector'''
 
     from qibo.hamiltonians import SymbolicHamiltonian
 
