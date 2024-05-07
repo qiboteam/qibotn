@@ -50,15 +50,15 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
 
     return amplitudes
 
-def tebd_tn_qu(circuit, tebd_opts, initial_state, nqubits):
+def tebd_tn_qu(circuit, tebd_opts):
 
-    print("Entered TEBD function")
     from qibo.hamiltonians import SymbolicHamiltonian
 
     hamiltonian = tebd_opts["hamiltonian"]
     dt = tebd_opts["dt"]
     initial_state = tebd_opts["initial_state"]
     tot_time = tebd_opts["tot_time"]
+    nqubits = circuit.nqubits
 
     init_state = init_state_tn_tebd(initial_state)
     from qibo import hamiltonians
