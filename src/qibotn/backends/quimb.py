@@ -74,7 +74,7 @@ class QuimbBackend(NumpyBackend):
             QuantumState or numpy.ndarray: If `return_array` is False, returns a QuantumState object representing the quantum state. If `return_array` is True, returns a numpy array representing the quantum state.
         """
 
-        import eval_qu as eval
+        import qibotn.eval_qu as eval
 
         if self.MPI_enabled == True:
             raise_error(NotImplementedError, "QiboTN quimb backend cannot support MPI.")

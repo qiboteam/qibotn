@@ -12,7 +12,7 @@ tebd_opts = {"dt":1e-4, "hamiltonian": "XXZ", "initial_state": "10101", "tot_tim
 ham = hamiltonians.XXZ(nqubits=5, dense=False)
 circuit= ham.circuit(dt=1e-4)
 
-#print(tebd.tebd_quimb(circuit, tebd_opts))
+print(tebd.tebd_quimb(circuit, tebd_opts))
 
 ''' trying circuit based '''
 
