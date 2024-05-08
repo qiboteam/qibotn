@@ -46,12 +46,14 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
     return amplitudes
 
 def tebd_tn_qu(circuit, tebd_opts):
-
+    
+    print("executing tebd")
     dt = tebd_opts["dt"]
     tot_time = tebd_opts["tot_time"]
     init_state = tebd_opts["initial_state"]
+    nqubits = circuit.nqubits
 
-    initial_state = qtn.MPS_computational_state(initial_state)
+    initial_state = qtn.MPS_computational_state(init_state)
     
     i=-1
     uni = circuit.unitary()
@@ -59,7 +61,7 @@ def tebd_tn_qu(circuit, tebd_opts):
 
     from qibo import hamiltonians
 
-    ham = hamiltonians.Hamiltonian(2,h) #nqubits, matrix
+    ham = hamiltonians.Hamiltonian(nqubits,h) #nqubits, matrix
     ham_quimb = ham.matrix
     H = qtn.LocalHam1D(2, H2=ham_quimb)
 

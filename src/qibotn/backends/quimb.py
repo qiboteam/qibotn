@@ -25,6 +25,7 @@ class QuimbBackend(NumpyBackend):
                 raise TypeError("MPS_enabled has an unexpected type")
             
             tebd_enabled_value = runcard.get("TEBD_enabled")
+            print("TEBD enabled")
             if tebd_enabled_value is True:
                 self.tebd_opts = {"dt":1e-4, "initial_state": "00", "tot_time":1}
             elif tebd_enabled_value is False:
@@ -73,7 +74,7 @@ class QuimbBackend(NumpyBackend):
             QuantumState or numpy.ndarray: If `return_array` is False, returns a QuantumState object representing the quantum state. If `return_array` is True, returns a numpy array representing the quantum state.
         """
 
-        import qibotn.eval_qu as eval
+        import eval_qu as eval
 
         if self.MPI_enabled == True:
             raise_error(NotImplementedError, "QiboTN quimb backend cannot support MPI.")
@@ -89,7 +90,7 @@ class QuimbBackend(NumpyBackend):
         if self.tebd_enabled_value == True:
 
             nqubits = circuit.nqubits
-            state = eval.tebd_tn_qu(circuit, self.tebd_opts, initial_state)
+            state = eval.tebd_tn_qu(circuit, self.tebd_opts)
         
         else:
             state = eval.dense_vector_tn_qu(

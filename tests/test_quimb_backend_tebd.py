@@ -5,16 +5,19 @@ import config
 import numpy as np
 import pytest
 import qibo
-from qibo import hamiltonians
+from qibo import Circuit, gates
 
 
 def create_init_state(nqubits):
     init_state = np.ones(nqubits)
     return init_state
 
-def qibo_trotter(nqubits, init_state, dt):
-    ham = hamiltonians.XXZ(nqubits=nqubits)
-    circ_qibo = ham.circuit(dt=dt)
+def qibo_crt(nqubits, init_state, dt):
+    from numpy import pi
+    circ_qibo = Circuit(3)
+    circ_qibo.add(gates.RY(0, theta=pi/2))
+    circ_qibo.add(gates.RY(1, theta=pi/4))
+    circ_qibo.add(gates.CNOT(0,1))
     state_vec = circ_qibo(init_state).state(numpy=True)
     return circ_qibo, state_vec
 
@@ -41,25 +44,27 @@ def test_eval(nqubits: int, tolerance: float, is_tebd: bool):
 
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
+    import eval_qu as ev
 
-    qibo_circ, result_sv = qibo_trotter(nqubits, init_state, dt=1e-4)
+    qibo_circ, result_sv = qibo_crt(nqubits, init_state, dt=1e-4)
 
     # Test quimb
     if is_tebd:
         gate_opt = {}
         gate_opt["dt"] = 1e-4
-        gate_opt["hamiltonian"] = "XXZ"
-        gate_opt["initial_state"] = "11111"
+        gate_opt["initial_state"] = "101"
         gate_opt["tot_time"] = 1
     else:
         gate_opt = None
-    result_tn = qibotn.tebd.tebd_quimb(
-        qibo_circ, init_state_tn, gate_opt, backend=config.quimb.backend
+    result_tn = ev.tebd_tn_qu(
+        qibo_circ, gate_opt
     ).flatten()
     
     assert np.allclose(
         result_sv, result_tn, atol=tolerance
     ), "Resulting dense vectors do not match"
+
+print(test_eval(nqubits=3, tolerance=1e-6, is_tebd=True))
 
 
 
