@@ -24,22 +24,22 @@ class QuimbBackend(NumpyBackend):
             else:
                 raise TypeError("MPS_enabled has an unexpected type")
             
-            '''tebd_enabled_value = runcard.get("TEBD_enabled")
+            tebd_enabled_value = runcard.get("TEBD_enabled")
             if tebd_enabled_value is True:
-                self.tebd_opts = {"dt":1e-4, "hamiltonian": "XXZ", "initial_state": "00000", "tot_time":1}
+                self.tebd_opts = {"dt":1e-4, "initial_state": "00", "tot_time":1}
             elif tebd_enabled_value is False:
                 self.tebd_opts = None
             elif isinstance(tebd_enabled_value, dict):
-                self.tebd_opts = tebd_enabled_value'''
+                self.tebd_opts = tebd_enabled_value
 
         else:
             self.MPI_enabled = False
-            #self.TEBD_enabled = False
+            self.TEBD_enabled = False
             self.MPS_enabled = False
             self.NCCL_enabled = False
             self.expectation_enabled = False
             self.mps_opts = None
-            #self.tebd_opts = None
+            self.tebd_opts = None
 
         self.name = "qibotn"
         self.quimb = quimb
@@ -86,12 +86,13 @@ class QuimbBackend(NumpyBackend):
                 NotImplementedError, "QiboTN quimb backend cannot support expectation"
             )
 
-        '''if self.tebd_enabled_value == True:
+        if self.tebd_enabled_value == True:
 
             nqubits = circuit.nqubits
-            state = eval.tebd_tn_qu(circuit, self.tebd_opts, initial_state, nqubits)'''
+            state = eval.tebd_tn_qu(circuit, self.tebd_opts, initial_state)
         
-        state = eval.dense_vector_tn_qu(
+        else:
+            state = eval.dense_vector_tn_qu(
             circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
             )
 

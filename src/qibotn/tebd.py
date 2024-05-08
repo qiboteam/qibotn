@@ -60,3 +60,15 @@ def tebd_quimb(circuit, tebd_opts):
     state = np.array(list(states.values()))[-1]
 
     return state
+
+def tebd_quimb_execute_circuit(circuit, tebd_opts, mps_opts):
+
+    initial_state = tebd_opts["initial_state"]
+    init_state = init_state_tn_tebd(initial_state)
+
+    circ_cls = qtn.circuit.CircuitMPS if mps_opts else qtn.circuit.Circuit
+    circ_quimb = circ_cls.from_openqasm2_str(
+        circuit.to_qasm(), psi0=initial_state, gate_opts=mps_opts
+    )
+
+    #return state
