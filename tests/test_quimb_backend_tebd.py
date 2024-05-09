@@ -12,14 +12,17 @@ def create_init_state(nqubits):
     init_state = np.ones(nqubits)
     return init_state
 
+
 def qibo_crt(nqubits, init_state, dt):
     from numpy import pi
+
     circ_qibo = Circuit(3)
-    circ_qibo.add(gates.RY(0, theta=pi/2))
-    circ_qibo.add(gates.RY(1, theta=pi/4))
-    circ_qibo.add(gates.CNOT(0,1))
+    circ_qibo.add(gates.RY(0, theta=pi / 2))
+    circ_qibo.add(gates.RY(1, theta=pi / 4))
+    circ_qibo.add(gates.CNOT(0, 1))
     state_vec = circ_qibo(init_state).state(numpy=True)
     return circ_qibo, state_vec
+
 
 @pytest.mark.parametrize(
     "nqubits, tolerance, is_tebd",
@@ -37,7 +40,6 @@ def test_eval(nqubits: int, tolerance: float, is_tebd: bool):
     # TODO: remove completely, or at least delegate to the backend
     # implementation
     os.environ["QUIMB_NUM_PROCS"] = str(os.cpu_count())
-    import qibotn.eval_qu
 
     init_state = create_init_state(nqubits=nqubits)
     init_state_tn = copy.deepcopy(init_state)
@@ -56,15 +58,11 @@ def test_eval(nqubits: int, tolerance: float, is_tebd: bool):
         gate_opt["tot_time"] = 1
     else:
         gate_opt = None
-    result_tn = ev.tebd_tn_qu(
-        qibo_circ, gate_opt
-    ).flatten()
-    
+    result_tn = ev.tebd_tn_qu(qibo_circ, gate_opt).flatten()
+
     assert np.allclose(
         result_sv, result_tn, atol=tolerance
     ), "Resulting dense vectors do not match"
 
+
 print(test_eval(nqubits=3, tolerance=1e-6, is_tebd=True))
-
-
-

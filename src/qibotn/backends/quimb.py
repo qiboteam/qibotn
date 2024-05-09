@@ -23,11 +23,11 @@ class QuimbBackend(NumpyBackend):
                 self.mps_opts = mps_enabled_value
             else:
                 raise TypeError("MPS_enabled has an unexpected type")
-            
+
             tebd_enabled_value = runcard.get("TEBD_enabled")
             print("TEBD enabled")
             if tebd_enabled_value is True:
-                self.tebd_opts = {"dt":1e-4, "initial_state": "00", "tot_time":1}
+                self.tebd_opts = {"dt": 1e-4, "initial_state": "00", "tot_time": 1}
             elif tebd_enabled_value is False:
                 self.tebd_opts = None
             elif isinstance(tebd_enabled_value, dict):
@@ -91,10 +91,10 @@ class QuimbBackend(NumpyBackend):
 
             nqubits = circuit.nqubits
             state = eval.tebd_tn_qu(circuit, self.tebd_opts)
-        
+
         else:
             state = eval.dense_vector_tn_qu(
-            circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
+                circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
             )
 
         if return_array:

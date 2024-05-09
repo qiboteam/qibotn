@@ -1,6 +1,5 @@
 import numpy as np
 import quimb.tensor as qtn
-from qibo.config import raise_error
 
 
 def init_state_tn(nqubits, init_state_sv):
@@ -17,6 +16,7 @@ def init_state_tn(nqubits, init_state_sv):
     dims = tuple(2 * np.ones(nqubits, dtype=int))
 
     return qtn.tensor_1d.MatrixProductState.from_dense(init_state_sv, dims)
+
 
 def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
     """Evaluate circuit in QASM format with Quimb.
@@ -45,8 +45,9 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
 
     return amplitudes
 
+
 def tebd_tn_qu(circuit, tebd_opts):
-    
+
     print("executing tebd")
     dt = tebd_opts["dt"]
     tot_time = tebd_opts["tot_time"]
@@ -54,14 +55,14 @@ def tebd_tn_qu(circuit, tebd_opts):
     nqubits = circuit.nqubits
 
     initial_state = qtn.MPS_computational_state(init_state)
-    
-    i=-1
+
+    i = -1
     uni = circuit.unitary()
-    h = np.divide((np.log(uni)),-1*i*dt)
+    h = np.divide((np.log(uni)), -1 * i * dt)
 
     from qibo import hamiltonians
 
-    ham = hamiltonians.Hamiltonian(nqubits,h) #nqubits, matrix
+    ham = hamiltonians.Hamiltonian(nqubits, h)  # nqubits, matrix
     ham_quimb = ham.matrix
     H = qtn.LocalHam1D(2, H2=ham_quimb)
 
@@ -70,11 +71,7 @@ def tebd_tn_qu(circuit, tebd_opts):
 
     states = {}
     for t in tebd.at_times(ts, tol=1e-3):
-        states.update({None: t.to_dense()}) 
+        states.update({None: t.to_dense()})
 
     state = np.array(list(states.values()))[-1]
     return state
-
-
-
-

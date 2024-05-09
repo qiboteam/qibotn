@@ -1,22 +1,21 @@
 """ TEBD usage : An independent algorithm function"""
-#import eval_qu as eval
-import tebd
+
+# import eval_qu as eval
 import qibo
-from qibo import hamiltonians, gates
-import numpy as np
+import tebd
+from qibo import hamiltonians
 
 qibo.set_backend(backend="qibotn", platform="qutensornet", runcard=None)
 
-tebd_opts = {"dt":1e-4, "hamiltonian": "XXZ", "initial_state": "10101", "tot_time":1}
+tebd_opts = {"dt": 1e-4, "hamiltonian": "XXZ", "initial_state": "10101", "tot_time": 1}
 
 ham = hamiltonians.XXZ(nqubits=5, dense=False)
-circuit= ham.circuit(dt=1e-4)
+circuit = ham.circuit(dt=1e-4)
 
 print(tebd.tebd_quimb(circuit, tebd_opts))
+""" trying circuit based """
 
-''' trying circuit based '''
-
-'''print(circuit.unitary())
+"""print(circuit.unitary())
 u = circuit.unitary()
 import numpy as np
 u = np.array(u)
@@ -39,7 +38,7 @@ from qiskit import transpile
 
 target_basis = ['rx', 'ry', 'rz', 'h', 'cx', 'x', 'y', 'z']
 decomposed = transpile(qc,
-                       basis_gates=target_basis, 
+                       basis_gates=target_basis,
                        optimization_level=0)
 
 qasm = qq.dumps(decomposed)
@@ -76,9 +75,8 @@ print(amplitudes)
 #tn = qtn.TensorNetwork(u)
 
 import qibotn.circuit_to_mps as ev
-'''
-'''import numpy as np
-dt=1e-4
+"""
+"""Import numpy as np dt=1e-4.
 
 np.set_printoptions(precision=8)
 
@@ -100,9 +98,10 @@ for d in h.terms.values():
     arr.append(d*dt)
 
 U = np.exp(arr)
-print("unitary ",U)'''
+print("unitary ",U)
+"""
 
-'''
+"""
 import quimb.tensor as qtn
 from qibo import gates, Circuit
 from numpy import pi
@@ -120,7 +119,7 @@ initial_state = qtn.MPS_computational_state(initial_state)
 
 circ_cls = qtn.circuit.CircuitMPS
 circ_quimb = circ_cls.from_openqasm2_str(
-        qasm, psi0=initial_state, gate_opts=mps_opts  
+        qasm, psi0=initial_state, gate_opts=mps_opts
 )
 
 interim = circ_quimb.psi.full_simplify(seq="DRC")
@@ -138,19 +137,14 @@ dt = 1e-4
 ts = np.arange(0, tot_time, dt)
 states = {}
 for t in tebd.at_times(ts, dt=dt):
-    states.update({None: t.to_dense()}) 
+    states.update({None: t.to_dense()})
 
 state = np.array(list(states.values()))[-1]
 
 print("State ",state)
-'''
-'''
-interim = circ_quimb.psi.full_simplify(seq="DRC")
-amplitudes = interim.to_dense()
+"""
+"""Interim = circ_quimb.psi.full_simplify(seq="DRC") amplitudes =
+interim.to_dense()
 
 print(amplitudes*state)
-'''
-
-
-
-
+"""
