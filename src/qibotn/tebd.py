@@ -11,9 +11,10 @@ def init_state_tn_tebd(initial_state):
 
 
 def tebd_quimb(circuit, tebd_opts):
-    """Symbolic Hamiltonian based TEBD which returns the final evolved state as
-    a dense vector."""
 
+    '''Symbolic Hamiltonian based TEBD which returns the final evolved state as a dense vector'''
+
+    from qibo.hamiltonians import SymbolicHamiltonian
 
     hamiltonian = tebd_opts["hamiltonian"]
     dt = tebd_opts["dt"]
@@ -59,7 +60,6 @@ def tebd_quimb(circuit, tebd_opts):
 
     return state
 
-
 def tebd_quimb_execute_circuit(circuit, tebd_opts, mps_opts):
 
     initial_state = tebd_opts["initial_state"]
@@ -70,4 +70,4 @@ def tebd_quimb_execute_circuit(circuit, tebd_opts, mps_opts):
         circuit.to_qasm(), psi0=initial_state, gate_opts=mps_opts
     )
 
-    # return state
+    #return state
