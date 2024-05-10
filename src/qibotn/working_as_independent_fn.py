@@ -13,7 +13,7 @@ ham = hamiltonians.XXZ(nqubits=5, dense=False)
 circuit = ham.circuit(dt=1e-4)
 
 print(tebd.tebd_quimb(circuit, tebd_opts))
-""" trying circuit based """
+"""Trying circuit based."""
 
 """print(circuit.unitary())
 u = circuit.unitary()

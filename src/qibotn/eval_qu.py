@@ -47,7 +47,7 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
 
 
 def tebd_tn_qu(circuit, tebd_opts):
-    
+
     print("executing tebd")
     dt = tebd_opts["dt"]
     tot_time = tebd_opts["tot_time"]
