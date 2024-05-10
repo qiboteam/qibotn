@@ -68,8 +68,8 @@ def tebd_tn_qu(circuit, tebd_opts):
     H = qtn.LocalHam1D(2, H2=ham_quimb)
 
     tebd = qtn.TEBD(initial_state, H)
-    ts = np.arange(0, 1, dt)
 
+    ts = np.arange(0, 1, dt)
     states = {}
     for t in tebd.at_times(ts, tol=1e-3):
         states.update({None: t.to_dense()})
