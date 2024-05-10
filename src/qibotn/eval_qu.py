@@ -62,7 +62,7 @@ def tebd_tn_qu(circuit, tebd_opts):
 
     from qibo import hamiltonians
 
-    ham = hamiltonians.Hamiltonian(nqubits, h)  # nqubits, matrix
+    ham = hamiltonians.Hamiltonian(nqubits, h)
     ham_quimb = ham.matrix
     H = qtn.LocalHam1D(2, H2=ham_quimb)
 
