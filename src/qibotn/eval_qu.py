@@ -14,7 +14,6 @@ def init_state_tn(nqubits, init_state_sv):
     """
 
     dims = tuple(2 * np.ones(nqubits, dtype=int))
-
     return qtn.tensor_1d.MatrixProductState.from_dense(init_state_sv, dims)
 
 
@@ -47,6 +46,8 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
 
 
 def tebd_tn_qu(circuit, tebd_opts):
+    """Circuit based TEBD which returns the final evolved state as a dense
+    vector."""
 
     print("executing tebd")
     dt = tebd_opts["dt"]
