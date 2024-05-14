@@ -2,6 +2,7 @@ from qibo.backends.numpy import NumpyBackend
 from qibo.config import raise_error
 from qibo.result import QuantumState
 
+
 class QuimbBackend(NumpyBackend):
 
     def __init__(self, runcard):
@@ -23,7 +24,7 @@ class QuimbBackend(NumpyBackend):
             else:
                 raise TypeError("MPS_enabled has an unexpected type")
 
-            global TEBD_enabled 
+            global TEBD_enabled
             TEBD_enabled = runcard.get("TEBD_enabled")
             tebd_enabled_value = runcard.get("TEBD_enabled")
             if tebd_enabled_value is True:
@@ -90,7 +91,7 @@ class QuimbBackend(NumpyBackend):
         if TEBD_enabled:
             nqubits = circuit.nqubits
             state = eval.tebd_tn_qu(circuit, self.tebd_opts)
-        
+
         else:
             state = eval.dense_vector_tn_qu(
                 circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
