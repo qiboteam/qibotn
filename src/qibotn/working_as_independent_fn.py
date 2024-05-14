@@ -2,17 +2,16 @@
 
 # import eval_qu as eval
 import qibo
-import tebd
 from qibo import hamiltonians
 
 qibo.set_backend(backend="qibotn", platform="qutensornet", runcard=None)
 
 tebd_opts = {"dt": 1e-4, "hamiltonian": "XXZ", "initial_state": "10101", "tot_time": 1}
 
-ham = hamiltonians.XXZ(nqubits=5, dense=False)
+ham = hamiltonians.TFIM(nqubits=2, dense=False)
 circuit = ham.circuit(dt=1e-4)
 
-print(tebd.tebd_quimb(circuit, tebd_opts))
+# print(tebd.tebd_quimb(circuit, tebd_opts))
 """Trying circuit based."""
 
 """print(circuit.unitary())
@@ -147,4 +146,39 @@ print("State ",state)
 interim.to_dense()
 
 print(amplitudes*state)
+"""
+
+"""
+# reverse engineer, from circuit -> unitary -> circuit -> qasm -> quimb mps circuit???
+unitary = circuit.unitary()
+
+import quimb.tensor as qtn
+
+from qiskit import QuantumCircuit, QuantumRegister
+import qiskit.qasm3 as qq
+import qiskit
+circ = QuantumCircuit(2)
+circ.unitary(unitary,[0,1])
+print(circ)
+
+from qiskit import transpile
+transpiled_circ = transpile(circ, basis_gates = ['rx','ry','rz','cx'])
+
+qasm = qq.dumps(transpiled_circ)
+print(qasm)
+
+mps_opts = {"method": "svd", "cutoff": 1e-6, "cutoff_mode": "abs"}
+initial_state = '00'
+
+initial_state = qtn.MPS_computational_state(initial_state)
+
+circ_cls = qtn.circuit.CircuitMPS
+circ_quimb = circ_cls.from_openqasm2_str(
+        qasm, psi0=initial_state, gate_opts=mps_opts
+    )
+
+interim = circ_quimb.psi.full_simplify(seq="DRC")
+amplitudes = interim.to_dense()
+
+print(amplitudes)
 """
