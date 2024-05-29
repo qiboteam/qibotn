@@ -29,7 +29,7 @@ class QuimbBackend(NumpyBackend):
             TEBD_enabled = runcard.get("TEBD_enabled")
             tebd_enabled_value = runcard.get("TEBD_enabled")
             TEBD_option = runcard.get("TEBD_option")
-            if TEBD_option = True:
+            if TEBD_option == True:
                 if tebd_enabled_value is True:
                     self.tebd_opts = {"dt": 1e-4, "initial_state": "00", "tot_time": 1}
                 elif tebd_enabled_value is False:
