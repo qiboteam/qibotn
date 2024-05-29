@@ -38,7 +38,12 @@ class QuimbBackend(NumpyBackend):
                     self.tebd_opts = tebd_enabled_value
             else:
                 if tebd_enabled_value is True:
-                    self.tebd_opts = {"dt": 1e-4, "hamiltoninan": "XXZ", "initial_state": "00", "tot_time": 1}
+                    self.tebd_opts = {
+                        "dt": 1e-4,
+                        "hamiltoninan": "XXZ",
+                        "initial_state": "00",
+                        "tot_time": 1,
+                    }
                 elif tebd_enabled_value is False:
                     self.tebd_opts = None
                 elif isinstance(tebd_enabled_value, dict):
