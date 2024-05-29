@@ -50,9 +50,9 @@ class QuimbBackend(NumpyBackend):
             self.MPS_enabled = False
             self.NCCL_enabled = False
             self.expectation_enabled = False
+            self.TEBD_option = False
             self.mps_opts = None
             self.tebd_opts = None
-            self.TEBD_option = False
 
         self.name = "qibotn"
         self.quimb = quimb
