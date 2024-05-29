@@ -86,11 +86,9 @@ def tebd_tn_qu(circuit, tebd_opts, mps_opts):
     amplitudes = psi0.to_dense()
     return amplitudes
 
-
 def tebd_tn_qu_2(circuit, tebd_opts):
     """Circuit based TEBD which returns the final evolved state as a dense
     vector."""
-
     dt = tebd_opts["dt"]
     tot_time = tebd_opts["tot_time"]
     init_state = tebd_opts["initial_state"]
