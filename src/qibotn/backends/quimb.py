@@ -105,7 +105,7 @@ class QuimbBackend(NumpyBackend):
                 state = eval.tebd_tn_qu(circuit, self.tebd_opts)
             else:
                 state = eval.tebd_tn_qu_2(circuit, self.tebd_opts)
-                
+
         else:
             state = eval.dense_vector_tn_qu(
                 circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
