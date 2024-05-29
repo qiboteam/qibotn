@@ -25,14 +25,24 @@ class QuimbBackend(NumpyBackend):
                 raise TypeError("MPS_enabled has an unexpected type")
 
             global TEBD_enabled
+            global TEBD_option
             TEBD_enabled = runcard.get("TEBD_enabled")
             tebd_enabled_value = runcard.get("TEBD_enabled")
-            if tebd_enabled_value is True:
-                self.tebd_opts = {"dt": 1e-4, "initial_state": "00", "tot_time": 1}
-            elif tebd_enabled_value is False:
-                self.tebd_opts = None
-            elif isinstance(tebd_enabled_value, dict):
-                self.tebd_opts = tebd_enabled_value
+            TEBD_option = runcard.get("TEBD_option")
+            if TEBD_option = True:
+                if tebd_enabled_value is True:
+                    self.tebd_opts = {"dt": 1e-4, "initial_state": "00", "tot_time": 1}
+                elif tebd_enabled_value is False:
+                    self.tebd_opts = None
+                elif isinstance(tebd_enabled_value, dict):
+                    self.tebd_opts = tebd_enabled_value
+            else:
+                if tebd_enabled_value is True:
+                    self.tebd_opts = {"dt": 1e-4, "hamiltoninan": "XXZ", "initial_state": "00", "tot_time": 1}
+                elif tebd_enabled_value is False:
+                    self.tebd_opts = None
+                elif isinstance(tebd_enabled_value, dict):
+                    self.tebd_opts = tebd_enabled_value
 
         else:
             self.MPI_enabled = False
@@ -42,6 +52,7 @@ class QuimbBackend(NumpyBackend):
             self.expectation_enabled = False
             self.mps_opts = None
             self.tebd_opts = None
+            self.TEBD_option = False
 
         self.name = "qibotn"
         self.quimb = quimb
@@ -90,8 +101,11 @@ class QuimbBackend(NumpyBackend):
 
         if TEBD_enabled:
             nqubits = circuit.nqubits
-            state = eval.tebd_tn_qu(circuit, self.tebd_opts)
-
+            if TEBD_option == True:
+                state = eval.tebd_tn_qu(circuit, self.tebd_opts)
+            else:
+                state = eval.tebd_tn_qu_2(circuit, self.tebd_opts)
+                
         else:
             state = eval.dense_vector_tn_qu(
                 circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
