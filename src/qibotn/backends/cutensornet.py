@@ -12,8 +12,9 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
 
     def __init__(self, runcard):
         super().__init__()
+        import cuquantum
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
-
+        
         if runcard is not None:
             self.MPI_enabled = runcard.get("MPI_enabled", False)
             self.NCCL_enabled = runcard.get("NCCL_enabled", False)
