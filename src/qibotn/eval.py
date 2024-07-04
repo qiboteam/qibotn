@@ -320,6 +320,7 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
     """
     from cuquantum import Network
     from mpi4py import MPI  # this line initializes MPI
+    import cuquantum.cutensornet as cutn
 
     root = 0
     comm = MPI.COMM_WORLD
@@ -329,6 +330,7 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
     # Assign the device for each process.
     device_id = rank % getDeviceCount()
     cp.cuda.Device(device_id).use()
+    mempool = cp.get_default_memory_pool()
 
     # Perform circuit conversion
     if rank==0:
