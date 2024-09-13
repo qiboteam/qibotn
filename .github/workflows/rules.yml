@@ -3,13 +3,10 @@
 name: Tests
 
 on:
-
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
   workflow_dispatch:
+  push:
+  pull_request:
+    types: [labeled]
 
 
 jobs:
@@ -18,7 +15,7 @@ jobs:
     strategy:
           matrix:
             os: [ubuntu-latest]
-            python-version: [ 3.9, "3.10", "3.11"]
+            python-version: [ 3.9, "3.10", "3.11", "3.12"]
     uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@main
     with:
       os: ${{ matrix.os }}
