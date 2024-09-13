@@ -1,7 +1,6 @@
 from timeit import default_timer as timer
 
 import config
-import cupy as cp
 import numpy as np
 import pytest
 import qibo
@@ -58,6 +57,7 @@ def test_mps(nqubits: int, dtype="complex128"):
             'complex128' for double.
     """
     import qibotn.eval
+    import cupy as cp
 
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
