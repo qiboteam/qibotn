@@ -12,6 +12,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
 
     def __init__(self, runcard):
         super().__init__()
+        import cuquantum
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
 
         if runcard is not None:
@@ -32,6 +33,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 )
             else:
                 raise TypeError("expectation_enabled has an unexpected type")
+                state = np.array(0)
 
             mps_enabled_value = runcard.get("MPS_enabled")
             if mps_enabled_value is True:
@@ -192,6 +194,7 @@ class CuTensorNet(NumpyBackend):  # pragma: no cover
                 state = np.array(0)
         else:
             raise_error(NotImplementedError, "Compute type not supported.")
+            state = np.array(0)
 
         if return_array:
             return state.flatten()
