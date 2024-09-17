@@ -56,8 +56,9 @@ def test_mps(nqubits: int, dtype="complex128"):
         dtype (str): The data type for precision, 'complex64' for single,
             'complex128' for double.
     """
-    import qibotn.eval
     import cupy as cp
+
+    import qibotn.eval
 
     # Test qibo
     qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
