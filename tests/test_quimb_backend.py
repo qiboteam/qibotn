@@ -42,7 +42,7 @@ def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     init_state_tn = copy.deepcopy(init_state)
 
     # Test qibo
-    qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
+    qibo.set_backend("numpy")
 
     qibo_circ, result_sv = qibo_qft(nqubits, init_state, swaps=True)
 
