@@ -1996,31 +1996,6 @@ tensorflow = ["tensorflow (>=2.16.1,<3.0.0)"]
 torch = ["torch (>=2.1.1,<2.4)"]
 
 [[package]]
-name = "qibojit"
-version = "0.1.6"
-description = "Simulation tools based on numba and cupy."
-optional = false
-python-versions = "^3.9,<3.13"
-files = []
-develop = false
-
-[package.dependencies]
-numba = ">=0.59.0"
-psutil = "^5.9.5"
-qibo = "^0.2.10"
-scipy = "^1.10.1"
-
-[package.extras]
-cupy = ["cupy-cuda12x (>=13.1.0,<14.0.0)"]
-cuquantum = ["cuquantum-python-cu12 (>=23.10.0,<24.0.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/qiboteam/qibojit.git"
-reference = "HEAD"
-resolved_reference = "0d9bbd2f0f3545293cdb2ac039680b8dbceaf55e"
-
-[[package]]
 name = "quimb"
 version = "1.8.1"
 description = "Quantum information and many-body library."
@@ -2513,4 +2488,4 @@ cuda = ["cupy-cuda11x", "cuquantum-python-cu11", "mpi4py"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.13"
-content-hash = "d49e0d933d8af29836899aeeb38bf1baa80c97c0f386bf17508d40a88ee0429c"
+content-hash = "9bb131aa93c985589719d05b4a257d3741893cf44b239f5e1d192401635a59dc"
