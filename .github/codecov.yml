@@ -1,0 +1,4 @@
+# Reference docs at https://docs.codecov.com/docs/codecovyml-reference
+
+codecov:
+  require_ci_to_pass: yes
