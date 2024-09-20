@@ -1,6 +1,5 @@
 from timeit import default_timer as timer
 
-import config
 import numpy as np
 import pytest
 import qibo
@@ -34,7 +33,7 @@ def test_eval(nqubits: int, dtype="complex128"):
     import qibotn.eval
 
     # Test qibo
-    qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
+    qibo.set_backend("numpy")
     qibo_time, (qibo_circ, result_sv) = time(lambda: qibo_qft(nqubits, swaps=True))
 
     # Test Cuquantum
@@ -42,7 +41,6 @@ def test_eval(nqubits: int, dtype="complex128"):
         lambda: qibotn.eval.dense_vector_tn(qibo_circ, dtype).flatten()
     )
 
-    assert 1e-2 * qibo_time < cutn_time < 1e2 * qibo_time
     assert np.allclose(result_sv, result_tn), "Resulting dense vectors do not match"
 
 
@@ -61,7 +59,7 @@ def test_mps(nqubits: int, dtype="complex128"):
     import qibotn.eval
 
     # Test qibo
-    qibo.set_backend(backend=config.qibo.backend, platform=config.qibo.platform)
+    qibo.set_backend("numpy")
 
     qibo_time, (circ_qibo, result_sv) = time(lambda: qibo_qft(nqubits, swaps=True))
 

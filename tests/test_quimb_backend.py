@@ -1,7 +1,6 @@
 import copy
 import os
 
-import config
 import numpy as np
 import pytest
 import qibo
@@ -58,7 +57,7 @@ def test_eval(nqubits: int, tolerance: float, is_mps: bool):
     else:
         gate_opt = None
     result_tn = qibotn.eval_qu.dense_vector_tn_qu(
-        qasm_circ, init_state_tn, gate_opt, backend=config.quimb.backend
+        qasm_circ, init_state_tn, gate_opt, backend="numpy"
     ).flatten()
 
     assert np.allclose(
