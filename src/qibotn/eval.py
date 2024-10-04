@@ -64,6 +64,7 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
 
     from cuquantum import Network
     from mpi4py import MPI
+    import cuquantum.cutensornet as cutn
 
     root = 0
     comm = MPI.COMM_WORLD
@@ -71,21 +72,31 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
     size = comm.Get_size()
 
     device_id = rank % getDeviceCount()
-
+    cp.cuda.Device(device_id).use()
+    mempool = cp.get_default_memory_pool()
+    
     # Perform circuit conversion
-    myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
+    if rank == 0:
+        myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
 
-    operands = myconvertor.state_vector_operands()
+        operands = myconvertor.state_vector_operands()
+    else:
+        operands = None
 
-    # Assign the device for each process.
-    device_id = rank % getDeviceCount()
+    operands = comm.bcast(operands, root)
 
     # Create network object.
     network = Network(*operands, options={"device_id": device_id})
 
     # Compute the path on all ranks with 8 samples for hyperoptimization. Force slicing to enable parallel contraction.
     path, info = network.contract_path(
-        optimize={"samples": n_samples, "slicing": {"min_slices": max(32, size)}}
+        optimize={
+            "samples": n_samples,
+            "slicing": {
+                "min_slices": max(32, size),
+                "memory_model": cutn.MemoryModel.CUTENSOR,
+            },
+        }
     )
 
     # Select the best path from all ranks.
@@ -114,6 +125,9 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
     # Sum the partial contribution from each process on root.
     result = comm.reduce(sendobj=result, op=MPI.SUM, root=root)
 
+    del network
+    mempool.free_all_blocks()
+    
     return result, rank
 
 
@@ -139,6 +153,7 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     from cupy.cuda import nccl
     from cuquantum import Network
     from mpi4py import MPI
+    import cuquantum.cutensornet as cutn
 
     root = 0
     comm_mpi = MPI.COMM_WORLD
@@ -162,7 +177,13 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
 
     # Compute the path on all ranks with 8 samples for hyperoptimization. Force slicing to enable parallel contraction.
     path, info = network.contract_path(
-        optimize={"samples": n_samples, "slicing": {"min_slices": max(32, size)}}
+        optimize={
+            "samples": n_samples,
+            "slicing": {
+                "min_slices": max(32, size),
+                "memory_model": cutn.MemoryModel.CUTENSOR,
+            },
+        }
     )
 
     # Select the best path from all ranks.
@@ -247,7 +268,7 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
     comm_nccl = nccl.NcclCommunicator(size, nccl_id, rank)
 
     # Perform circuit conversion
-    if rank==0:
+    if rank == 0:
 
         myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
         operands = myconvertor.expectation_operands(
@@ -255,14 +276,20 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
         )
     else:
         operands = None
-    
+
     operands = comm_mpi.bcast(operands, root)
 
     network = Network(*operands)
 
     # Compute the path on all ranks with 8 samples for hyperoptimization. Force slicing to enable parallel contraction.
     path, info = network.contract_path(
-        optimize={"samples": n_samples, "slicing": {"min_slices": max(32, size),"memory_model":cutn.MemoryModel.CUTENSOR}}
+        optimize={
+            "samples": n_samples,
+            "slicing": {
+                "min_slices": max(32, size),
+                "memory_model": cutn.MemoryModel.CUTENSOR,
+            },
+        }
     )
 
     # Select the best path from all ranks.
@@ -299,10 +326,10 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
         root,
         stream_ptr,
     )
-    
+
     del network
     mempool.free_all_blocks()
-    
+
     return result, rank
 
 
@@ -337,14 +364,14 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
-    
+
     # Assign the device for each process.
     device_id = rank % getDeviceCount()
     cp.cuda.Device(device_id).use()
     mempool = cp.get_default_memory_pool()
 
     # Perform circuit conversion
-    if rank==0:
+    if rank == 0:
         myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
 
         operands = myconvertor.expectation_operands(
@@ -352,15 +379,21 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
         )
     else:
         operands = None
-    
+
     operands = comm.bcast(operands, root)
-   
+
     # Create network object.
     network = Network(*operands, options={"device_id": device_id})
 
     # Compute the path on all ranks with 8 samples for hyperoptimization. Force slicing to enable parallel contraction.
     path, info = network.contract_path(
-        optimize={"samples": n_samples, "slicing": {"min_slices": max(32, size),"memory_model":cutn.MemoryModel.CUTENSOR}}
+        optimize={
+            "samples": n_samples,
+            "slicing": {
+                "min_slices": max(32, size),
+                "memory_model": cutn.MemoryModel.CUTENSOR,
+            },
+        }
     )
 
     # Select the best path from all ranks.
@@ -388,7 +421,7 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
 
     # Sum the partial contribution from each process on root.
     result = comm.reduce(sendobj=result, op=MPI.SUM, root=root)
-    
+
     del network
     mempool.free_all_blocks()
 
@@ -437,82 +470,3 @@ def pauli_string_gen(nqubits, pauli_string_pattern):
         char_to_add = pauli_string_pattern[i % len(pauli_string_pattern)]
         result += char_to_add
     return result
-
-def expectation_pauli_tn_MPI_pathfinding(qibo_circ, datatype, pauli_string_pattern, n_samples=8):
-    """Convert qibo circuit to tensornet (TN) format and perform contraction to
-    expectation of given Pauli string using multi node and multi GPU through
-    MPI.
-
-    The conversion is performed by QiboCircuitToEinsum(), after which it
-    goes through 2 steps: pathfinder and execution. The
-    pauli_string_pattern is used to generate the pauli string
-    corresponding to the number of qubits of the system. The pathfinder
-    looks at user defined number of samples (n_samples) iteratively to
-    select the least costly contraction path. This is sped up with multi
-    thread. After pathfinding the optimal path is used in the actual
-    contraction to give an expectation value.
-
-    Parameters:
-        qibo_circ: The quantum circuit object.
-        datatype (str): Either single ("complex64") or double (complex128) precision.
-        pauli_string_pattern(str): pauli string pattern.
-        n_samples(int): Number of samples for pathfinding.
-
-    Returns:
-        Expectation of quantum circuit due to pauli string.
-    """
-    from cuquantum import Network
-    from mpi4py import MPI  # this line initializes MPI
-    import cuquantum.cutensornet as cutn
-    import time
-    import numpy as np
-    
-    root = 0
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    size = comm.Get_size()
-    
-    # Assign the device for each process.
-    device_id = rank % getDeviceCount()
-    cp.cuda.Device(device_id).use()
-    mempool = cp.get_default_memory_pool()
-
-    # Perform circuit conversion
-    if rank==0:
-        myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
-
-        operands = myconvertor.expectation_operands(
-            pauli_string_gen(qibo_circ.nqubits, pauli_string_pattern)
-        )
-    else:
-        operands = None
-    
-    operands = comm.bcast(operands, root)
-   
-    # Create network object.
-    network = Network(*operands, options={"device_id": device_id})
-    start_time = time.time()
-    # Compute the path on all ranks with 8 samples for hyperoptimization. Force slicing to enable parallel contraction.
-    path, info = network.contract_path(
-        optimize={"samples": n_samples, "slicing": {"min_slices": max(32, size),"memory_model":cutn.MemoryModel.CUTENSOR}}
-    )
-    end_time = time.time()
-
-    # print("Andy rank",rank,"info",info, info.num_slices, info.opt_cost, info.largest_intermediate, end_time-start_time)
-    local_data = np.array([info.num_slices, info.opt_cost, info.largest_intermediate, end_time-start_time])
-
-
-    # Initialize a list to store the gathered data on rank 0
-    if rank == 0:
-        gathered_data = np.zeros((size, 4))
-
-    else:
-        gathered_data = None
-
-    # Gather data from all ranks to rank 0
-    comm.Gather(local_data, gathered_data, root=0)
-    # print("Andy rank",rank,"gathered data",gathered_data)
-    del network
-    mempool.free_all_blocks()
-
-    return gathered_data, rank
