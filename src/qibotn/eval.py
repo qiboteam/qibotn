@@ -62,6 +62,7 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
         Dense vector of quantum circuit.
     """
 
+    import cuquantum.cutensornet as cutn
     from cuquantum import Network
     from mpi4py import MPI
 
@@ -71,21 +72,31 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
     size = comm.Get_size()
 
     device_id = rank % getDeviceCount()
+    cp.cuda.Device(device_id).use()
+    mempool = cp.get_default_memory_pool()
 
     # Perform circuit conversion
-    myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
+    if rank == 0:
+        myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
 
-    operands = myconvertor.state_vector_operands()
+        operands = myconvertor.state_vector_operands()
+    else:
+        operands = None
 
-    # Assign the device for each process.
-    device_id = rank % getDeviceCount()
+    operands = comm.bcast(operands, root)
 
     # Create network object.
     network = Network(*operands, options={"device_id": device_id})
 
     # Compute the path on all ranks with 8 samples for hyperoptimization. Force slicing to enable parallel contraction.
     path, info = network.contract_path(
-        optimize={"samples": n_samples, "slicing": {"min_slices": max(32, size)}}
+        optimize={
+            "samples": n_samples,
+            "slicing": {
+                "min_slices": max(32, size),
+                "memory_model": cutn.MemoryModel.CUTENSOR,
+            },
+        }
     )
 
     # Select the best path from all ranks.
@@ -114,6 +125,9 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
     # Sum the partial contribution from each process on root.
     result = comm.reduce(sendobj=result, op=MPI.SUM, root=root)
 
+    del network
+    mempool.free_all_blocks()
+
     return result, rank
 
 
@@ -136,6 +150,7 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     Returns:
         Dense vector of quantum circuit.
     """
+    import cuquantum.cutensornet as cutn
     from cupy.cuda import nccl
     from cuquantum import Network
     from mpi4py import MPI
@@ -148,6 +163,7 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     device_id = rank % getDeviceCount()
 
     cp.cuda.Device(device_id).use()
+    mempool = cp.get_default_memory_pool()
 
     # Set up the NCCL communicator.
     nccl_id = nccl.get_unique_id() if rank == root else None
@@ -157,12 +173,26 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     # Perform circuit conversion
     myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
     operands = myconvertor.state_vector_operands()
+    # Perform circuit conversion
+    if rank == 0:
+        myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
+        operands = myconvertor.state_vector_operands()
+    else:
+        operands = None
+
+    operands = comm_mpi.bcast(operands, root)
 
     network = Network(*operands)
 
     # Compute the path on all ranks with 8 samples for hyperoptimization. Force slicing to enable parallel contraction.
     path, info = network.contract_path(
-        optimize={"samples": n_samples, "slicing": {"min_slices": max(32, size)}}
+        optimize={
+            "samples": n_samples,
+            "slicing": {
+                "min_slices": max(32, size),
+                "memory_model": cutn.MemoryModel.CUTENSOR,
+            },
+        }
     )
 
     # Select the best path from all ranks.
@@ -199,6 +229,9 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
         root,
         stream_ptr,
     )
+
+    del network
+    mempool.free_all_blocks()
 
     return result, rank
 
@@ -226,6 +259,7 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
     Returns:
         Expectation of quantum circuit due to pauli string.
     """
+    import cuquantum.cutensornet as cutn
     from cupy.cuda import nccl
     from cuquantum import Network
     from mpi4py import MPI
@@ -238,6 +272,7 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
     device_id = rank % getDeviceCount()
 
     cp.cuda.Device(device_id).use()
+    mempool = cp.get_default_memory_pool()
 
     # Set up the NCCL communicator.
     nccl_id = nccl.get_unique_id() if rank == root else None
@@ -245,16 +280,28 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
     comm_nccl = nccl.NcclCommunicator(size, nccl_id, rank)
 
     # Perform circuit conversion
-    myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
-    operands = myconvertor.expectation_operands(
-        pauli_string_gen(qibo_circ.nqubits, pauli_string_pattern)
-    )
+    if rank == 0:
+
+        myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
+        operands = myconvertor.expectation_operands(
+            pauli_string_gen(qibo_circ.nqubits, pauli_string_pattern)
+        )
+    else:
+        operands = None
+
+    operands = comm_mpi.bcast(operands, root)
 
     network = Network(*operands)
 
     # Compute the path on all ranks with 8 samples for hyperoptimization. Force slicing to enable parallel contraction.
     path, info = network.contract_path(
-        optimize={"samples": n_samples, "slicing": {"min_slices": max(32, size)}}
+        optimize={
+            "samples": n_samples,
+            "slicing": {
+                "min_slices": max(32, size),
+                "memory_model": cutn.MemoryModel.CUTENSOR,
+            },
+        }
     )
 
     # Select the best path from all ranks.
@@ -292,6 +339,9 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
         stream_ptr,
     )
 
+    del network
+    mempool.free_all_blocks()
+
     return result, rank
 
 
@@ -318,6 +368,7 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
     Returns:
         Expectation of quantum circuit due to pauli string.
     """
+    import cuquantum.cutensornet as cutn
     from cuquantum import Network
     from mpi4py import MPI  # this line initializes MPI
 
@@ -326,24 +377,35 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
     rank = comm.Get_rank()
     size = comm.Get_size()
 
-    device_id = rank % getDeviceCount()
-
-    # Perform circuit conversion
-    myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
-
-    operands = myconvertor.expectation_operands(
-        pauli_string_gen(qibo_circ.nqubits, pauli_string_pattern)
-    )
-
     # Assign the device for each process.
     device_id = rank % getDeviceCount()
+    cp.cuda.Device(device_id).use()
+    mempool = cp.get_default_memory_pool()
+
+    # Perform circuit conversion
+    if rank == 0:
+        myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
+
+        operands = myconvertor.expectation_operands(
+            pauli_string_gen(qibo_circ.nqubits, pauli_string_pattern)
+        )
+    else:
+        operands = None
+
+    operands = comm.bcast(operands, root)
 
     # Create network object.
     network = Network(*operands, options={"device_id": device_id})
 
     # Compute the path on all ranks with 8 samples for hyperoptimization. Force slicing to enable parallel contraction.
     path, info = network.contract_path(
-        optimize={"samples": n_samples, "slicing": {"min_slices": max(32, size)}}
+        optimize={
+            "samples": n_samples,
+            "slicing": {
+                "min_slices": max(32, size),
+                "memory_model": cutn.MemoryModel.CUTENSOR,
+            },
+        }
     )
 
     # Select the best path from all ranks.
@@ -371,6 +433,9 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
 
     # Sum the partial contribution from each process on root.
     result = comm.reduce(sendobj=result, op=MPI.SUM, root=root)
+
+    del network
+    mempool.free_all_blocks()
 
     return result, rank
 
