@@ -51,7 +51,7 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
     at user defined number of samples (n_samples) iteratively to select
     the least costly contraction path. This is sped up with multi
     thread. After pathfinding the optimal path is used in the actual
-    contraction to give a dense vector representation of the TN.
+    contraction to give a dense vector representation of the TN .
 
     Parameters:
         qibo_circ: The quantum circuit object.
