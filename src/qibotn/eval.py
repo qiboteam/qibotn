@@ -62,9 +62,9 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
         Dense vector of quantum circuit.
     """
 
+    import cuquantum.cutensornet as cutn
     from cuquantum import Network
     from mpi4py import MPI
-    import cuquantum.cutensornet as cutn
 
     root = 0
     comm = MPI.COMM_WORLD
@@ -150,10 +150,10 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     Returns:
         Dense vector of quantum circuit.
     """
+    import cuquantum.cutensornet as cutn
     from cupy.cuda import nccl
     from cuquantum import Network
     from mpi4py import MPI
-    import cuquantum.cutensornet as cutn
 
     root = 0
     comm_mpi = MPI.COMM_WORLD
@@ -259,10 +259,10 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
     Returns:
         Expectation of quantum circuit due to pauli string.
     """
+    import cuquantum.cutensornet as cutn
     from cupy.cuda import nccl
     from cuquantum import Network
     from mpi4py import MPI
-    import cuquantum.cutensornet as cutn
 
     root = 0
     comm_mpi = MPI.COMM_WORLD
@@ -368,9 +368,9 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
     Returns:
         Expectation of quantum circuit due to pauli string.
     """
+    import cuquantum.cutensornet as cutn
     from cuquantum import Network
     from mpi4py import MPI  # this line initializes MPI
-    import cuquantum.cutensornet as cutn
 
     root = 0
     comm = MPI.COMM_WORLD
