@@ -31,7 +31,9 @@ Currently, the supported tensor network libraries are:
 To get started:
 
 ```sh
-pip install .
+git clone https://github.com/qiboteam/qibotn.git
+cd qibotn
+poetry install
 ```
 
 to install the tools and dependencies. A few extras are provided, check `pyproject.toml` in
