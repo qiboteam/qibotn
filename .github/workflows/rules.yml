@@ -1,8 +1,6 @@
-# A single CI script with github workflow
-name: Tests
 
-env:
-  CUDA_PATH:
+
+name: Tests
 
 on:
   workflow_dispatch:
@@ -10,27 +8,14 @@ on:
   pull_request:
     types: [labeled]
 
-jobs:
-  check:
-    # job to check cuda availability for local gpu host runners
-    runs-on: ubuntu-latest
-    steps:
-      - id: step1
-        run: echo "test=${{ env.CUDA_PATH != ''}}" >> "$GITHUB_OUTPUT"
-      - id: step2
-        run: echo "test=${{ contains(github.event.pull_request.labels.*.name, 'run-workflow') || github.event_name == 'push' }}" >> "$GITHUB_OUTPUT"
-    outputs:
-      cuda_avail: ${{ fromJSON(steps.step1.outputs.test) && fromJSON(steps.step2.outputs.test) }}
 
+jobs:
   build:
-    # job to build
-    needs: check
-    if: ${{fromJSON(needs.check.outputs.cuda_avail)}}
     strategy:
           matrix:
             os: [ubuntu-latest]
-            python-version: [3.9, "3.10", "3.11", "3.12"]
-    uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@main
+            python-version: [ 3.9, "3.10", "3.11", "3.12"]
+    uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@v1
     with:
       os: ${{ matrix.os }}
       python-version: ${{ matrix.python-version }}
