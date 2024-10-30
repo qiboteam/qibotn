@@ -171,9 +171,6 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     comm_nccl = nccl.NcclCommunicator(size, nccl_id, rank)
 
     # Perform circuit conversion
-    myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
-    operands = myconvertor.state_vector_operands()
-    # Perform circuit conversion
     if rank == 0:
         myconvertor = QiboCircuitToEinsum(qibo_circ, dtype=datatype)
         operands = myconvertor.state_vector_operands()
