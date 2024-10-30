@@ -14,7 +14,7 @@ class CuTensorNet(QibotnBackend, NumpyBackend):  # pragma: no cover
 
     def __init__(self, runcard):
         super().__init__()
-        import cuquantum
+        from cuquantum import cudaDataType, ComputeType, __version__ # pylint: disable=import-error
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
 
         if runcard is not None:
@@ -61,22 +61,21 @@ class CuTensorNet(QibotnBackend, NumpyBackend):  # pragma: no cover
             self.expectation_enabled = False
 
         self.name = "qibotn"
-        self.cuquantum = cuquantum
         self.cutn = cutn
         self.platform = "cutensornet"
-        self.versions["cuquantum"] = self.cuquantum.__version__
+        self.versions["cuquantum"] = __version__
         self.supports_multigpu = True
         self.handle = self.cutn.create()
 
         global CUDA_TYPES
         CUDA_TYPES = {
             "complex64": (
-                self.cuquantum.cudaDataType.CUDA_C_32F,
-                self.cuquantum.ComputeType.COMPUTE_32F,
+                cudaDataType.CUDA_C_32F,
+                ComputeType.COMPUTE_32F,
             ),
             "complex128": (
-                self.cuquantum.cudaDataType.CUDA_C_64F,
-                self.cuquantum.ComputeType.COMPUTE_64F,
+                cudaDataType.CUDA_C_64F,
+                ComputeType.COMPUTE_64F,
             ),
         }
 
