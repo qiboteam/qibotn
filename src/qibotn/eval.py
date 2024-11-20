@@ -125,9 +125,6 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
     # Sum the partial contribution from each process on root.
     result = comm.reduce(sendobj=result, op=MPI.SUM, root=root)
 
-    del network
-    mempool.free_all_blocks()
-
     return result, rank
 
 
@@ -226,9 +223,6 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
         root,
         stream_ptr,
     )
-
-    del network
-    mempool.free_all_blocks()
 
     return result, rank
 
@@ -336,9 +330,6 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
         stream_ptr,
     )
 
-    del network
-    mempool.free_all_blocks()
-
     return result, rank
 
 
@@ -430,9 +421,6 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
 
     # Sum the partial contribution from each process on root.
     result = comm.reduce(sendobj=result, op=MPI.SUM, root=root)
-
-    del network
-    mempool.free_all_blocks()
 
     return result, rank
 
