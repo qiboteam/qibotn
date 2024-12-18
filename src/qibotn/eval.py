@@ -73,7 +73,6 @@ def dense_vector_tn_MPI(qibo_circ, datatype, n_samples=8):
 
     device_id = rank % getDeviceCount()
     cp.cuda.Device(device_id).use()
-    mempool = cp.get_default_memory_pool()
 
     # Perform circuit conversion
     if rank == 0:
@@ -160,7 +159,6 @@ def dense_vector_tn_nccl(qibo_circ, datatype, n_samples=8):
     device_id = rank % getDeviceCount()
 
     cp.cuda.Device(device_id).use()
-    mempool = cp.get_default_memory_pool()
 
     # Set up the NCCL communicator.
     nccl_id = nccl.get_unique_id() if rank == root else None
@@ -263,7 +261,6 @@ def expectation_pauli_tn_nccl(qibo_circ, datatype, pauli_string_pattern, n_sampl
     device_id = rank % getDeviceCount()
 
     cp.cuda.Device(device_id).use()
-    mempool = cp.get_default_memory_pool()
 
     # Set up the NCCL communicator.
     nccl_id = nccl.get_unique_id() if rank == root else None
@@ -368,7 +365,6 @@ def expectation_pauli_tn_MPI(qibo_circ, datatype, pauli_string_pattern, n_sample
     # Assign the device for each process.
     device_id = rank % getDeviceCount()
     cp.cuda.Device(device_id).use()
-    mempool = cp.get_default_memory_pool()
 
     # Perform circuit conversion
     if rank == 0:
