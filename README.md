@@ -27,22 +27,22 @@ Currently, the supported tensor network libraries are:
 - [quimb](https://quimb.readthedocs.io/en/latest/), an easy but fast python library for ‘quantum information many-body’ calculations, focusing primarily on tensor networks.
 
 ## Installation
- 
+
 To get started:
- 
+
 ```sh
 pip install qibotn
 ```
- 
+
 to install the tools and dependencies. A few extras are provided, check `pyproject.toml` in
 case you need them.
- 
+
 <!-- TODO: describe extras, after Poetry adoption and its groups -->
- 
+
 ## Contribute
- 
+
 To contribute, please install using poetry:
- 
+
 ```sh
 git clone https://github.com/qiboteam/qibotn.git
 cd qibotn
