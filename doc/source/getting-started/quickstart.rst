@@ -48,7 +48,7 @@ Basic example
 """""""""""""
 
 The following is a basic example to execute a two qubit circuit and print the final state in dense vector form using quimb backend::
-   
+
    import qibo
    from qibo import Circuit, gates
 
