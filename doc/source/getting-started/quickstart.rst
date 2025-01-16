@@ -49,10 +49,8 @@ Basic example
 
 The following is a basic example to execute a two qubit circuit and print the final state in dense vector form using quimb backend::
 
-   # Set the quimb backend
-   qibo.set_backend(
-       backend="qibotn", platform="qutensornet", runcard=computation_settings
-   )
+   import qibo
+   from qibo import Circuit, gates
 
    # Set the runcard
    computation_settings = {
@@ -61,6 +59,13 @@ The following is a basic example to execute a two qubit circuit and print the fi
        "NCCL_enabled": False,
        "expectation_enabled": False,
    }
+
+
+   # Set the quimb backend
+   qibo.set_backend(
+       backend="qibotn", platform="qutensornet", runcard=computation_settings
+   )
+
 
    # Construct the circuit with two qubits
    c = Circuit(2)
