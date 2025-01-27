@@ -82,7 +82,6 @@ class CuTensorNet(QibotnBackend):  # pragma: no cover
         if hasattr(self, "cutn"):
             self.cutn.destroy(self.handle)
 
-
     def cuda_type(self, dtype="complex64"):
         """Get CUDA Type.
 

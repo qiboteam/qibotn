@@ -1,4 +1,3 @@
-from qibo.backends.numpy import NumpyBackend
 from qibo.config import raise_error
 from qibo.result import QuantumState
 
@@ -37,7 +36,6 @@ class QuimbBackend(QibotnBackend):
         self.quimb = quimb
         self.platform = "QuimbBackend"
         self.versions["quimb"] = self.quimb.__version__
-
 
     def execute_circuit(
         self, circuit, initial_state=None, nshots=None, return_array=False
