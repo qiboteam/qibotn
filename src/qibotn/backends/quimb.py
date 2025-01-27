@@ -2,8 +2,10 @@ from qibo.backends.numpy import NumpyBackend
 from qibo.config import raise_error
 from qibo.result import QuantumState
 
+from qibotn.backends.abstract import QibotnBackend
 
-class QuimbBackend(NumpyBackend):
+
+class QuimbBackend(QibotnBackend):
 
     def __init__(self, runcard):
         super().__init__()
@@ -36,18 +38,6 @@ class QuimbBackend(NumpyBackend):
         self.platform = "QuimbBackend"
         self.versions["quimb"] = self.quimb.__version__
 
-    def apply_gate(self, gate, state, nqubits):  # pragma: no cover
-        raise_error(NotImplementedError, "QiboTN cannot apply gates directly.")
-
-    def apply_gate_density_matrix(self, gate, state, nqubits):  # pragma: no cover
-        raise_error(NotImplementedError, "QiboTN cannot apply gates directly.")
-
-    def assign_measurements(self, measurement_map, circuit_result):
-        raise_error(NotImplementedError, "Not implemented in QiboTN.")
-
-    def set_precision(self, precision):
-        if precision != self.precision:
-            super().set_precision(precision)
 
     def execute_circuit(
         self, circuit, initial_state=None, nshots=None, return_array=False
