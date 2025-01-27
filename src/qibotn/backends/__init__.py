@@ -2,10 +2,10 @@ from typing import Union
 
 from qibo.config import raise_error
 
-from qibotn.backends.cutensornet import CuTensorNet  # pylint: disable=E0401
-from qibotn.backends.quimb import QuimbBackend  # pylint: disable=E0401
-from qibotn.backends.qmatchatea import QMatchaTeaBackend # pylint: disable=E0401
 from qibotn.backends.abstract import QibotnBackend
+from qibotn.backends.cutensornet import CuTensorNet  # pylint: disable=E0401
+from qibotn.backends.qmatchatea import QMatchaTeaBackend  # pylint: disable=E0401
+from qibotn.backends.quimb import QuimbBackend  # pylint: disable=E0401
 
 QibotnBackend = Union[CuTensorNet, QuimbBackend, QMatchaTeaBackend]
 
