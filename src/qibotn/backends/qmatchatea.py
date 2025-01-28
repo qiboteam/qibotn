@@ -6,6 +6,7 @@ from qibo.config import raise_error
 from qiskit import QuantumCircuit
 
 from qibotn.backends.abstract import QibotnBackend
+from qibotn.result import TensorNetworkResult
 
 
 @dataclass
@@ -13,10 +14,15 @@ class QMatchaTeaBackend(QibotnBackend):
 
     def __init__(self):
         super().__init__()
+
+        self.name = "qiboml"
+        self.platform = "qmatchatea"
+
         import qiskit  # pylint: disable=import-error
         import qmatchatea  # pylint: disable=import-error
         import qtealeaves  # pylint: disable=import-error
 
+        # TODO: move outside of the class
         self.qmatchatea = qmatchatea
         self.qiskit = qiskit
         self.qtleaves = qtealeaves
@@ -34,24 +40,52 @@ class QMatchaTeaBackend(QibotnBackend):
         return self._observables
 
     @observables.setter
-    def observables(self, observables: list):
+    def observables(self, observables: dict):
         """Set the observables to be measured after TN execution.
 
-        It accepts a list
-        of objects among the ones proposed in ``qtealeaves.observables``.
+        It accepts a dict of objects among the ones proposed in ``qtealeaves.observables``.
         """
+        self._observables = self.qtleaves.observables.TNObservables()
         for obs in observables:
             if isinstance(obs, self.qtleaves.observables.tnobase._TNObsBase):
-                self._observables = self.qtleaves.observables.TNObservables()
                 self._observables += obs
             else:
                 raise TypeError("Expected an instance of TNObservables")
 
     def execute_circuit(
-        self, circuit, initial_state=None, nshots=None, return_array=False
+        self,
+        circuit,
+        initial_state=None,
+        nshots=None,
+        prob_type="U",
+        **prob_kwargs,
     ):
-        """Preserve the Qibo execution interface, but return Quantum Matcha Tea
-        ``SimulationResult`` object."""
+        """Execute a Qibo quantum circuit through a tensor network simulation.
+        The execution returns a ``TensorNetworkResults`` object, which can be
+        used to reconstruct the system state (in the system size is < 30), the
+        frequencies (if a number of shots is provided) and the probabibilities.
+        Different methods are available for the probabilities computation,
+        according.
+
+        to the Quantum Matcha Tea implementation; in particular:
+            - "E": even probability measure, where probabilities are measured going down evenly on the
+                probability tree, and you neglect a branch (a state) if the probability is too low;
+            - "G": greedy probability measure, where you follow the state going from the most probable to
+                the least probable, until you reach a given coverage (sum of probabilities);
+            - "U": optimal probability measure, called unbiased, since differently from the previous
+                methods it is unbiased. The explanation of this one is
+                a bit tough, but it is the best possible. See https://arxiv.org/abs/2401.10330.
+
+        Args:
+            circuit: the Qibo circuit we want to execute;
+            initial_state: the initial state, usually the vacuum in tensor network
+                simulations;
+            nshots: number of shots, if shot-noise simulation is performed;
+            prob_type: it can be "E", "G" or "U" (default);
+            prob_kwargs: extra parameters required by qmatchatea to compute the
+                probabilities. "U" requires ``num_samples`` while "E" and "G" require
+                ``prob_threshold``.
+        """
 
         # TODO: verify if the QCIO mechanism of matcha is supported by Fortran only
         # as written in the docstrings or by Python too (see ``io_info`` argument of
@@ -62,27 +96,54 @@ class QMatchaTeaBackend(QibotnBackend):
                 f"Backend {self.name}-{self.platform} currently does not support initial state.",
             )
 
-        # TODO: do we want to keep it like this or we aim to implement a different
-        # idea of "shots" here?
+        # TODO: check
         circuit = self._qibocirc_to_qiskitcirc(circuit)
-
         run_qk_params = self.qmatchatea.preprocessing.qk_transpilation_params(False)
+
+        # Initialize the TNObservable object
+        observables = self.qtleaves.observables.TNObservables()
+
+        # Shots
+        if nshots is not None:
+            observables += self.qtleaves.observables.TNObsProjective(num_shots=nshots)
+
+        # Probabilities
+        observables += self.qtleaves.observables.TNObsProbabilities(
+            prob_type=prob_type,
+            **prob_kwargs,
+        )
+
+        # State
+        observables += self.qtleaves.observables.TNState2File(
+            name="temp", formatting="U"
+        )
 
         results = self.qmatchatea.run_simulation(
             circ=circuit,
             convergence_parameters=self.convergence_params,
             transpilation_parameters=run_qk_params,
             backend=self.qmatchatea_backend,
-            observables=self._observables,
+            observables=observables,
         )
 
-        # TODO: construct a proper TNResult in Qibo?
-        return results
+        if circuit.num_qubits < 30:
+            statevector = results.statevector
+        else:
+            statevector = None
+
+        return TensorNetworkResult(
+            nqubits=circuit.num_qubits,
+            backend=self,
+            measures=results.measures,
+            measured_probabilities=results.measure_probabilities,
+            prob_type=prob_type,
+            statevector=statevector,
+        )
 
     def configure_tn_simulation(
         self,
-        convergence_params=None,
         ansatz: str = "MPS",
+        convergence_params=None,
     ):
         """Configure TN simulation given Quantum Matcha Tea interface.
 
@@ -96,7 +157,7 @@ class QMatchaTeaBackend(QibotnBackend):
                 by Quantum Matcha Tea's authors are set.
         """
 
-        # Set configurationsor defaults
+        # Set configurations or defaults
         self.convergence_params = (
             convergence_params or self.qmatchatea.QCConvergenceParameters()
         )
