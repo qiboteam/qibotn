@@ -2,8 +2,10 @@
 
 from dataclasses import dataclass
 
+import qiskit
+import qmatchatea
+import qtealeaves
 from qibo.config import raise_error
-from qiskit import QuantumCircuit
 
 from qibotn.backends.abstract import QibotnBackend
 from qibotn.result import TensorNetworkResult
@@ -18,21 +20,12 @@ class QMatchaTeaBackend(QibotnBackend):
         self.name = "qiboml"
         self.platform = "qmatchatea"
 
-        import qiskit  # pylint: disable=import-error
-        import qmatchatea  # pylint: disable=import-error
-        import qtealeaves  # pylint: disable=import-error
-
-        # TODO: move outside of the class
-        self.qmatchatea = qmatchatea
-        self.qiskit = qiskit
-        self.qtleaves = qtealeaves
-
         # Set default configurations
         self.configure_tn_simulation()
         # TODO: update this function whenever ``set_device`` and ``set_precision``
         # are set (?)
         self._setup_qmatchatea_backend()
-        self._observables = self.qtleaves.observables.TNObservables()
+        self._observables = qtealeaves.observables.TNObservables()
 
     @property
     def observables(self):
@@ -45,9 +38,9 @@ class QMatchaTeaBackend(QibotnBackend):
 
         It accepts a dict of objects among the ones proposed in ``qtealeaves.observables``.
         """
-        self._observables = self.qtleaves.observables.TNObservables()
+        self._observables = qtealeaves.observables.TNObservables()
         for obs in observables:
-            if isinstance(obs, self.qtleaves.observables.tnobase._TNObsBase):
+            if isinstance(obs, qtealeaves.observables.tnobase._TNObsBase):
                 self._observables += obs
             else:
                 raise TypeError("Expected an instance of TNObservables")
@@ -98,27 +91,25 @@ class QMatchaTeaBackend(QibotnBackend):
 
         # TODO: check
         circuit = self._qibocirc_to_qiskitcirc(circuit)
-        run_qk_params = self.qmatchatea.preprocessing.qk_transpilation_params(False)
+        run_qk_params = qmatchatea.preprocessing.qk_transpilation_params(False)
 
         # Initialize the TNObservable object
-        observables = self.qtleaves.observables.TNObservables()
+        observables = qtealeaves.observables.TNObservables()
 
         # Shots
         if nshots is not None:
-            observables += self.qtleaves.observables.TNObsProjective(num_shots=nshots)
+            observables += qtealeaves.observables.TNObsProjective(num_shots=nshots)
 
         # Probabilities
-        observables += self.qtleaves.observables.TNObsProbabilities(
+        observables += qtealeaves.observables.TNObsProbabilities(
             prob_type=prob_type,
             **prob_kwargs,
         )
 
         # State
-        observables += self.qtleaves.observables.TNState2File(
-            name="temp", formatting="U"
-        )
+        observables += qtealeaves.observables.TNState2File(name="temp", formatting="U")
 
-        results = self.qmatchatea.run_simulation(
+        results = qmatchatea.run_simulation(
             circ=circuit,
             convergence_parameters=self.convergence_params,
             transpilation_parameters=run_qk_params,
@@ -159,40 +150,40 @@ class QMatchaTeaBackend(QibotnBackend):
 
         # Set configurations or defaults
         self.convergence_params = (
-            convergence_params or self.qmatchatea.QCConvergenceParameters()
+            convergence_params or qmatchatea.QCConvergenceParameters()
         )
         self.ansatz = ansatz
 
     def _setup_qmatchatea_backend(self):
         """Configure qmatchatea QCBackend object."""
 
-        self.qmatchatea_device = (
+        qmatchatea_device = (
             "cpu" if "CPU" in self.device else "gpu" if "GPU" in self.device else None
         )
-        self.qmatchatea_precision = (
+        qmatchatea_precision = (
             "C"
             if self.precision == "single"
             else "Z" if self.precision == "double" else "A"
         )
 
         # TODO: once MPI is available for Python, integrate it here
-        self.qmatchatea_backend = self.qmatchatea.QCBackend(
+        self.qmatchatea_backend = qmatchatea.QCBackend(
             backend="PY",  # The only alternative is Fortran, but we use Python here
-            precision=self.qmatchatea_precision,
-            device=self.qmatchatea_device,
+            precision=qmatchatea_precision,
+            device=qmatchatea_device,
             ansatz=self.ansatz,
         )
 
-    def _qibocirc_to_qiskitcirc(self, qibo_circuit) -> QuantumCircuit:
+    def _qibocirc_to_qiskitcirc(self, qibo_circuit) -> qiskit.QuantumCircuit:
         """Convert a Qibo Circuit into a Qiskit Circuit."""
         # Convert the circuit to QASM 2.0 to qiskit
         qasm_circuit = qibo_circuit.to_qasm()
-        qiskit_circuit = QuantumCircuit.from_qasm_str(qasm_circuit)
+        qiskit_circuit = qiskit.QuantumCircuit.from_qasm_str(qasm_circuit)
 
         # Transpile the circuit to adapt it to the linear structure of the MPS,
         # with the constraint of having only the gates basis_gates
-        qiskit_circuit = self.qmatchatea.preprocessing.preprocess(
+        qiskit_circuit = qmatchatea.preprocessing.preprocess(
             qiskit_circuit,
-            qk_params=self.qmatchatea.preprocessing.qk_transpilation_params(),
+            qk_params=qmatchatea.preprocessing.qk_transpilation_params(),
         )
         return qiskit_circuit

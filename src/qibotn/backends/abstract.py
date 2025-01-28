@@ -3,6 +3,16 @@ from abc import abstractmethod
 from qibo.backends.numpy import NumpyBackend
 from qibo.config import raise_error
 
+DEFAULT_CONFIGURATION = {
+    "MPI_enabled": False,  # TODO: cutensornet specific, TBRemoved
+    "NCCL_enabled": False,  # TODO: cutensornet specific, TBRemoved
+    "expectation_enabled": False,
+    "pauli_string_pattern": None,
+    "MPS_enabled": False,
+    "gate_algo": None,
+    "mps_opts": None,
+}
+
 
 class QibotnBackend(NumpyBackend):
 
