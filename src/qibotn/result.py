@@ -22,13 +22,22 @@ class TensorNetworkResult:
             self.measured_probabilities = {"default": self.measured_probabilities}
 
     def probabilities(self):
+        """Return calculated probabilities according to the given method."""
         return self.measured_probabilities[self.prob_type]
 
     def frequencies(self):
-        return self.measures
+        """Return frequencies if a certain number of shots has been set."""
+        if self.measures is None:
+            raise_error(
+                ValueError,
+                f"To access frequencies, circuit has to be executed with a given number of shots != None",
+            )
+        else:
+            return self.measures
 
     def state(self):
-        if self.nqubits < 30:
+        """Return the statevector if the number of qubits is less than 30."""
+        if self.nqubits < 20:
             return self.statevector
         else:
             raise_error(
