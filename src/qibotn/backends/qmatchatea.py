@@ -27,25 +27,49 @@ class QMatchaTeaBackend(QibotnBackend):
         # TODO: update this function whenever ``set_device`` and ``set_precision``
         # are set (?)
         self._setup_qmatchatea_backend()
-        self._observables = qtealeaves.observables.TNObservables()
 
-    @property
-    def observables(self):
-        """Observables measured after TN execution."""
-        return self._observables
+    def configure_tn_simulation(
+        self,
+        ansatz: str = "MPS",
+        convergence_params=None,
+    ):
+        """Configure TN simulation given Quantum Matcha Tea interface.
 
-    @observables.setter
-    def observables(self, observables: dict):
-        """Set the observables to be measured after TN execution.
-
-        It accepts a dict of objects among the ones proposed in ``qtealeaves.observables``.
+        Args:
+            ansatz (str): tensor network ansatz. It can be  tree tensor network "TTN"
+            or Matrix Product States "MPS" (default).
+            convergence_params (qmatchatea.utils.QCConvergenceParameters):
+                convergence parameters class adapted to the quantum computing
+                execution. See https://baltig.infn.it/quantum_matcha_tea/py_api_quantum_matcha_tea/-/blob/master/qmatchatea/utils/utils.py?ref_type=heads#L540
+                for more instructions. If not passed, the default values proposed
+                by Quantum Matcha Tea's authors are set.
         """
-        self._observables = qtealeaves.observables.TNObservables()
-        for obs in observables:
-            if isinstance(obs, qtealeaves.observables.tnobase._TNObsBase):
-                self._observables += obs
-            else:
-                raise TypeError("Expected an instance of TNObservables")
+
+        # Set configurations or defaults
+        self.convergence_params = (
+            convergence_params or qmatchatea.QCConvergenceParameters()
+        )
+        self.ansatz = ansatz
+
+    def _setup_qmatchatea_backend(self):
+        """Configure qmatchatea QCBackend object."""
+
+        qmatchatea_device = (
+            "cpu" if "CPU" in self.device else "gpu" if "GPU" in self.device else None
+        )
+        qmatchatea_precision = (
+            "C"
+            if self.precision == "single"
+            else "Z" if self.precision == "double" else "A"
+        )
+
+        # TODO: once MPI is available for Python, integrate it here
+        self.qmatchatea_backend = qmatchatea.QCBackend(
+            backend="PY",  # The only alternative is Fortran, but we use Python here
+            precision=qmatchatea_precision,
+            device=qmatchatea_device,
+            ansatz=self.ansatz,
+        )
 
     def execute_circuit(
         self,
@@ -183,49 +207,6 @@ class QMatchaTeaBackend(QibotnBackend):
         )
 
         return np.real(results.observables["custom_hamiltonian"])
-
-    def configure_tn_simulation(
-        self,
-        ansatz: str = "MPS",
-        convergence_params=None,
-    ):
-        """Configure TN simulation given Quantum Matcha Tea interface.
-
-        Args:
-            ansatz (str): tensor network ansatz. It can be  tree tensor network "TTN"
-            or Matrix Product States "MPS" (default).
-            convergence_params (qmatchatea.utils.QCConvergenceParameters):
-                convergence parameters class adapted to the quantum computing
-                execution. See https://baltig.infn.it/quantum_matcha_tea/py_api_quantum_matcha_tea/-/blob/master/qmatchatea/utils/utils.py?ref_type=heads#L540
-                for more instructions. If not passed, the default values proposed
-                by Quantum Matcha Tea's authors are set.
-        """
-
-        # Set configurations or defaults
-        self.convergence_params = (
-            convergence_params or qmatchatea.QCConvergenceParameters()
-        )
-        self.ansatz = ansatz
-
-    def _setup_qmatchatea_backend(self):
-        """Configure qmatchatea QCBackend object."""
-
-        qmatchatea_device = (
-            "cpu" if "CPU" in self.device else "gpu" if "GPU" in self.device else None
-        )
-        qmatchatea_precision = (
-            "C"
-            if self.precision == "single"
-            else "Z" if self.precision == "double" else "A"
-        )
-
-        # TODO: once MPI is available for Python, integrate it here
-        self.qmatchatea_backend = qmatchatea.QCBackend(
-            backend="PY",  # The only alternative is Fortran, but we use Python here
-            precision=qmatchatea_precision,
-            device=qmatchatea_device,
-            ansatz=self.ansatz,
-        )
 
     def _qibocirc_to_qiskitcirc(self, qibo_circuit) -> qiskit.QuantumCircuit:
         """Convert a Qibo Circuit into a Qiskit Circuit."""
