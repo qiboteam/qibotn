@@ -25,7 +25,9 @@ qibo = "^0.2.8"
 quimb = { version = "^1.6.0", extras = ["tensor"] }
 cupy-cuda11x = { version = "^11.6.0", optional = true }
 cuquantum-python-cu11 = { version = "^23.3.0", optional = true }
+qmatchatea = { version = "^1.1.4", optional = true }
 mpi4py = { version = "^3.1.5", optional = true }
+
 
 [tool.poetry.extras]
 cuda = ["cupy-cuda11x", "cuquantum-python-cu11", "mpi4py"]
