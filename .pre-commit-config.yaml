@@ -18,12 +18,6 @@ repos:
     hooks:
       - id: isort
         args: ["--profile", "black"]
-  - repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5
-    hooks:
-      - id: docformatter
-        additional_dependencies: [tomli]
-        args: [--in-place, --config, ./pyproject.toml]
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.19.1
     hooks:
@@ -32,17 +26,4 @@ repos:
     rev: v2.5.0
     hooks:
       - id: pycln
-        args:
-          - --config=pyproject.toml
-          - --all
-  - repo: https://github.com/adamchainz/blacken-docs
-    rev: 1.19.1
-    hooks:
-      - id: blacken-docs
-  - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.3.0
-    hooks:
-      - id: pydocstyle
-        args:
-          - --select=D103,D200,D206,D300,D301
-        files: ^src/
+        args: [--config=pyproject.toml]
