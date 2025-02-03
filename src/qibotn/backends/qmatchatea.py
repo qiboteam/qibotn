@@ -77,6 +77,7 @@ class QMatchaTeaBackend(QibotnBackend):
         initial_state=None,
         nshots=None,
         prob_type="U",
+        return_array=False,
         **prob_kwargs,
     ):
         """Execute a Qibo quantum circuit using tensor network simulation.
@@ -153,7 +154,7 @@ class QMatchaTeaBackend(QibotnBackend):
             observables=observables,
         )
 
-        if circuit.num_qubits < 20:
+        if circuit.num_qubits < 20 and return_array:
             statevector = results.statevector
         else:
             statevector = None
