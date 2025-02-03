@@ -1,5 +1,3 @@
-from abc import abstractmethod
-
 from qibo.backends.numpy import NumpyBackend
 from qibo.config import raise_error
 
@@ -32,7 +30,7 @@ class QibotnBackend(NumpyBackend):
         if precision != self.precision:
             super().set_precision(precision)
 
-    @abstractmethod
+    # @abstractmethod
     def configure_tn_simulation(self, **config):
         """Configure the TN simulation that will be performed."""
         pass
