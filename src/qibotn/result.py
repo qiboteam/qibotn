@@ -23,7 +23,16 @@ class TensorNetworkResult:
 
     def probabilities(self):
         """Return calculated probabilities according to the given method."""
-        return self.measured_probabilities[self.prob_type]
+        if self.prob_type == "U":
+            for bitstring in self.measured_probabilities[self.prob_type]:
+                self.measured_probabilities[self.prob_type][bitstring] = (
+                    self.measured_probabilities[self.prob_type][bitstring][1]
+                    - self.measured_probabilities[self.prob_type][bitstring][0]
+                )
+            probabilities = self.measured_probabilities[self.prob_type]
+        else:
+            probabilities = self.measured_probabilities[self.prob_type]
+        return probabilities
 
     def frequencies(self):
         """Return frequencies if a certain number of shots has been set."""
