@@ -76,7 +76,7 @@ class QMatchaTeaBackend(QibotnBackend):
         circuit,
         initial_state=None,
         nshots=None,
-        prob_type="U",
+        prob_type=None,
         return_array=False,
         **prob_kwargs,
     ):
@@ -122,6 +122,10 @@ class QMatchaTeaBackend(QibotnBackend):
                 NotImplementedError,
                 f"Backend {self.name}-{self.platform} currently does not support initial state.",
             )
+
+        if prob_type == None:
+            prob_type = "U"
+            prob_kwargs = {"num_samples": 500}
 
         # To be sure the setup is correct and no modifications have been done
         self._setup_qmatchatea_backend()

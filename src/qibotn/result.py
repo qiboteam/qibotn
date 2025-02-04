@@ -1,3 +1,4 @@
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Union
 
@@ -24,12 +25,13 @@ class TensorNetworkResult:
     def probabilities(self):
         """Return calculated probabilities according to the given method."""
         if self.prob_type == "U":
+            measured_probabilities = deepcopy(self.measured_probabilities)
             for bitstring in self.measured_probabilities[self.prob_type]:
-                self.measured_probabilities[self.prob_type][bitstring] = (
+                measured_probabilities[self.prob_type][bitstring] = (
                     self.measured_probabilities[self.prob_type][bitstring][1]
                     - self.measured_probabilities[self.prob_type][bitstring][0]
                 )
-            probabilities = self.measured_probabilities[self.prob_type]
+            probabilities = measured_probabilities[self.prob_type]
         else:
             probabilities = self.measured_probabilities[self.prob_type]
         return probabilities
