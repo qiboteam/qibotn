@@ -126,9 +126,6 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
             prob_type = "U"
             prob_kwargs = {"num_samples": 500}
 
-        # To be sure the setup is correct and no modifications have been done
-        self._setup_qmatchatea_backend()
-
         # TODO: check
         circuit = self._qibocirc_to_qiskitcirc(circuit)
         run_qk_params = qmatchatea.preprocessing.qk_transpilation_params(False)
@@ -189,7 +186,9 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
                 (e.g., `X(0)*Y(1)` or `Z(0)*Z(1) + 1.5*Y(2)`).
 
         Returns:
-            qmatchatea.SimulationResult [TEMPORARY]
+            qibotn.TensorNetworkResult class, providing methods to retrieve
+            probabilities, frequencies and state always according to the chosen
+            simulation setup.
         """
 
         # From Qibo to Qiskit

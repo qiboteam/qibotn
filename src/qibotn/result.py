@@ -10,6 +10,20 @@ from qibotn.backends.abstract import QibotnBackend
 
 @dataclass
 class TensorNetworkResult:
+    """
+    Object to store and process the output of a Tensor Network simulation of a quantum circuit.
+
+    Args:
+        nqubits (int): number of qubits involved in the simulation;
+        backend (QibotnBackend): specific backend on which the simulation has been performed;
+        measures (dict): measures (if performed) during the tensor network simulation;
+        measured_probabilities (Union[dict, ndarray]): probabilities of the final state
+            according to the simulation;
+        prob_type (str): string identifying the method used to compute the probabilities.
+            Especially useful in case the `QmatchateaBackend` is selected.
+        statevector (ndarray): if computed, the reconstructed statevector.
+    """
+
     nqubits: int
     backend: QibotnBackend
     measures: dict
