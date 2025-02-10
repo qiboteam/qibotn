@@ -5,7 +5,7 @@ from qibo.result import QuantumState
 from qibotn.backends.abstract import QibotnBackend
 
 
-class QuimbBackend(NumpyBackend, QibotnBackend):
+class QuimbBackend(QibotnBackend, NumpyBackend):
 
     def __init__(self, runcard):
         super().__init__()

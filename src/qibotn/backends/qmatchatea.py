@@ -15,7 +15,7 @@ from qibotn.result import TensorNetworkResult
 
 
 @dataclass
-class QMatchaTeaBackend(NumpyBackend, QibotnBackend):
+class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
 
     def __init__(self):
         super().__init__()
@@ -25,9 +25,7 @@ class QMatchaTeaBackend(NumpyBackend, QibotnBackend):
 
         # Set default configurations
         self.configure_tn_simulation()
-        # TODO: update this function whenever ``set_device`` and ``set_precision``
-        # are set (?)
-        self._setup_qmatchatea_backend()
+        self._setup_backend_specifics()
 
     def configure_tn_simulation(
         self,
@@ -52,7 +50,7 @@ class QMatchaTeaBackend(NumpyBackend, QibotnBackend):
         )
         self.ansatz = ansatz
 
-    def _setup_qmatchatea_backend(self):
+    def _setup_backend_specifics(self):
         """Configure qmatchatea QCBackend object."""
 
         qmatchatea_device = (

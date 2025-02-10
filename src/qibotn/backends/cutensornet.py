@@ -8,7 +8,7 @@ from qibotn.backends.abstract import QibotnBackend
 CUDA_TYPES = {}
 
 
-class CuTensorNet(NumpyBackend, QibotnBackend):  # pragma: no cover
+class CuTensorNet(QibotnBackend, NumpyBackend):  # pragma: no cover
     # CI does not test for GPU
     """Creates CuQuantum backend for QiboTN."""
 
