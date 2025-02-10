@@ -30,23 +30,46 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
     def configure_tn_simulation(
         self,
         ansatz: str = "MPS",
-        convergence_params=None,
+        max_bond_dimension: int = 10,
+        cut_ratio: float = 1e-9,
+        trunc_tracking_mode: str = "C",
+        svd_control: str = "A",
+        ini_bond_dimension: int = 1,
     ):
         """Configure TN simulation given Quantum Matcha Tea interface.
 
         Args:
             ansatz (str): tensor network ansatz. It can be  tree tensor network "TTN"
-            or Matrix Product States "MPS" (default).
-            convergence_params (qmatchatea.utils.QCConvergenceParameters):
-                convergence parameters class adapted to the quantum computing
-                execution. See https://baltig.infn.it/quantum_matcha_tea/py_api_quantum_matcha_tea/-/blob/master/qmatchatea/utils/utils.py?ref_type=heads#L540
-                for more instructions. If not passed, the default values proposed
-                by Quantum Matcha Tea's authors are set.
+                or Matrix Product States "MPS" (default).
+            max_bond_dimension : int, optional Maximum bond dimension of the problem. Default to 10.
+            cut_ratio : float, optional
+                Cut ratio for singular values. If :math:`\\lambda_n/\\lambda_1 <` cut_ratio then
+                :math:`\\lambda_n` is neglected. Default to 1e-9.
+            trunc_tracking_mode : str, optional
+                Modus for storing truncation, 'M' for maximum, 'C' for
+                cumulated (default).
+            svd_ctrl : character, optional
+                Control for the SVD algorithm. Available:
+                - "A" : automatic. Some heuristic is run to choose the best mode for the algorithm.
+                - "V" : gesvd. Safe but slow method.
+                - "D" : gesdd. Fast iterative method. It might fail. Resort to gesvd if it fails
+                - "E" : eigenvalue decomposition method. Faster on GPU. Available only when
+                    contracting the singular value to left or right
+                - "X" : sparse eigenvalue decomposition method. Used when you reach the maximum
+                    bond dimension.
+                - "R" : random svd method. Used when you reach the maximum bond dimension.
+                Default to 'A'.
+            ini_bond_dimension: int, optional
+                Initial bond dimension of the simulation. It is used if the initial state is random.
+                Default to 1.
         """
 
-        # Set configurations or defaults
-        self.convergence_params = (
-            convergence_params or qmatchatea.QCConvergenceParameters()
+        self.convergence_params = qmatchatea.QCConvergenceParameters(
+            max_bond_dimension=max_bond_dimension,
+            cut_ratio=cut_ratio,
+            trunc_tracking_mode=trunc_tracking_mode,
+            svd_ctrl=svd_control,
+            ini_bond_dimension=ini_bond_dimension,
         )
         self.ansatz = ansatz
 
