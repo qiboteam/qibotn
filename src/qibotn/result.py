@@ -27,10 +27,7 @@ class TensorNetworkResult:
         if self.prob_type == "U":
             measured_probabilities = deepcopy(self.measured_probabilities)
             for bitstring, prob in self.measured_probabilities[self.prob_type].items():
-                measured_probabilities[self.prob_type][bitstring] = (
-                   prob[1]
-                    - prob[0]
-                )
+                measured_probabilities[self.prob_type][bitstring] = prob[1] - prob[0]
             probabilities = measured_probabilities[self.prob_type]
         else:
             probabilities = self.measured_probabilities[self.prob_type]
