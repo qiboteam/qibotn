@@ -135,4 +135,4 @@ used to execute a quantum circuit::
 
 By default, the simulator is choosing a specific method to compute the probabilities,
 and for further information we recommend the user to refer to our High-Level-API
-docstrings.
+docstrings: :doc:`/api-reference/qibotn.backends`.
