@@ -19,7 +19,7 @@ class QMatchaTeaBackend(QibotnBackend):
     def __init__(self):
         super().__init__()
 
-        self.name = "qiboml"
+        self.name = "qibotn"
         self.platform = "qmatchatea"
 
         # Set default configurations

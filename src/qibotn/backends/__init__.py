@@ -35,7 +35,7 @@ class MetaBackend:
         else:
             raise_error(
                 NotImplementedError,
-                f"Unsupported platform {platform}, please pick one in (`cutensornet`, `qutensornet`, `qmatchatea`)",
+                f"Unsupported platform {platform}, please pick one in {PLATFORMS}",
             )
 
     def list_available(self) -> dict:
