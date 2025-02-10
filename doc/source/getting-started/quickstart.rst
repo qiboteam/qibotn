@@ -95,24 +95,17 @@ used to execute a quantum circuit::
 
     # We need Qibo to setup the circuit and the backend
     from qibo import Circuit, gates
+    from qibo.models.encodings import ghz_state
     from qibo.backends import construct_backend
 
     # We need Quantum Matcha Tea to customize the tensor network simulation
     from qmatchatea import QCConvergenceParameters
 
-    # Constructing the circuit preparing a GHZ state
-    def build_GHZ(nqubits):
-        """Helper function to construct a circuit preparing the GHZ circuit."""
-        circ = Circuit(nqubits)
-        circ.add(gates.H(0))
-        [circ.add(gates.CNOT(q, q+1)) for q in range(nqubits-1)]
-        return circ
-
     # Set the number of qubits
     nqubits = 40
 
-    # Construct the circuit preparing the GHZ state
-    circuit = build_GHZ(nqubits)
+    # Construct a circuit preparing a Quantum Fourier Transform
+    circuit = ghz_state(nqubits)
 
     # Construct the backend
     backend = construct_backend(backend="qibotn", platform="qmatchatea")
