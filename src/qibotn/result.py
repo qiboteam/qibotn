@@ -54,8 +54,7 @@ class TensorNetworkResult:
                 ValueError,
                 f"To access frequencies, circuit has to be executed with a given number of shots != None",
             )
-        else:
-            return self.measures
+        return self.measures
 
     def state(self):
         """Return the statevector if the number of qubits is less than 20."""
