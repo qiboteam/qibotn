@@ -198,7 +198,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
         operators = qmatchatea.QCOperators()
         observables = qtealeaves.observables.TNObservables()
         # Add custom observable
-        observables += self._qiboobs_to_qmatchaobs(hamiltonian_form=observable)
+        observables += self._qiboobs_to_qmatchaobs(hamiltonian=observable)
 
         results = qmatchatea.run_simulation(
             circ=circuit,
@@ -225,92 +225,68 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
         )
         return qiskit_circuit
 
-    def _qiboobs_to_qmatchaobs(
-        self, hamiltonian_form, observable_name="custom_hamiltonian"
-    ):
-        """Convert a Qibo-style symbolic expression (e.g. '2.0*Y2*Z0 + Z0*Z2')
-        into a qmatchatea ``TNObsWeightedSum`` observable.
+    def _qiboobs_to_qmatchaobs(self, hamiltonian, observable_name="custom_hamiltonian"):
+        """
+        Convert a Qibo SymbolicHamiltonian into a qmatchatea TNObsWeightedSum observable.
 
-        The parsing logic here assumes:
-        - Each term may have an optional leading coefficient (defaults to 1.0).
-        - Each operator is a single-letter from [XYZI] plus a qubit index (e.g., 'X2' means X on qubit 2).
-        - Terms are separated by '+' (and optionally '-') signs. If negative, we parse it as a negative coefficient.
+        The SymbolicHamiltonian is expected to have a collection of terms, where each term has:
+        - `coefficient`: A numeric value.
+        - `factors`: A list of factors, each a string such as "X2" or "Z0", representing an operator
+                    and the qubit it acts on.
 
         Args:
-            hamiltonian_form: e.g. 'Y2*Z0 + 2.5*Z0*Z2'
-            observable_name (str): A name for the resulting ``TNObsWeightedSum``.
+            hamiltonian (qibo.SymbolicHamiltonian): The symbolic Hamiltonian containing the terms.
+            observable_name (str): The name for the resulting TNObsWeightedSum observable.
 
         Returns:
-            TNObsWeightedSum: An observable suitable for qmatchatea.
+            TNObsWeightedSum: An observable suitable for use with qmatchatea.
         """
-        hamiltonian_form = str(hamiltonian_form)
-
-        # Collect all the simple terms in the string and preserve the sign
-        # whenever a coefficient is negative
-        hamiltonian_form = hamiltonian_form.replace("-", "+-")
-        raw_terms = [t.strip() for t in hamiltonian_form.split("+") if t.strip()]
-
         coeff_list = []
+        tensor_product_obs = None
 
-        # Regex for leading coefficient: e.g. "2.5*" or "-0.3*"
-        # group(1) will capture the numeric part, group(0) includes the sign if present
-        leading_coeff_pattern = re.compile(r"^([+-]?\d+(\.\d+)?)\*")
+        # Regex to split an operator factor (e.g., "X2" -> operator "X", qubit 2)
+        factor_pattern = re.compile(r"([^\d]+)(\d+)")
 
-        for i, hamiltonian_term in enumerate(raw_terms):
-            # Set default coefficient to 1.0
-            coeff = 1.0
-            # Look for a leading numeric coefficient
-            match = leading_coeff_pattern.search(hamiltonian_term)
+        # Iterate over each term in the symbolic Hamiltonian
+        for i, term in enumerate(hamiltonian.terms):
+            # Store the term's coefficient
+            coeff_list.append(term.coefficient)
 
-            if match:
-                # Parse that coefficient
-                coeff = float(match.group(1))
+            operator_names = []
+            acting_on_qubits = []
 
-                # Remove that portion from the term string so only operators remain
-                hamiltonian_term = leading_coeff_pattern.sub(
-                    "", hamiltonian_term, count=1
-                )
-
-            # Now isolate the single terms in the product (if there are more than 1)
-            operators_qubits = hamiltonian_term.split("*")
-
-            # Prepare lists for qmatchatea
-            operator_names, acting_on_qubits = [], []
-
-            # Each sub-term is e.g. "Y2", so operator = "Y", qubit = 2
-            # We assume the operator is the single letter, the rest is the qubit index
-            for operator in operators_qubits:
-                operator = operator.strip()
-
-                # Use a regex to split the operator and the qubit index
-                match = re.match(r"([^\d]+)(\d+)", operator)
+            # Process each factor in the term
+            for factor in term.factors:
+                # Assume each factor is a string like "Y2" or "Z0"
+                match = factor_pattern.match(str(factor))
                 if match:
-                    operator_name = match.group(
-                        1
-                    )  # All characters before the number (e.g., 'XYZ')
-                    qubit_index = int(match.group(2))  # The number part (e.g., 2)
+                    operator_name = match.group(1)
+                    qubit_index = int(match.group(2))
+                    operator_names.append(operator_name)
+                    acting_on_qubits.append([qubit_index])
+                else:
+                    raise ValueError(
+                        f"Factor '{str(factor)}' does not match the expected format."
+                    )
 
-                operator_names.append(operator_name)
-                acting_on_qubits.append([qubit_index])
+            # Create a TNObsTensorProduct for this term.
+            term_tensor_prod = qtealeaves.observables.TNObsTensorProduct(
+                name=f"term_{i}",
+                operators=operator_names,
+                sites=acting_on_qubits,
+            )
 
-            # Build collection of tensor product operators (tpo)
-            if i == 0:
-                tpo = qtealeaves.observables.TNObsTensorProduct(
-                    name=f"{hamiltonian_term}",
-                    operators=operator_names,
-                    sites=acting_on_qubits,
-                )
+            # Combine tensor products from each term
+            if tensor_product_obs is None:
+                tensor_product_obs = term_tensor_prod
             else:
-                tpo += qtealeaves.observables.TNObsTensorProduct(
-                    name=f"{hamiltonian_term}",
-                    operators=operator_names,
-                    sites=acting_on_qubits,
-                )
-            # And also keep track of coefficients
-            coeff_list.append(coeff)
+                tensor_product_obs += term_tensor_prod
 
-        # Combine everything into a WeightedSum
+        # Combine all terms into a weighted sum observable
         obs_sum = qtealeaves.observables.TNObsWeightedSum(
-            name=observable_name, tp_operators=tpo, coeffs=coeff_list, use_itpo=False
+            name=observable_name,
+            tp_operators=tensor_product_obs,
+            coeffs=coeff_list,
+            use_itpo=False,
         )
         return obs_sum
