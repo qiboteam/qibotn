@@ -31,7 +31,7 @@ class TensorNetworkResult:
             probabilities = measured_probabilities[self.prob_type]
         else:
             probabilities = self.measured_probabilities[self.prob_type]
-        return probabilities
+        return self.backend.cast(list(probabilities.values()), dtype="double")
 
     def frequencies(self):
         """Return frequencies if a certain number of shots has been set."""
@@ -44,10 +44,10 @@ class TensorNetworkResult:
             return self.measures
 
     def state(self):
-        """Return the statevector if the number of qubits is less than 30."""
+        """Return the statevector if the number of qubits is less than 20."""
         if self.nqubits < 20:
             return self.statevector
         raise_error(
             NotImplementedError,
-            f"Tensor network simulation cannot be used to reconstruct statevector for >= 30 .",
+            f"Tensor network simulation cannot be used to reconstruct statevector for >= 20 .",
         )

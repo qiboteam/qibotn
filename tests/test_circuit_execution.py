@@ -36,7 +36,6 @@ def construct_targets(nqubits):
 def test_probabilities(backend, nqubits):
 
     circ = build_GHZ(nqubits=nqubits)
-    ones, zeros = construct_targets(nqubits)
 
     if isinstance(backend, QMatchaTeaBackend):
         # unbiased prob
@@ -46,8 +45,8 @@ def test_probabilities(backend, nqubits):
             num_samples=1000,
         ).probabilities()
 
-        math.isclose(out_u[ones], 0.5, abs_tol=1e-7)
-        math.isclose(out_u[zeros], 0.5, abs_tol=1e-7)
+        math.isclose(out_u[0], 0.5, abs_tol=1e-7)
+        math.isclose(out_u[1], 0.5, abs_tol=1e-7)
 
         out_g = backend.execute_circuit(
             circuit=circ,
@@ -55,8 +54,8 @@ def test_probabilities(backend, nqubits):
             prob_threshold=1.0,
         ).probabilities()
 
-        math.isclose(out_g[ones], 0.5, abs_tol=1e-7)
-        math.isclose(out_g[zeros], 0.5, abs_tol=1e-7)
+        math.isclose(out_g[0], 0.5, abs_tol=1e-7)
+        math.isclose(out_g[1], 0.5, abs_tol=1e-7)
 
         out_e = backend.execute_circuit(
             circuit=circ,
@@ -64,8 +63,8 @@ def test_probabilities(backend, nqubits):
             prob_threshold=0.2,
         ).probabilities()
 
-        math.isclose(out_e[ones], 0.5, abs_tol=1e-7)
-        math.isclose(out_e[zeros], 0.5, abs_tol=1e-7)
+        math.isclose(out_e[0], 0.5, abs_tol=1e-7)
+        math.isclose(out_e[1], 0.5, abs_tol=1e-7)
 
 
 @pytest.mark.parametrize("nqubits", [2, 10, 40])
