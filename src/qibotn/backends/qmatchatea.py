@@ -119,7 +119,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
         if initial_state is not None:
             raise_error(
                 NotImplementedError,
-                f"Backend {self.name}-{self.platform} currently does not support initial state.",
+                f"Backend {self} currently does not support initial state.",
             )
 
         if prob_type == None:
