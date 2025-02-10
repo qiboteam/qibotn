@@ -1,4 +1,5 @@
 import numpy as np
+from qibo.backends import NumpyBackend
 from qibo.config import raise_error
 from qibo.result import QuantumState
 
@@ -7,7 +8,7 @@ from qibotn.backends.abstract import QibotnBackend
 CUDA_TYPES = {}
 
 
-class CuTensorNet(QibotnBackend):  # pragma: no cover
+class CuTensorNet(NumpyBackend, QibotnBackend):  # pragma: no cover
     # CI does not test for GPU
     """Creates CuQuantum backend for QiboTN."""
 

@@ -7,6 +7,7 @@ import numpy as np
 import qiskit
 import qmatchatea
 import qtealeaves
+from qibo.backends import NumpyBackend
 from qibo.config import raise_error
 
 from qibotn.backends.abstract import QibotnBackend
@@ -14,7 +15,7 @@ from qibotn.result import TensorNetworkResult
 
 
 @dataclass
-class QMatchaTeaBackend(QibotnBackend):
+class QMatchaTeaBackend(NumpyBackend, QibotnBackend):
 
     def __init__(self):
         super().__init__()

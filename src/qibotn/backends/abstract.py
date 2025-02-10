@@ -1,20 +1,11 @@
-from qibo.backends.numpy import NumpyBackend
+from abc import ABC
+
 from qibo.config import raise_error
 
-DEFAULT_CONFIGURATION = {
-    "MPI_enabled": False,  # TODO: cutensornet specific, TBRemoved
-    "NCCL_enabled": False,  # TODO: cutensornet specific, TBRemoved
-    "expectation_enabled": False,
-    "pauli_string_pattern": None,
-    "MPS_enabled": False,
-    "gate_algo": None,
-    "mps_opts": None,
-}
 
+class QibotnBackend(ABC):
 
-class QibotnBackend(NumpyBackend):
-
-    def __init__(self, runcard: dict = DEFAULT_CONFIGURATION):
+    def __init__(self):
         super().__init__()
 
     def apply_gate(self, gate, state, nqubits):  # pragma: no cover
@@ -33,7 +24,6 @@ class QibotnBackend(NumpyBackend):
     def set_device(self, device):
         self.device = device
 
-    # @abstractmethod
     def configure_tn_simulation(self, **config):
         """Configure the TN simulation that will be performed."""
         pass

@@ -1,10 +1,11 @@
+from qibo.backends import NumpyBackend
 from qibo.config import raise_error
 from qibo.result import QuantumState
 
 from qibotn.backends.abstract import QibotnBackend
 
 
-class QuimbBackend(QibotnBackend):
+class QuimbBackend(NumpyBackend, QibotnBackend):
 
     def __init__(self, runcard):
         super().__init__()
