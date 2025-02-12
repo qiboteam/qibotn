@@ -1,3 +1,4 @@
+import numpy as np
 from qibo.backends.numpy import NumpyBackend
 from qibo.config import raise_error
 from qibo.result import QuantumState
@@ -65,8 +66,6 @@ class QuimbBackend(NumpyBackend):
 
         import qibotn.eval_qu as eval
 
-        if self.MPI_enabled == True:
-            raise_error(NotImplementedError, "QiboTN quimb backend cannot support MPI.")
         if self.NCCL_enabled == True:
             raise_error(
                 NotImplementedError, "QiboTN quimb backend cannot support NCCL."
@@ -76,9 +75,21 @@ class QuimbBackend(NumpyBackend):
                 NotImplementedError, "QiboTN quimb backend cannot support expectation"
             )
 
-        state = eval.dense_vector_tn_qu(
-            circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
-        )
+        if self.MPI_enabled == True:
+            state, rank = eval.dense_vector_tn_mpi_qu(
+                circuit.to_qasm(),
+                circuit.nqubits,
+                initial_state,
+                self.mps_opts,
+                backend="numpy",
+            )
+
+            if rank > 0:
+                state = np.array(0)
+        else:
+            state = eval.dense_vector_tn_qu(
+                circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
+            )
 
         if return_array:
             return state.flatten()
