@@ -1,12 +1,18 @@
 Quick start
 ===========
 
-In this section, we provide an example of two qubit ciruit simulation using qibotn package in Qibo simulator. First, the backend is to be set with appropriate run card settings, followed by the circuit simulation using Qibo documentation.
+In this section, we provide examples on how to use Qibotn to execute tensor network
+simulation of quantum circuit. First, we show how to use the Cutensornet and Quimb
+backends, while in a second moment we show a complete example of usage of the Quantum
+Matcha Tea Backend.
 
-Setting the backend
-"""""""""""""""""""
+Setting the backend with Cutensornet and Quimb
+""""""""""""""""""""""""""""""""""""""""""""""
 
-QiboTN offers two backends: cutensornet (using cuQuantum library) and qutensornet (using Quimb library) for tensor network based simulations. At present, cutensornet backend works only for GPUs whereas qutensornet for CPUs.  The backend can be set using the following command line.
+Among the backends provided by Qibotn, we have cutensornet (using cuQuantum library)
+and qutensornet (using Quimb library) for tensor network based simulations.
+At present, cutensornet backend works only for GPUs whereas qutensornet for CPUs.
+These backend can be set using the following command line.
 
 To use cuQuantum library, cutensornet can be specified as follows::
 
@@ -79,3 +85,54 @@ The following is a basic example to execute a two qubit circuit and print the fi
 
    # Print the final state
    print(result.state())
+
+
+Using the Quantum Matcha Tea backend
+""""""""""""""""""""""""""""""""""""
+
+In the following we show an example of how the Quantum Matcha Tea backend can be
+used to execute a quantum circuit::
+
+    # We need Qibo to setup the circuit and the backend
+    from qibo import Circuit, gates
+    from qibo.models.encodings import ghz_state
+    from qibo.backends import construct_backend
+
+    # We need Quantum Matcha Tea to customize the tensor network simulation
+    from qmatchatea import QCConvergenceParameters
+
+    # Set the number of qubits
+    nqubits = 40
+
+    # Construct a circuit preparing a Quantum Fourier Transform
+    circuit = ghz_state(nqubits)
+
+    # Construct the backend
+    backend = construct_backend(backend="qibotn", platform="qmatchatea")
+
+    # Customize the low-level backend preferences according to Qibo's formalism
+    backend.set_device("/CPU:1")
+    backend.set_precision("double")
+
+    # Customize the tensor network simulation itself
+    backend.configure_tn_simulation(
+        ansatz = "MPS",
+        convergence_params = QCConvergenceParameters(max_bond_dimension=50, cut_ratio=1e-6)
+    )
+
+    # Execute the tensor network simulation
+    outcome = backend.execute_circuit(
+        circuit = circuit,
+        nshots=1024,
+    )
+
+    # Print some results
+    print(outcome.probabilities())
+    # Should print something like: {'0000000000000000000000000000000000000000': 0.5000000000000001, '1111111111111111111111111111111111111111': 0.5000000000000001}
+    print(outcome.frequencies())
+    # Should print something like: {'0000000000000000000000000000000000000000': 488, '1111111111111111111111111111111111111111': 536}
+
+
+By default, the simulator is choosing a specific method to compute the probabilities,
+and for further information we recommend the user to refer to our High-Level-API
+docstrings: :doc:`/api-reference/qibotn.backends`.
