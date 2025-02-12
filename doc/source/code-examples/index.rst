@@ -12,4 +12,4 @@ Introduction to backends
 .. toctree::
     :maxdepth: 1
 
-    tutorials/qmatchatea_intro/qmatchatea_intro.ipynb
+    tutorials/qmatchatea_intro/qmatchatea_introduction.ipynb
