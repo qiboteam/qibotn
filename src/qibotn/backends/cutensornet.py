@@ -14,7 +14,11 @@ class CuTensorNet(QibotnBackend, NumpyBackend):  # pragma: no cover
 
     def __init__(self, runcard):
         super().__init__()
-        from cuquantum import cudaDataType, ComputeType, __version__ # pylint: disable=import-error
+        from cuquantum import (  # pylint: disable=import-error
+            ComputeType,
+            __version__,
+            cudaDataType,
+        )
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
 
         if runcard is not None:
