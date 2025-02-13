@@ -2,12 +2,11 @@ from typing import Union
 
 from qibo.config import raise_error
 
+from qibotn.backends.abstract import QibotnBackend
 from qibotn.backends.cutensornet import CuTensorNet  # pylint: disable=E0401
 from qibotn.backends.quimb import QuimbBackend  # pylint: disable=E0401
 
-QibotnBackend = Union[CuTensorNet, QuimbBackend]
-
-PLATFORMS = ("cutensornet", "qutensornet")
+PLATFORMS = ("cutensornet", "qutensornet", "qmatchatea")
 
 
 class MetaBackend:
@@ -28,10 +27,14 @@ class MetaBackend:
             return CuTensorNet(runcard)
         elif platform == "qutensornet":  # pragma: no cover
             return QuimbBackend(runcard)
+        elif platform == "qmatchatea":  # pragma: no cover
+            from qibotn.backends.qmatchatea import QMatchaTeaBackend
+
+            return QMatchaTeaBackend()
         else:
             raise_error(
                 NotImplementedError,
-                f"Unsupported platform {platform}, please pick one in (`cutensornet`, `qutensornet)",
+                f"Unsupported platform {platform}, please pick one in {PLATFORMS}",
             )
 
     def list_available(self) -> dict:
