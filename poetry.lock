@@ -4184,4 +4184,4 @@ cuda = ["cupy-cuda11x", "cuquantum-python-cu11", "mpi4py"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9,<3.13"
-content-hash = "7aaedf16b13257a997a1f4274af7b9ddb059969baa781c5506cb03ebe495f951"
+content-hash = "d73348f3043523ee9df298ae526d2bd431360a961637aa6caf391701f3a5fa36"
