@@ -25,7 +25,7 @@ As shown in the figure above, we currently support three different backends, whi
 correspond to the three mentioned packages:
    - `cuQuantum <https://github.com/NVIDIA/cuQuantum>`_: an NVIDIA SDK of optimized libraries and tools for accelerating quantum computing workflows (we refer to the specific `Cutensornet <https://docs.nvidia.com/cuda/cuquantum/latest/cutensornet/index.html>`_  library);
    - `quimb <https://quimb.readthedocs.io/en/latest/>`_: an easy but fast python library for ‘quantum information many-body’ calculations, focusing primarily on tensor networks;
-   - `Quantum Matcha Tea <https://www.quantumtea.it/>`_: a logical quantum computer emulator powered by matrix product states.
+   - `Quantum Matcha Tea <https://www.quantumtea.it/>`_: a logical quantum computer emulator powered by matrix product states. Read `here <https://github.com/qiboteam/qibotn/blob/restore/examples/qmatchatea_intro/qmatchatea_introduction.ipynb>`_ if you want to have an example on how using the Quantum Matcha Tea backend.
 
 ..  warning::
 
@@ -73,7 +73,6 @@ Contents
    :caption: Introduction
 
    getting-started/index
-   code-examples/index
 
 .. toctree::
     :maxdepth: 1
