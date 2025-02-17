@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "qibotn"
-version = "0.0.3"
+version = "0.0.4"
 description = "A tensor-network translation module for Qibo"
 authors = ["The Qibo team"]
 license = "Apache License 2.0"
