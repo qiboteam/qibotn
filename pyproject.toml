@@ -31,6 +31,7 @@ mpi4py = { version = "^3.1.5", optional = true }
 
 [tool.poetry.extras]
 cuda = ["cupy-cuda11x", "cuquantum-python-cu11", "mpi4py"]
+qmatchatea = ["qmatchatea"]
 
 [tool.poetry.group.docs]
 optional = true
@@ -41,7 +42,6 @@ furo = "^2023.3.27"
 sphinxcontrib-bibtex = "^2.5.0"
 sphinx-copybutton = "^0.5.2"
 sphinxcontrib-katex = "^0.9.9"
-nbsphinx = "^0.8.12"
 
 [tool.poetry.group.dev.dependencies]
 ipython = "^7.0.0"
