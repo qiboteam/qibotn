@@ -1,15 +1,13 @@
 import cupy as cp
+import cuquantum.cutensornet as cutn
+from cupy.cuda import nccl
 from cupy.cuda.runtime import getDeviceCount
-from cuquantum import contract
+from cuquantum import Network, contract
+from mpi4py import MPI
 
 from qibotn.circuit_convertor import QiboCircuitToEinsum
 from qibotn.circuit_to_mps import QiboCircuitToMPS
 from qibotn.mps_contraction_helper import MPSContractionHelper
-
-import cuquantum.cutensornet as cutn
-from cuquantum import Network
-from mpi4py import MPI
-from cupy.cuda import nccl
 
 
 def initialize_mpi():
