@@ -43,12 +43,14 @@ def test_observable_expval(backend, nqubits):
     )
 
     computation_settings = {
-    "MPI_enabled": False,
-    "MPS_enabled": True,
-    "NCCL_enabled": False,
-    "expectation_enabled": False,
+        "MPI_enabled": False,
+        "MPS_enabled": True,
+        "NCCL_enabled": False,
+        "expectation_enabled": False,
     }
-    backend = construct_backend(backend="qibotn", platform="qutensornet", runcard=computation_settings)
+    backend = construct_backend(
+        backend="qibotn", platform="qutensornet", runcard=computation_settings
+    )
     tn_expval = backend.expectation(circuit=circ, observable=ham)
 
     assert math.isclose(exact_expval, tn_expval, abs_tol=1e-7)

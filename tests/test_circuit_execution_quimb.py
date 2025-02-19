@@ -1,7 +1,7 @@
 import math
 
 import pytest
-from qibo import Circuit, gates, hamiltonians, construct_backend
+from qibo import Circuit, construct_backend, gates, hamiltonians
 from qibo.symbols import X, Z
 
 from qibotn.backends.qmatchatea import QMatchaTeaBackend
@@ -35,14 +35,16 @@ def construct_targets(nqubits):
 @pytest.mark.parametrize("nqubits", [2, 10, 40])
 def test_probabilities(backend, nqubits):
     computation_settings = {
-    "MPI_enabled": False,
-    "MPS_enabled": True,
-    "NCCL_enabled": False,
-    "expectation_enabled": False,
+        "MPI_enabled": False,
+        "MPS_enabled": True,
+        "NCCL_enabled": False,
+        "expectation_enabled": False,
     }
-    backend = construct_backend(backend="qibotn", platform="qutensornet", runcard=computation_settings)
+    backend = construct_backend(
+        backend="qibotn", platform="qutensornet", runcard=computation_settings
+    )
     circ = build_GHZ(nqubits=nqubits)
-        # unbiased prob
+    # unbiased prob
     out = backend.execute_circuit(
         circuit=circ,
         nshots=1000,
@@ -51,20 +53,20 @@ def test_probabilities(backend, nqubits):
     math.isclose(out[0], 0.5, abs_tol=1e-7)
     math.isclose(out[1], 0.5, abs_tol=1e-7)
 
-    
-
 
 @pytest.mark.parametrize("nqubits", [2, 10, 40])
 @pytest.mark.parametrize("nshots", [100, 1000])
 def test_shots(backend, nqubits, nshots):
-    
+
     computation_settings = {
-    "MPI_enabled": False,
-    "MPS_enabled": True,
-    "NCCL_enabled": False,
-    "expectation_enabled": False,
+        "MPI_enabled": False,
+        "MPS_enabled": True,
+        "NCCL_enabled": False,
+        "expectation_enabled": False,
     }
-    backend = construct_backend(backend="qibotn", platform="qutensornet", runcard=computation_settings)
+    backend = construct_backend(
+        backend="qibotn", platform="qutensornet", runcard=computation_settings
+    )
     circ = build_GHZ(nqubits=nqubits)
     ones, zeros = construct_targets(nqubits)
 
