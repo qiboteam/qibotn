@@ -43,6 +43,10 @@ class TensorNetworkResult:
             for bitstring, prob in self.measured_probabilities[self.prob_type].items():
                 measured_probabilities[self.prob_type][bitstring] = prob[1] - prob[0]
             probabilities = measured_probabilities[self.prob_type]
+
+        elif self.prob_type is None:
+            probabilities = self.measured_probabilities
+
         else:
             probabilities = self.measured_probabilities[self.prob_type]
         return self.backend.cast(list(probabilities.values()), dtype="double")
