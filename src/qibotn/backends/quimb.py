@@ -92,13 +92,17 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             probabilities = dict()
             if self.MPS_enabled == True:
                 tt = list(results.psi.sample(nshots))
-            else:
+            # memory to do sampling by converting to dense vector is huge for qubits >30
+            elif circuit.nqubits < 30:
                 dense_vector = results.psi.to_dense(backend="numpy")
                 tt = list(
                     qtn.tensor_1d.MatrixProductState.from_dense(dense_vector).sample(
                         nshots
                     )
                 )
+            else:
+                tt = []
+
             for i in range(len(tt)):
                 tx = "".join(str(e) for e in tt[i][0])
                 probabilities[tx] = float(tt[i][1])
