@@ -28,7 +28,7 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
         backend (str):  Backend to perform the contraction with, e.g. ``numpy``, ``cupy``, ``jax``. Passed to ``opt_einsum``.
 
     Returns:
-        list: Amplitudes of final state after the simulation of the circuit.
+        class: Circuit object 'quimb.tensor.circuit.CircuitMPS' after simulation.
     """
 
     if initial_state is not None:
@@ -40,7 +40,6 @@ def dense_vector_tn_qu(qasm: str, initial_state, mps_opts, backend="numpy"):
         qasm, psi0=initial_state, gate_opts=mps_opts
     )
 
-    interim = circ_quimb.psi.full_simplify(seq="DRC")
-    amplitudes = interim.to_dense(backend=backend)
+    interim = circ_quimb
 
-    return amplitudes
+    return interim
