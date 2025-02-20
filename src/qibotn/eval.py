@@ -4,17 +4,12 @@ from cupy.cuda import nccl
 from cupy.cuda.runtime import getDeviceCount
 from cuquantum import Network, contract
 from mpi4py import MPI
+from qibo import hamiltonians
+from qibo.symbols import I, X, Y, Z
 
 from qibotn.circuit_convertor import QiboCircuitToEinsum
 from qibotn.circuit_to_mps import QiboCircuitToMPS
 from qibotn.mps_contraction_helper import MPSContractionHelper
-
-import cuquantum.cutensornet as cutn
-from cuquantum import Network
-from mpi4py import MPI
-from cupy.cuda import nccl
-from qibo import hamiltonians
-from qibo.symbols import X, Y, Z, I
 
 
 def check_observable(observable, circuit_nqubit):

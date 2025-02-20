@@ -1,13 +1,13 @@
+import math
 from timeit import default_timer as timer
 
 import cupy as cp
 import numpy as np
 import pytest
 import qibo
+from qibo import Circuit, construct_backend, gates, hamiltonians
 from qibo.models import QFT
-from qibo import Circuit, gates, hamiltonians, construct_backend
 from qibo.symbols import X, Z
-import math
 
 
 def qibo_qft(nqubits, swaps):

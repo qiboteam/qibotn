@@ -1,10 +1,10 @@
 import numpy as np
+from qibo import hamiltonians
 from qibo.backends import NumpyBackend
 from qibo.config import raise_error
-from qibotn.result import TensorNetworkResult
 
 from qibotn.backends.abstract import QibotnBackend
-from qibo import hamiltonians
+from qibotn.result import TensorNetworkResult
 
 CUDA_TYPES = {}
 
