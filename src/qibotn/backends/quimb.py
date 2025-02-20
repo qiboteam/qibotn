@@ -147,9 +147,9 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         """
 
         # convert the circuit to quimb format
-        circ_cls = qtn.circuit.Circuit
+        circ_cls = qtn.circuit.CircuitMPS if self.mps_opts else qtn.circuit.Circuit
         circ_quimb = circ_cls.from_openqasm2_str(
-            circuit.to_qasm(), psi0=None, gate_opts=None
+            circuit.to_qasm(), psi0=None, gate_opts=self.mps_opts
         )
 
         # To convert the observable in the symbolic Hamiltonian format of qibo into quimb object
