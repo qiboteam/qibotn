@@ -1,3 +1,4 @@
+import quimb
 from qibo.backends import NumpyBackend
 from qibo.config import raise_error
 from qibo.result import QuantumState
@@ -7,9 +8,15 @@ from qibotn.backends.abstract import QibotnBackend
 
 class QuimbBackend(QibotnBackend, NumpyBackend):
 
-    def __init__(self, runcard):
+    # TODO: use a configure_tn_simulation function instead
+    # TODO: use a _configure_quimb_backend function as well
+    def __init__(self):
         super().__init__()
-        import quimb  # pylint: disable=import-error
+
+        self.name = "qibotn"
+        self.platform = "quimb"
+
+        # self.configure_tn_simulation()
 
         if runcard is not None:
             self.MPI_enabled = runcard.get("MPI_enabled", False)
@@ -38,6 +45,12 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         self.platform = "QuimbBackend"
         self.versions["quimb"] = self.quimb.__version__
 
+    def configure_tn_simulation(
+        self,
+        ansatz: str = "MPS",
+    ):
+        pass
+
     def execute_circuit(
         self, circuit, initial_state=None, nshots=None, return_array=False
     ):  # pragma: no cover
@@ -65,6 +78,8 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
                 NotImplementedError, "QiboTN quimb backend cannot support expectation"
             )
 
+        # TODO: initialise the initial state properly loading data into an MPS
+        # TODO: what if the formalism is different from MPS?
         state = eval.dense_vector_tn_qu(
             circuit.to_qasm(), initial_state, self.mps_opts, backend="numpy"
         )
