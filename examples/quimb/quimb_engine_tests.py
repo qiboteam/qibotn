@@ -2,10 +2,13 @@ import numpy as np
 import qibo
 from qibo import Circuit, gates, hamiltonians
 from qibo.backends import construct_backend
+
 np.random.seed(42)
 
 nqubits = 2
 quimb_backend = construct_backend(backend="qibotn", platform="quimb")
+
+
 def build_circuit(nqubits, nlayers):
     """Construct a parametric quantum circuit."""
     circ = Circuit(nqubits)
@@ -16,6 +19,8 @@ def build_circuit(nqubits, nlayers):
         [circ.add(gates.CNOT(q % nqubits, (q + 1) % nqubits) for q in range(nqubits))]
     circ.add(gates.M(*range(nqubits)))
     return circ
+
+
 circuit = build_circuit(nqubits=nqubits, nlayers=3)
 circuit.set_parameters(
     parameters=np.random.uniform(-np.pi, np.pi, len(circuit.get_parameters())),

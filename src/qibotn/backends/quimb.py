@@ -8,6 +8,7 @@ from qibo.result import QuantumState
 from qibotn.backends.abstract import QibotnBackend
 from qibotn.result import TensorNetworkResult
 
+
 class QuimbBackend(QibotnBackend, NumpyBackend):
 
     def __init__(self):
@@ -108,11 +109,17 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         )
 
         frequencies = Counter(circ_quimb.sample(nshots)) if nshots is not None else None
-        main_frequencies = {state: count for state, count in frequencies.most_common(n=100)}
+        main_frequencies = {
+            state: count for state, count in frequencies.most_common(n=100)
+        }
         computational_states = [state for state in main_frequencies.keys()]
-        amplitudes = {state: circ_quimb.amplitude(state) for state in computational_states}
-        measured_probabilities = {state: abs(amplitude) ** 2 for state, amplitude in amplitudes.items()}
-            
+        amplitudes = {
+            state: circ_quimb.amplitude(state) for state in computational_states
+        }
+        measured_probabilities = {
+            state: abs(amplitude) ** 2 for state, amplitude in amplitudes.items()
+        }
+
         statevector = circ_quimb.to_dense() if return_array else None
         return TensorNetworkResult(
             nqubits=circuit.nqubits,
