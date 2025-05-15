@@ -6,7 +6,7 @@ from qibotn.backends.abstract import QibotnBackend
 from qibotn.backends.cutensornet import CuTensorNet  # pylint: disable=E0401
 from qibotn.backends.quimb import QuimbBackend  # pylint: disable=E0401
 
-PLATFORMS = ("cutensornet", "qutensornet", "qmatchatea")
+PLATFORMS = ("cutensornet", "quimb", "qmatchatea")
 
 
 class MetaBackend:
@@ -17,7 +17,7 @@ class MetaBackend:
         """Loads the backend.
 
         Args:
-            platform (str): Name of the backend to load: either `cutensornet` or `qutensornet`.
+            platform (str): Name of the backend to load: either `cutensornet`, 'qmatchatea' or `quimb`.
             runcard (dict): Dictionary containing the simulation settings.
         Returns:
             qibo.backends.abstract.Backend: The loaded backend.
@@ -25,8 +25,10 @@ class MetaBackend:
 
         if platform == "cutensornet":  # pragma: no cover
             return CuTensorNet(runcard)
-        elif platform == "qutensornet":  # pragma: no cover
-            return QuimbBackend(runcard)
+        elif platform == "quimb":  # pragma: no cover
+            from qibotn.backends.quimb import QuimbBackend
+
+            return QuimbBackend()
         elif platform == "qmatchatea":  # pragma: no cover
             from qibotn.backends.qmatchatea import QMatchaTeaBackend
 

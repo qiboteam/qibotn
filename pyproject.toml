@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "qibotn"
-version = "0.0.5"
+version = "0.0.4"
 description = "A tensor-network translation module for Qibo"
 authors = ["The Qibo team"]
 license = "Apache License 2.0"
@@ -20,12 +20,13 @@ classifiers = [
 packages = [{ include = "qibotn", from = "src" }]
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.14"
-qibo = "^0.2.17"
-quimb = { version = "^1.10.0", extras = ["tensor"] }
-cupy-cuda11x = { version = "^13.1.0", optional = true }
-cuquantum-python-cu11 = { version = "^24.1.0", optional = true }
-qmatchatea = { version = "^1.4.3", optional = true }
+python = "^3.9,<3.13"
+qibo = "^0.2.8"
+quimb = { version = "^1.6.0", extras = ["tensor"] }
+cupy-cuda11x = { version = "^11.6.0", optional = true }
+cuquantum-python-cu11 = { version = "^23.3.0", optional = true }
+qmatchatea = { version = "^1.1.4", optional = true }
+mpi4py = { version = "^3.1.5", optional = true }
 
 
 [tool.poetry.extras]

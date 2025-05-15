@@ -74,7 +74,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
         self.ansatz = ansatz
 
     def _setup_backend_specifics(self):
-        """Configure qmatchatea QCBackend object."""
+        """Configure quimb backend object."""
 
         qmatchatea_device = (
             "cpu" if "CPU" in self.device else "gpu" if "GPU" in self.device else None
@@ -187,7 +187,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
             backend=self,
             measures=results.measures,
             measured_probabilities=results.measure_probabilities,
-            prob_type=prob_type,
+            prob_type="default",
             statevector=statevector,
         )
 
