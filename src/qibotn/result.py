@@ -44,8 +44,8 @@ class TensorNetworkResult:
                 measured_probabilities[self.prob_type][bitstring] = prob[1] - prob[0]
             probabilities = measured_probabilities[self.prob_type]
         else:
-            probabilities = self.measured_probabilities[self.prob_type]
-        return self.backend.cast(list(probabilities.values()), dtype="double")
+            probabilities = self.measured_probabilities
+        return probabilities
 
     def frequencies(self):
         """Return frequencies if a certain number of shots has been set."""
