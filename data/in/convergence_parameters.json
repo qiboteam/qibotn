@@ -1,6 +1,0 @@
-{
-    "max_bond_dimension": 10,
-    "cut_ratio": 1e-09,
-    "trunc_tracking_mode": "C",
-    "svd_ctrl": "A"
-}
