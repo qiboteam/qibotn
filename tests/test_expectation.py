@@ -42,6 +42,6 @@ def test_observable_expval(backend, nqubits):
         normalize=False,
     )
 
-    tn_expval = backend.expectation(circuit=circ, observable=ham_form)
+    tn_expval = backend.expectation(circuit=circ, observable=ham)
 
     assert math.isclose(exact_expval, tn_expval, abs_tol=1e-7)

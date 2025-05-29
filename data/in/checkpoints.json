@@ -1,0 +1,5 @@
+{
+    "checkpoint_PATH": "data/checkpoints/",
+    "checkpoint_frequency": -1,
+    "initial_line": 1
+}

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import numpy as np
 from qibo.backends import NumpyBackend
 from qibo.config import raise_error
+from qtealeaves import probabilities
 
 from qibotn.backends.abstract import QibotnBackend
 from qibotn.result import TensorNetworkResult
@@ -182,6 +183,11 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
             observables=observables,
         )
 
+        probabilities = {
+            k: v[0] if isinstance(v, tuple) else v
+            for k, v in results.measure_probabilities.items()
+        }
+
         if circuit.num_qubits < 20 and return_array:
             statevector = results.statevector
         else:
@@ -191,7 +197,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
             nqubits=circuit.num_qubits,
             backend=self,
             measures=results.measures,
-            measured_probabilities=results.measure_probabilities,
+            measured_probabilities=probabilities,
             prob_type=prob_type,
             statevector=statevector,
         )
