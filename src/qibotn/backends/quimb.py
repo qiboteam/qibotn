@@ -24,6 +24,7 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         self,
         ansatz: str = "MPS",
         max_bond_dimension: int = 10,
+        n_most_frequent_states: int = 100,
     ):
         """
         Configure tensor network simulation.
@@ -40,6 +41,7 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         """
         self.ansatz = ansatz
         self.max_bond_dimension = max_bond_dimension
+        self.n_most_frequent_states = n_most_frequent_states
 
     def setup_backend_specifics(self, qimb_backend="numpy"):
         """Setup backend specifics.
@@ -69,6 +71,8 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
                 The number of shots for sampling the circuit. If None, no sampling is performed, and the full statevector is used.
             return_array : bool, optional
                 If True, returns the statevector as a dense array. Default is False.
+            n_most_frequent_states : int, optional
+                The number of most frequent computational basis states to return. Default is 100.
             **prob_kwargs : dict, optional
                 Additional keyword arguments for probability computation (currently unused).
 
@@ -109,9 +113,7 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         )
 
         frequencies = Counter(circ_quimb.sample(nshots)) if nshots is not None else None
-        main_frequencies = {
-            state: count for state, count in frequencies.most_common(n=100)
-        }
+        main_frequencies = {state: count for state, count in frequencies.most_common(self.n_most_frequent_states)}
         computational_states = [state for state in main_frequencies.keys()]
         amplitudes = {
             state: circ_quimb.amplitude(state) for state in computational_states
