@@ -4,11 +4,9 @@ import re
 from dataclasses import dataclass
 
 import numpy as np
-import qiskit
-import qmatchatea
-import qtealeaves
 from qibo.backends import NumpyBackend
 from qibo.config import raise_error
+from qtealeaves import probabilities
 
 from qibotn.backends.abstract import QibotnBackend
 from qibotn.result import TensorNetworkResult
@@ -22,6 +20,13 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
 
         self.name = "qibotn"
         self.platform = "qmatchatea"
+        import qiskit
+        import qmatchatea
+        import qtealeaves
+
+        self.qmatchatea = qmatchatea
+        self.qtealeaves = qtealeaves
+        self.qiskit = qiskit
 
         # Set default configurations
         self.configure_tn_simulation()
@@ -64,7 +69,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
                 Default to 1.
         """
 
-        self.convergence_params = qmatchatea.QCConvergenceParameters(
+        self.convergence_params = self.qmatchatea.QCConvergenceParameters(
             max_bond_dimension=max_bond_dimension,
             cut_ratio=cut_ratio,
             trunc_tracking_mode=trunc_tracking_mode,
@@ -86,8 +91,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
         )
 
         # TODO: once MPI is available for Python, integrate it here
-        self.qmatchatea_backend = qmatchatea.QCBackend(
-            backend="PY",  # The only alternative is Fortran, but we use Python here
+        self.qmatchatea_backend = self.qmatchatea.QCBackend(
             precision=qmatchatea_precision,
             device=qmatchatea_device,
             ansatz=self.ansatz,
@@ -151,31 +155,38 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
 
         # TODO: check
         circuit = self._qibocirc_to_qiskitcirc(circuit)
-        run_qk_params = qmatchatea.preprocessing.qk_transpilation_params(False)
+        run_qk_params = self.qmatchatea.preprocessing.qk_transpilation_params(False)
 
         # Initialize the TNObservable object
-        observables = qtealeaves.observables.TNObservables()
+        observables = self.qtealeaves.observables.TNObservables()
 
         # Shots
         if nshots is not None:
-            observables += qtealeaves.observables.TNObsProjective(num_shots=nshots)
+            observables += self.qtealeaves.observables.TNObsProjective(num_shots=nshots)
 
         # Probabilities
-        observables += qtealeaves.observables.TNObsProbabilities(
+        observables += self.qtealeaves.observables.TNObsProbabilities(
             prob_type=prob_type,
             **prob_kwargs,
         )
 
         # State
-        observables += qtealeaves.observables.TNState2File(name="temp", formatting="U")
+        observables += self.qtealeaves.observables.TNState2File(
+            name="temp", formatting="U"
+        )
 
-        results = qmatchatea.run_simulation(
+        results = self.qmatchatea.run_simulation(
             circ=circuit,
             convergence_parameters=self.convergence_params,
             transpilation_parameters=run_qk_params,
             backend=self.qmatchatea_backend,
             observables=observables,
         )
+
+        probabilities = {
+            k: v[0] if isinstance(v, tuple) else v
+            for k, v in results.measure_probabilities.items()
+        }
 
         if circuit.num_qubits < 20 and return_array:
             statevector = results.statevector
@@ -186,7 +197,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
             nqubits=circuit.num_qubits,
             backend=self,
             measures=results.measures,
-            measured_probabilities=results.measure_probabilities,
+            measured_probabilities=probabilities,
             prob_type=prob_type,
             statevector=statevector,
         )
@@ -216,14 +227,14 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
 
         # From Qibo to Qiskit
         circuit = self._qibocirc_to_qiskitcirc(circuit)
-        run_qk_params = qmatchatea.preprocessing.qk_transpilation_params(False)
+        run_qk_params = self.qmatchatea.preprocessing.qk_transpilation_params(False)
 
-        operators = qmatchatea.QCOperators()
-        observables = qtealeaves.observables.TNObservables()
+        operators = self.qmatchatea.QCOperators()
+        observables = self.qtealeaves.observables.TNObservables()
         # Add custom observable
         observables += self._qiboobs_to_qmatchaobs(hamiltonian=observable)
 
-        results = qmatchatea.run_simulation(
+        results = self.qmatchatea.run_simulation(
             circ=circuit,
             convergence_parameters=self.convergence_params,
             transpilation_parameters=run_qk_params,
@@ -234,17 +245,17 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
 
         return np.real(results.observables["custom_hamiltonian"])
 
-    def _qibocirc_to_qiskitcirc(self, qibo_circuit) -> qiskit.QuantumCircuit:
+    def _qibocirc_to_qiskitcirc(self, qibo_circuit) -> "qiskit.QuantumCircuit":
         """Convert a Qibo Circuit into a Qiskit Circuit."""
         # Convert the circuit to QASM 2.0 to qiskit
         qasm_circuit = qibo_circuit.to_qasm()
-        qiskit_circuit = qiskit.QuantumCircuit.from_qasm_str(qasm_circuit)
+        qiskit_circuit = self.qiskit.QuantumCircuit.from_qasm_str(qasm_circuit)
 
         # Transpile the circuit to adapt it to the linear structure of the MPS,
         # with the constraint of having only the gates basis_gates
-        qiskit_circuit = qmatchatea.preprocessing.preprocess(
+        qiskit_circuit = self.qmatchatea.preprocessing.preprocess(
             qiskit_circuit,
-            qk_params=qmatchatea.preprocessing.qk_transpilation_params(),
+            qk_params=self.qmatchatea.preprocessing.qk_transpilation_params(),
         )
         return qiskit_circuit
 
@@ -293,7 +304,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
                     )
 
             # Create a TNObsTensorProduct for this term.
-            term_tensor_prod = qtealeaves.observables.TNObsTensorProduct(
+            term_tensor_prod = self.qtealeaves.observables.TNObsTensorProduct(
                 name=f"term_{i}",
                 operators=operator_names,
                 sites=acting_on_qubits,
@@ -306,7 +317,7 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
                 tensor_product_obs += term_tensor_prod
 
         # Combine all terms into a weighted sum observable
-        obs_sum = qtealeaves.observables.TNObsWeightedSum(
+        obs_sum = self.qtealeaves.observables.TNObsWeightedSum(
             name=observable_name,
             tp_operators=tensor_product_obs,
             coeffs=coeff_list,
