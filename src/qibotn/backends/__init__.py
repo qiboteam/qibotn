@@ -26,7 +26,7 @@ class MetaBackend:
         if platform == "cutensornet":  # pragma: no cover
             return CuTensorNet(runcard)
         elif platform == "quimb":  # pragma: no cover
-            return QuimbBackend(runcard)
+            return QuimbBackend()
         elif platform == "qmatchatea":  # pragma: no cover
             from qibotn.backends.qmatchatea import QMatchaTeaBackend
 

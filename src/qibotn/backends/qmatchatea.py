@@ -23,6 +23,9 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
         self.name = "qibotn"
         self.platform = "qmatchatea"
 
+        # Default precision
+        self.precision = "double"
+
         # Set default configurations
         self.configure_tn_simulation()
         self._setup_backend_specifics()
@@ -87,7 +90,6 @@ class QMatchaTeaBackend(QibotnBackend, NumpyBackend):
 
         # TODO: once MPI is available for Python, integrate it here
         self.qmatchatea_backend = qmatchatea.QCBackend(
-            backend="PY",  # The only alternative is Fortran, but we use Python here
             precision=qmatchatea_precision,
             device=qmatchatea_device,
             ansatz=self.ansatz,
