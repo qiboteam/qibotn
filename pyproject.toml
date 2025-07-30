@@ -26,11 +26,13 @@ quimb = { version = "^1.10.0", extras = ["tensor"] }
 cupy-cuda11x = { version = "^13.1.0", optional = true }
 cuquantum-python-cu11 = { version = "^24.1.0", optional = true }
 qmatchatea = { version = "^1.4.3", optional = true }
+qiskit = { version = "^1.4.0", optional = true }
+qtealeaves = { version = "^1.5.20", optional = true }
 
 
 [tool.poetry.extras]
 cuda = ["cupy-cuda11x", "cuquantum-python-cu11", "mpi4py"]
-qmatchatea = ["qmatchatea"]
+qmatchatea = ["qmatchatea", "qtealeaves", "qiskit"]
 
 [tool.poetry.group.docs]
 optional = true
