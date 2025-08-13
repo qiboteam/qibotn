@@ -1,9 +1,10 @@
 import numpy as np
+from qibo import hamiltonians
 from qibo.backends import NumpyBackend
 from qibo.config import raise_error
-from qibo.result import QuantumState
 
 from qibotn.backends.abstract import QibotnBackend
+from qibotn.result import TensorNetworkResult
 
 CUDA_TYPES = {}
 
@@ -14,6 +15,11 @@ class CuTensorNet(QibotnBackend, NumpyBackend):  # pragma: no cover
 
     def __init__(self, runcard):
         super().__init__()
+        from cuquantum import (  # pylint: disable=import-error
+            ComputeType,
+            __version__,
+            cudaDataType,
+        )
         from cuquantum import cutensornet as cutn  # pylint: disable=import-error
 
         if runcard is not None:
@@ -23,15 +29,17 @@ class CuTensorNet(QibotnBackend, NumpyBackend):  # pragma: no cover
             expectation_enabled_value = runcard.get("expectation_enabled")
             if expectation_enabled_value is True:
                 self.expectation_enabled = True
-                self.pauli_string_pattern = "XXXZ"
+                self.observable = None
             elif expectation_enabled_value is False:
                 self.expectation_enabled = False
             elif isinstance(expectation_enabled_value, dict):
                 self.expectation_enabled = True
-                expectation_enabled_dict = runcard.get("expectation_enabled", {})
-                self.pauli_string_pattern = expectation_enabled_dict.get(
-                    "pauli_string_pattern", None
-                )
+                self.observable = runcard.get("expectation_enabled", {})
+            elif isinstance(
+                expectation_enabled_value, hamiltonians.SymbolicHamiltonian
+            ):
+                self.expectation_enabled = True
+                self.observable = expectation_enabled_value
             else:
                 raise TypeError("expectation_enabled has an unexpected type")
 
@@ -60,22 +68,21 @@ class CuTensorNet(QibotnBackend, NumpyBackend):  # pragma: no cover
             self.expectation_enabled = False
 
         self.name = "qibotn"
-        self.cuquantum = cuquantum
         self.cutn = cutn
         self.platform = "cutensornet"
-        self.versions["cuquantum"] = self.cuquantum.__version__
+        self.versions["cuquantum"] = __version__
         self.supports_multigpu = True
         self.handle = self.cutn.create()
 
         global CUDA_TYPES
         CUDA_TYPES = {
             "complex64": (
-                self.cuquantum.cudaDataType.CUDA_C_32F,
-                self.cuquantum.ComputeType.COMPUTE_32F,
+                cudaDataType.CUDA_C_32F,
+                ComputeType.COMPUTE_32F,
             ),
             "complex128": (
-                self.cuquantum.cudaDataType.CUDA_C_64F,
-                self.cuquantum.ComputeType.COMPUTE_64F,
+                cudaDataType.CUDA_C_64F,
+                ComputeType.COMPUTE_64F,
             ),
         }
 
@@ -154,17 +161,15 @@ class CuTensorNet(QibotnBackend, NumpyBackend):  # pragma: no cover
             and self.NCCL_enabled == False
             and self.expectation_enabled == True
         ):
-            state = eval.expectation_pauli_tn(
-                circuit, self.dtype, self.pauli_string_pattern
-            )
+            state = eval.expectation_tn(circuit, self.dtype, self.observable)
         elif (
             self.MPI_enabled == True
             and self.MPS_enabled == False
             and self.NCCL_enabled == False
             and self.expectation_enabled == True
         ):
-            state, rank = eval.expectation_pauli_tn_MPI(
-                circuit, self.dtype, self.pauli_string_pattern, 32
+            state, rank = eval.expectation_tn_MPI(
+                circuit, self.dtype, self.observable, 32
             )
             if rank > 0:
                 state = np.array(0)
@@ -174,15 +179,27 @@ class CuTensorNet(QibotnBackend, NumpyBackend):  # pragma: no cover
             and self.NCCL_enabled == True
             and self.expectation_enabled == True
         ):
-            state, rank = eval.expectation_pauli_tn_nccl(
-                circuit, self.dtype, self.pauli_string_pattern, 32
+            state, rank = eval.expectation_tn_nccl(
+                circuit, self.dtype, self.observable, 32
             )
             if rank > 0:
                 state = np.array(0)
         else:
             raise_error(NotImplementedError, "Compute type not supported.")
 
-        if return_array:
-            return state.flatten()
+        if self.expectation_enabled:
+            return state.flatten().real
         else:
-            return QuantumState(state.flatten())
+            if return_array:
+                statevector = state.flatten()
+            else:
+                statevector = state
+
+            return TensorNetworkResult(
+                nqubits=circuit.nqubits,
+                backend=self,
+                measures=None,
+                measured_probabilities=None,
+                prob_type=None,
+                statevector=statevector,
+            )

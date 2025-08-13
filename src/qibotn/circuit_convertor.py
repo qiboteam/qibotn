@@ -195,12 +195,12 @@ class QiboCircuitToEinsum:
             gates.append((operand, (qubit,)))
         return gates
 
-    def expectation_operands(self, pauli_string):
+    def expectation_operands(self, ham_gates):
         """Create the operands for pauli string expectation computation in the
         interleave format.
 
         Parameters:
-            pauli_string: A string representating the list of pauli gates.
+            ham_gates: A list of gates derived from Qibo hamiltonian object.
 
         Returns:
             Operands for the contraction in the interleave format.
@@ -208,8 +208,6 @@ class QiboCircuitToEinsum:
         input_bitstring = "0" * self.circuit.nqubits
 
         input_operands = self._get_bitstring_tensors(input_bitstring)
-        pauli_string = dict(zip(range(self.circuit.nqubits), pauli_string))
-        pauli_map = pauli_string
 
         (
             mode_labels,
@@ -228,11 +226,7 @@ class QiboCircuitToEinsum:
 
         next_frontier = max(qubits_frontier.values()) + 1
 
-        pauli_gates = self.get_pauli_gates(
-            pauli_map, dtype=self.dtype, backend=self.backend
-        )
-
-        gates_inverse = pauli_gates + self.gate_tensors_inverse
+        gates_inverse = ham_gates + self.gate_tensors_inverse
 
         (
             gate_mode_labels_inverse,
