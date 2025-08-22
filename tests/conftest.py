@@ -15,13 +15,10 @@ BACKENDS = ["cutensornet"]
 
 def get_backend(backend_name):
 
-    from qibotn.backends.qmatchatea import QMatchaTeaBackend
     from qibotn.backends.cutensornet import CuTensorNet
+    from qibotn.backends.qmatchatea import QMatchaTeaBackend
 
-    NAME2BACKEND = {
-        "qmatchatea": QMatchaTeaBackend,
-        "cutensornet": CuTensorNet
-    }
+    NAME2BACKEND = {"qmatchatea": QMatchaTeaBackend, "cutensornet": CuTensorNet}
 
     return NAME2BACKEND[backend_name]()
 

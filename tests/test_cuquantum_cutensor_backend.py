@@ -1,4 +1,5 @@
 import math
+
 import cupy as cp
 import pytest
 import qibo
