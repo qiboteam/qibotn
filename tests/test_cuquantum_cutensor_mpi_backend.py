@@ -73,9 +73,6 @@ def test_eval_mpi(nqubits: int, dtype="complex128"):
     result_tn_cp = cp.asarray(result_tn.statevector.flatten())
 
     print(f"State vector difference: {abs(result_tn_cp - result_sv_cp).max():0.3e}")
-    print(
-        f"AndyRank {backend.rank} qibo {result_sv_cp} tn {result_tn_cp} State vector difference: {abs(result_tn_cp - result_sv_cp).max():0.3e}"
-    )
 
     if backend.rank == 0:
 
@@ -209,20 +206,11 @@ def test_eval_nccl(nqubits: int, dtype="complex128"):
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     result_tn_cp = cp.asarray(result_tn.statevector.flatten())
 
-    # print(
-    #     f"Rank {backend.rank} qibo {result_sv_cp} tn {result_sv_cp} State vector difference: {abs(result_tn_cp - result_sv_cp).max():0.3e}"
-    # )
     if backend.rank == 0:
-        print(
-            f"Rank {backend.rank} qibo {result_sv_cp} tn {result_tn_cp} State vector difference: {abs(result_tn_cp - result_sv_cp).max():0.3e}"
-        )
         assert cp.allclose(
             result_sv_cp, result_tn_cp
         ), "Resulting dense vectors do not match"
     else:
-        print(
-            f"Rank {backend.rank} qibo {result_sv_cp} tn {result_tn_cp} State vector difference: {abs(result_tn_cp - result_sv_cp).max():0.3e}"
-        )
         assert (
             isinstance(result_tn_cp, cp.ndarray)
             and result_tn_cp.size == 1
