@@ -1,4 +1,4 @@
-# mpirun --allow-run-as-root -np 2 python -m pytest --with-mpi test_cuquantum_cutensor_backend_mpi.py
+# mpirun --allow-run-as-root -np 2 python -m pytest --with-mpi test_cuquantum_cutensor_mpi_backend.py
 
 import math
 
@@ -43,7 +43,7 @@ def build_observable_dict(nqubits):
 
     return {"terms": terms}
 
-
+@pytest.mark.gpu
 @pytest.mark.mpi
 @pytest.mark.parametrize("nqubits", [1, 2, 5, 7, 10])
 def test_eval_mpi(nqubits: int, dtype="complex128"):
@@ -86,7 +86,7 @@ def test_eval_mpi(nqubits: int, dtype="complex128"):
             and result_tn_cp.item() == 0
         ), f"Rank {backend.rank}: result_tn_cp should be scalar/array with 0, got {result_tn_cp}"
 
-
+@pytest.mark.gpu
 @pytest.mark.mpi
 @pytest.mark.parametrize("nqubits", [1, 2, 5, 7, 10])
 def test_expectation_mpi(nqubits: int, dtype="complex128"):
@@ -177,7 +177,7 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
             and result_tn.item() == 0
         ), f"Rank {backend.rank}: expected int array [0], got {result_tn}"
 
-
+@pytest.mark.gpu
 @pytest.mark.mpi
 @pytest.mark.parametrize("nqubits", [1, 2, 5, 7, 10])
 def test_eval_nccl(nqubits: int, dtype="complex128"):
@@ -217,7 +217,7 @@ def test_eval_nccl(nqubits: int, dtype="complex128"):
             and result_tn_cp.item() == 0
         ), f"Rank {backend.rank}: result_tn_cp should be scalar/array with 0, got {result_tn_cp}"
 
-
+@pytest.mark.gpu
 @pytest.mark.mpi
 @pytest.mark.parametrize("nqubits", [1, 2, 5, 7, 10])
 def test_expectation_NCCL(nqubits: int, dtype="complex128"):

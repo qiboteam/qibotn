@@ -40,7 +40,7 @@ def build_observable_dict(nqubits):
 
     return {"terms": terms}
 
-
+@pytest.mark.gpu
 @pytest.mark.parametrize("nqubits", [1, 2, 5, 10])
 def test_eval(nqubits: int, dtype="complex128"):
     """
@@ -81,7 +81,7 @@ def test_eval(nqubits: int, dtype="complex128"):
         result_sv_cp, result_tn.statevector.flatten()
     ), "Resulting dense vectors do not match"
 
-
+@pytest.mark.gpu
 @pytest.mark.parametrize("nqubits", [2, 5, 10])
 def test_mps(nqubits: int, dtype="complex128"):
     """Evaluate MPS with cuQuantum.
