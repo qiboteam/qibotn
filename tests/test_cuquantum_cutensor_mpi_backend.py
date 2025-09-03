@@ -12,6 +12,7 @@ from qibo.symbols import X, Z
 
 ABS_TOL = 1e-7
 
+
 def qibo_qft(nqubits, swaps):
     circ_qibo = QFT(nqubits, swaps)
     state_vec = circ_qibo().state(numpy=True)
