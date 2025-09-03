@@ -57,7 +57,7 @@ def test_eval(nqubits: int, dtype="complex128"):
 
     # Test cutensornet
     backend = construct_backend(backend="qibotn", platform="cutensornet")
-    # Test 1: no computation settings specified. Use default.
+    # Test with no settings specified. Default is dense vector calculation without MPI or NCCL.
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     print(
         f"State vector difference: {abs(result_tn.statevector.flatten() - result_sv_cp).max():0.3e}"
@@ -66,7 +66,7 @@ def test_eval(nqubits: int, dtype="complex128"):
         result_sv_cp, result_tn.statevector.flatten()
     ), "Resulting dense vectors do not match"
 
-    # Test 2: Explicit computation settings specified (same as default).
+    # Test with explicit settings specified.
     computation_settings = {
         "MPI_enabled": False,
         "MPS_enabled": False,
@@ -101,7 +101,7 @@ def test_mps(nqubits: int, dtype="complex128"):
 
     # Test cutensornet
     backend = construct_backend(backend="qibotn", platform="cutensornet")
-    # Test 1: No MPS computation settings specified. Use default.
+    # Test with simple MPS settings specified using bool. Uses the default MPS parameters.
     computation_settings_1 = {
         "MPI_enabled": False,
         "MPS_enabled": True,
@@ -117,7 +117,7 @@ def test_mps(nqubits: int, dtype="complex128"):
         result_tn.statevector.flatten(), result_sv_cp
     ), "Resulting dense vectors do not match"
 
-    # Test 2: Explicit MPS computation settings specified (same as default).
+    # Test with explicit MPS computation settings specified using Dict. Users able to specify parameters like qr_method etc.
     computation_settings_2 = {
         "MPI_enabled": False,
         "MPS_enabled": {
@@ -156,7 +156,7 @@ def test_expectation(nqubits: int, dtype="complex128"):
     # Test cutensornet
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
-    # Test 1: No Hamilitonian computation settings specified. Use default.
+    # Test with simple settings using bool. Uses default Hamilitonian for expectation calculation.
     computation_settings_1 = {
         "MPI_enabled": False,
         "MPS_enabled": False,
@@ -167,7 +167,7 @@ def test_expectation(nqubits: int, dtype="complex128"):
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     assert math.isclose(exact_expval.item(), result_tn.real.get().item(), abs_tol=1e-7)
 
-    # Test 2: hamiltonians.SymbolicHamiltonian object in computation settings specified.
+    # Test with user defined hamiltonian using "hamiltonians.SymbolicHamiltonian" object.
     computation_settings_2 = {
         "MPI_enabled": False,
         "MPS_enabled": False,
@@ -178,7 +178,7 @@ def test_expectation(nqubits: int, dtype="complex128"):
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     assert math.isclose(exact_expval.item(), result_tn.real.get().item(), abs_tol=1e-7)
 
-    # Test 3: Dictionary object form of hamiltonian in computation settings specified.
+    # Test with user defined hamiltonian using Dictionary object form of hamiltonian.
     ham_dict = build_observable_dict(nqubits)
     computation_settings_3 = {
         "MPI_enabled": False,

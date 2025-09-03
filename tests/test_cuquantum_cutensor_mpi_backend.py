@@ -62,7 +62,7 @@ def test_eval_mpi(nqubits: int, dtype="complex128"):
     # Test cutensornet
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
-    # Test 1: Explicit computation settings specified (same as default).
+    # Test with explicit settings specified.
     computation_settings = {
         "MPI_enabled": True,
         "MPS_enabled": False,
@@ -106,7 +106,7 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
     # Test cutensornet
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
-    # Test 1: No Hamilitonian computation settings specified. Use default.
+    # Test with simple settings using bool. Uses default Hamilitonian for expectation calculation.
     computation_settings_1 = {
         "MPI_enabled": True,
         "MPS_enabled": False,
@@ -130,7 +130,7 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
             and result_tn.item() == 0
         ), f"Rank {backend.rank}: expected int array [0], got {result_tn}"
 
-    # Test 2: hamiltonians.SymbolicHamiltonian object in computation settings specified.
+    # Test with user defined hamiltonian using "hamiltonians.SymbolicHamiltonian" object.
     computation_settings_2 = {
         "MPI_enabled": True,
         "MPS_enabled": False,
@@ -154,7 +154,7 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
             and result_tn.item() == 0
         ), f"Rank {backend.rank}: expected int array [0], got {result_tn}"
 
-    # Test 3: Dictionary object form of hamiltonian in computation settings specified.
+    # Test with user defined hamiltonian using Dictionary object form of hamiltonian.
     ham_dict = build_observable_dict(nqubits)
     computation_settings_3 = {
         "MPI_enabled": True,
@@ -198,7 +198,7 @@ def test_eval_nccl(nqubits: int, dtype="complex128"):
     # Test cutensornet
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
-    # Test 1: Explicit computation settings specified (same as default).
+    # Test with explicit settings specified.
     computation_settings = {
         "MPI_enabled": False,
         "MPS_enabled": False,
@@ -239,7 +239,7 @@ def test_expectation_NCCL(nqubits: int, dtype="complex128"):
     # Test cutensornet
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
-    # Test 1: No Hamilitonian computation settings specified. Use default.
+    # Test with simple settings using bool. Uses default Hamilitonian for expectation calculation.
     computation_settings_1 = {
         "MPI_enabled": False,
         "MPS_enabled": False,
@@ -263,7 +263,7 @@ def test_expectation_NCCL(nqubits: int, dtype="complex128"):
             and result_tn.item() == 0
         ), f"Rank {backend.rank}: expected int array [0], got {result_tn}"
 
-    # Test 2: hamiltonians.SymbolicHamiltonian object in computation settings specified.
+    # Test with user defined hamiltonian using "hamiltonians.SymbolicHamiltonian" object.
     computation_settings_2 = {
         "MPI_enabled": False,
         "MPS_enabled": False,
@@ -287,7 +287,7 @@ def test_expectation_NCCL(nqubits: int, dtype="complex128"):
             and result_tn.item() == 0
         ), f"Rank {backend.rank}: expected int array [0], got {result_tn}"
 
-    # Test 3: Dictionary object form of hamiltonian in computation settings specified.
+    # Test with user defined hamiltonian using Dictionary object form of hamiltonian.
     ham_dict = build_observable_dict(nqubits)
     computation_settings_3 = {
         "MPI_enabled": False,
