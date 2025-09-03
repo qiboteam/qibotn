@@ -73,7 +73,6 @@ def create_hamiltonian_from_dict(data, circuit_nqubit):
 
         # Scale by the coefficient
         final_term = coeff * term_expr
-        # print(f"Adding term: {final_term}")  # Debugging output
         terms.append(final_term)
 
     if not terms:
@@ -81,7 +80,6 @@ def create_hamiltonian_from_dict(data, circuit_nqubit):
 
     # Combine all terms
     hamiltonian_form = sum(terms)
-    # print(f"Hamiltonian Form After Summation: {hamiltonian_form}")
 
     return hamiltonians.SymbolicHamiltonian(hamiltonian_form)
 
