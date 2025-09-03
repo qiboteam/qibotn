@@ -7,6 +7,7 @@ from qibo import construct_backend, hamiltonians
 from qibo.models import QFT
 from qibo.symbols import X, Z
 
+ABS_TOL = 1e-7
 
 def qibo_qft(nqubits, swaps):
     circ_qibo = QFT(nqubits, swaps)
@@ -165,7 +166,7 @@ def test_expectation(nqubits: int, dtype="complex128"):
     }
     backend.configure_tn_simulation(computation_settings_1)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
-    assert math.isclose(exact_expval.item(), result_tn.real.get().item(), abs_tol=1e-7)
+    assert math.isclose(exact_expval.item(), result_tn.real.get().item(), abs_tol=ABS_TOL)
 
     # Test with user defined hamiltonian using "hamiltonians.SymbolicHamiltonian" object.
     computation_settings_2 = {
@@ -176,7 +177,7 @@ def test_expectation(nqubits: int, dtype="complex128"):
     }
     backend.configure_tn_simulation(computation_settings_2)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
-    assert math.isclose(exact_expval.item(), result_tn.real.get().item(), abs_tol=1e-7)
+    assert math.isclose(exact_expval.item(), result_tn.real.get().item(), abs_tol=ABS_TOL)
 
     # Test with user defined hamiltonian using Dictionary object form of hamiltonian.
     ham_dict = build_observable_dict(nqubits)
@@ -188,4 +189,4 @@ def test_expectation(nqubits: int, dtype="complex128"):
     }
     backend.configure_tn_simulation(computation_settings_3)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
-    assert math.isclose(exact_expval.item(), result_tn.real.get().item(), abs_tol=1e-7)
+    assert math.isclose(exact_expval.item(), result_tn.real.get().item(), abs_tol=ABS_TOL)

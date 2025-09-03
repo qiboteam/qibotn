@@ -10,6 +10,7 @@ from qibo import construct_backend, hamiltonians
 from qibo.models import QFT
 from qibo.symbols import X, Z
 
+ABS_TOL = 1e-7
 
 def qibo_qft(nqubits, swaps):
     circ_qibo = QFT(nqubits, swaps)
@@ -118,7 +119,7 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
     if backend.rank == 0:
         # Compare numerical values
         assert math.isclose(
-            exact_expval.item(), float(result_tn[0]), abs_tol=1e-7
+            exact_expval.item(), float(result_tn[0]), abs_tol=ABS_TOL
         ), f"Rank {backend.rank}: mismatch, expected {exact_expval}, got {result_tn}"
 
     else:
@@ -142,7 +143,7 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
     if backend.rank == 0:
         # Compare numerical values
         assert math.isclose(
-            exact_expval.item(), float(result_tn[0]), abs_tol=1e-7
+            exact_expval.item(), float(result_tn[0]), abs_tol=ABS_TOL
         ), f"Rank {backend.rank}: mismatch, expected {exact_expval}, got {result_tn}"
 
     else:
@@ -167,7 +168,7 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
     if backend.rank == 0:
         # Compare numerical values
         assert math.isclose(
-            exact_expval.item(), float(result_tn[0]), abs_tol=1e-7
+            exact_expval.item(), float(result_tn[0]), abs_tol=ABS_TOL
         ), f"Rank {backend.rank}: mismatch, expected {exact_expval}, got {result_tn}"
 
     else:
@@ -251,7 +252,7 @@ def test_expectation_NCCL(nqubits: int, dtype="complex128"):
     if backend.rank == 0:
         # Compare numerical values
         assert math.isclose(
-            exact_expval.item(), float(result_tn[0]), abs_tol=1e-7
+            exact_expval.item(), float(result_tn[0]), abs_tol=ABS_TOL
         ), f"Rank {backend.rank}: mismatch, expected {exact_expval}, got {result_tn}"
 
     else:
@@ -275,7 +276,7 @@ def test_expectation_NCCL(nqubits: int, dtype="complex128"):
     if backend.rank == 0:
         # Compare numerical values
         assert math.isclose(
-            exact_expval.item(), float(result_tn[0]), abs_tol=1e-7
+            exact_expval.item(), float(result_tn[0]), abs_tol=ABS_TOL
         ), f"Rank {backend.rank}: mismatch, expected {exact_expval}, got {result_tn}"
 
     else:
@@ -300,7 +301,7 @@ def test_expectation_NCCL(nqubits: int, dtype="complex128"):
     if backend.rank == 0:
         # Compare numerical values
         assert math.isclose(
-            exact_expval.item(), float(result_tn[0]), abs_tol=1e-7
+            exact_expval.item(), float(result_tn[0]), abs_tol=ABS_TOL
         ), f"Rank {backend.rank}: mismatch, expected {exact_expval}, got {result_tn}"
 
     else:
