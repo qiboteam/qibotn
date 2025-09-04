@@ -69,13 +69,13 @@ def test_eval(nqubits: int, dtype="complex128"):
     ), "Resulting dense vectors do not match"
 
     # Test with explicit settings specified.
-    computation_settings = {
+    comp_set_w_bool = {
         "MPI_enabled": False,
         "MPS_enabled": False,
         "NCCL_enabled": False,
         "expectation_enabled": False,
     }
-    backend.configure_tn_simulation(computation_settings)
+    backend.configure_tn_simulation(comp_set_w_bool)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     print(
         f"State vector difference: {abs(result_tn.statevector.flatten() - result_sv_cp).max():0.3e}"
@@ -104,13 +104,13 @@ def test_mps(nqubits: int, dtype="complex128"):
     # Test cutensornet
     backend = construct_backend(backend="qibotn", platform="cutensornet")
     # Test with simple MPS settings specified using bool. Uses the default MPS parameters.
-    computation_settings_1 = {
+    comp_set_w_bool = {
         "MPI_enabled": False,
         "MPS_enabled": True,
         "NCCL_enabled": False,
         "expectation_enabled": False,
     }
-    backend.configure_tn_simulation(computation_settings_1)
+    backend.configure_tn_simulation(comp_set_w_bool)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     print(
         f"State vector difference: {abs(result_tn.statevector.flatten() - result_sv_cp).max():0.3e}"
@@ -120,7 +120,7 @@ def test_mps(nqubits: int, dtype="complex128"):
     ), "Resulting dense vectors do not match"
 
     # Test with explicit MPS computation settings specified using Dict. Users able to specify parameters like qr_method etc.
-    computation_settings_2 = {
+    comp_set_w_MPS_config_para = {
         "MPI_enabled": False,
         "MPS_enabled": {
             "qr_method": False,
@@ -132,7 +132,7 @@ def test_mps(nqubits: int, dtype="complex128"):
         "NCCL_enabled": False,
         "expectation_enabled": False,
     }
-    backend.configure_tn_simulation(computation_settings_2)
+    backend.configure_tn_simulation(comp_set_w_MPS_config_para)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     print(
         f"State vector difference: {abs(result_tn.statevector.flatten() - result_sv_cp).max():0.3e}"
@@ -159,26 +159,26 @@ def test_expectation(nqubits: int, dtype="complex128"):
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
     # Test with simple settings using bool. Uses default Hamilitonian for expectation calculation.
-    computation_settings_1 = {
+    comp_set_w_bool = {
         "MPI_enabled": False,
         "MPS_enabled": False,
         "NCCL_enabled": False,
         "expectation_enabled": True,
     }
-    backend.configure_tn_simulation(computation_settings_1)
+    backend.configure_tn_simulation(comp_set_w_bool)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     assert math.isclose(
         exact_expval.item(), result_tn.real.get().item(), abs_tol=ABS_TOL
     )
 
     # Test with user defined hamiltonian using "hamiltonians.SymbolicHamiltonian" object.
-    computation_settings_2 = {
+    comp_set_w_hamiltonian_obj = {
         "MPI_enabled": False,
         "MPS_enabled": False,
         "NCCL_enabled": False,
         "expectation_enabled": ham,
     }
-    backend.configure_tn_simulation(computation_settings_2)
+    backend.configure_tn_simulation(comp_set_w_hamiltonian_obj)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     assert math.isclose(
         exact_expval.item(), result_tn.real.get().item(), abs_tol=ABS_TOL
@@ -186,13 +186,13 @@ def test_expectation(nqubits: int, dtype="complex128"):
 
     # Test with user defined hamiltonian using Dictionary object form of hamiltonian.
     ham_dict = build_observable_dict(nqubits)
-    computation_settings_3 = {
+    comp_set_w_hamiltonian_dict = {
         "MPI_enabled": False,
         "MPS_enabled": False,
         "NCCL_enabled": False,
         "expectation_enabled": ham_dict,
     }
-    backend.configure_tn_simulation(computation_settings_3)
+    backend.configure_tn_simulation(comp_set_w_hamiltonian_dict)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     assert math.isclose(
         exact_expval.item(), result_tn.real.get().item(), abs_tol=ABS_TOL

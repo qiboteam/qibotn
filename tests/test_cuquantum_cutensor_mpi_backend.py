@@ -65,13 +65,13 @@ def test_eval_mpi(nqubits: int, dtype="complex128"):
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
     # Test with explicit settings specified.
-    computation_settings = {
+    comp_set_w_bool = {
         "MPI_enabled": True,
         "MPS_enabled": False,
         "NCCL_enabled": False,
         "expectation_enabled": False,
     }
-    backend.configure_tn_simulation(computation_settings)
+    backend.configure_tn_simulation(comp_set_w_bool)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     result_tn_cp = cp.asarray(result_tn.statevector.flatten())
 
@@ -109,13 +109,13 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
     # Test with simple settings using bool. Uses default Hamilitonian for expectation calculation.
-    computation_settings_1 = {
+    comp_set_w_bool = {
         "MPI_enabled": True,
         "MPS_enabled": False,
         "NCCL_enabled": False,
         "expectation_enabled": True,
     }
-    backend.configure_tn_simulation(computation_settings_1)
+    backend.configure_tn_simulation(comp_set_w_bool)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     if backend.rank == 0:
         # Compare numerical values
@@ -133,13 +133,13 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
         ), f"Rank {backend.rank}: expected int array [0], got {result_tn}"
 
     # Test with user defined hamiltonian using "hamiltonians.SymbolicHamiltonian" object.
-    computation_settings_2 = {
+    comp_set_w_hamiltonian_obj = {
         "MPI_enabled": True,
         "MPS_enabled": False,
         "NCCL_enabled": False,
         "expectation_enabled": ham,
     }
-    backend.configure_tn_simulation(computation_settings_2)
+    backend.configure_tn_simulation(comp_set_w_hamiltonian_obj)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     if backend.rank == 0:
         # Compare numerical values
@@ -158,13 +158,13 @@ def test_expectation_mpi(nqubits: int, dtype="complex128"):
 
     # Test with user defined hamiltonian using Dictionary object form of hamiltonian.
     ham_dict = build_observable_dict(nqubits)
-    computation_settings_3 = {
+    comp_set_w_hamiltonian_dict = {
         "MPI_enabled": True,
         "MPS_enabled": False,
         "NCCL_enabled": False,
         "expectation_enabled": ham_dict,
     }
-    backend.configure_tn_simulation(computation_settings_3)
+    backend.configure_tn_simulation(comp_set_w_hamiltonian_dict)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     if backend.rank == 0:
         # Compare numerical values
@@ -201,13 +201,13 @@ def test_eval_nccl(nqubits: int, dtype="complex128"):
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
     # Test with explicit settings specified.
-    computation_settings = {
+    comp_set_w_bool = {
         "MPI_enabled": False,
         "MPS_enabled": False,
         "NCCL_enabled": True,
         "expectation_enabled": False,
     }
-    backend.configure_tn_simulation(computation_settings)
+    backend.configure_tn_simulation(comp_set_w_bool)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     result_tn_cp = cp.asarray(result_tn.statevector.flatten())
 
@@ -242,13 +242,13 @@ def test_expectation_NCCL(nqubits: int, dtype="complex128"):
     backend = construct_backend(backend="qibotn", platform="cutensornet")
 
     # Test with simple settings using bool. Uses default Hamilitonian for expectation calculation.
-    computation_settings_1 = {
+    comp_set_w_bool = {
         "MPI_enabled": False,
         "MPS_enabled": False,
         "NCCL_enabled": True,
         "expectation_enabled": True,
     }
-    backend.configure_tn_simulation(computation_settings_1)
+    backend.configure_tn_simulation(comp_set_w_bool)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     if backend.rank == 0:
         # Compare numerical values
@@ -266,13 +266,13 @@ def test_expectation_NCCL(nqubits: int, dtype="complex128"):
         ), f"Rank {backend.rank}: expected int array [0], got {result_tn}"
 
     # Test with user defined hamiltonian using "hamiltonians.SymbolicHamiltonian" object.
-    computation_settings_2 = {
+    comp_set_w_hamiltonian_obj = {
         "MPI_enabled": False,
         "MPS_enabled": False,
         "NCCL_enabled": True,
         "expectation_enabled": ham,
     }
-    backend.configure_tn_simulation(computation_settings_2)
+    backend.configure_tn_simulation(comp_set_w_hamiltonian_obj)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     if backend.rank == 0:
         # Compare numerical values
@@ -291,13 +291,13 @@ def test_expectation_NCCL(nqubits: int, dtype="complex128"):
 
     # Test with user defined hamiltonian using Dictionary object form of hamiltonian.
     ham_dict = build_observable_dict(nqubits)
-    computation_settings_3 = {
+    comp_set_w_hamiltonian_dict = {
         "MPI_enabled": False,
         "MPS_enabled": False,
         "NCCL_enabled": True,
         "expectation_enabled": ham_dict,
     }
-    backend.configure_tn_simulation(computation_settings_3)
+    backend.configure_tn_simulation(comp_set_w_hamiltonian_dict)
     result_tn = backend.execute_circuit(circuit=qibo_circ)
     if backend.rank == 0:
         # Compare numerical values
