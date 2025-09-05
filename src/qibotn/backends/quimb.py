@@ -112,18 +112,24 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             circuit.to_qasm(), psi0=initial_state
         )
 
-        frequencies = Counter(circ_quimb.sample(nshots)) if nshots is not None else None
-        main_frequencies = {
-            state: count
-            for state, count in frequencies.most_common(self.n_most_frequent_states)
-        }
-        computational_states = [state for state in main_frequencies.keys()]
-        amplitudes = {
-            state: circ_quimb.amplitude(state) for state in computational_states
-        }
-        measured_probabilities = {
-            state: abs(amplitude) ** 2 for state, amplitude in amplitudes.items()
-        }
+        if nshots:
+            frequencies = Counter(circ_quimb.sample(nshots))
+            main_frequencies = {
+                state: count
+                for state, count in frequencies.most_common(
+                    self.n_most_frequent_states
+                )
+            }
+            computational_states = list(main_frequencies.keys())
+            amplitudes = {
+                state: circ_quimb.amplitude(state) for state in computational_states
+            }
+            measured_probabilities = {
+                state: abs(amplitude) ** 2 for state, amplitude in amplitudes.items()
+            }
+        else:
+            frequencies = None
+            measured_probabilities = None
 
         statevector = circ_quimb.to_dense() if return_array else None
         return TensorNetworkResult(
