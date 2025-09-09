@@ -1,16 +1,16 @@
 import re
+import warnings
 from collections import Counter, defaultdict
 
 import numpy as np
-import quimb.tensor as qtn
 import quimb as qu
+import quimb.tensor as qtn
 from qibo.backends import NumpyBackend
 from qibo.config import raise_error
 from qibo.result import QuantumState
 
 from qibotn.backends.abstract import QibotnBackend
 from qibotn.result import TensorNetworkResult
-import warnings
 
 
 class QuimbBackend(QibotnBackend, NumpyBackend):
@@ -48,7 +48,7 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         self.max_bond_dimension = max_bond_dimension
         self.n_most_frequent_states = n_most_frequent_states
 
-    def setup_backend_specifics(self, qimb_backend="numpy", optimizer='auto-hq'):
+    def setup_backend_specifics(self, qimb_backend="numpy", optimizer="auto-hq"):
         """Setup backend specifics.
         Args:
             qimb_backend: str
@@ -119,9 +119,7 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             frequencies = Counter(circ_quimb.sample(nshots))
             main_frequencies = {
                 state: count
-                for state, count in frequencies.most_common(
-                    self.n_most_frequent_states
-                )
+                for state, count in frequencies.most_common(self.n_most_frequent_states)
             }
             computational_states = list(main_frequencies.keys())
             amplitudes = {
@@ -134,7 +132,11 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             frequencies = None
             measured_probabilities = None
 
-        statevector = circ_quimb.to_dense(backend=self.backend, optimize=self.optimizer) if return_array else None
+        statevector = (
+            circ_quimb.to_dense(backend=self.backend, optimize=self.optimizer)
+            if return_array
+            else None
+        )
         return TensorNetworkResult(
             nqubits=circuit.nqubits,
             backend=self,
@@ -167,34 +169,39 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         # for computing them in a single contraction. This does not work with CircuitMPS for some now
         # for Quimb 1.11.1
         operators_list, sites_list, coeffs_list = self._qiboobs_to_quimbobs(observable)
-        sites_list_grouped, operators_list_grouped, coeffs_list_grouped = self._group_by_tuples(sites_list, operators_list, coeffs_list)
+        sites_list_grouped, operators_list_grouped, coeffs_list_grouped = (
+            self._group_by_tuples(sites_list, operators_list, coeffs_list)
+        )
 
         if self.ansatz == "MPS":
-            if len(sites_list)-len(sites_list_grouped) > 10:
+            if len(sites_list) - len(sites_list_grouped) > 10:
                 warnings.warn(
                     "More than 10 local operators on the same sites are not being grouped as this is not compatible with CircuitMPS. Expected value computation can be more efficient without an MPS ansatz."
                 )
-            circ_ansatz = (qtn.circuit.CircuitMPS)
+            circ_ansatz = qtn.circuit.CircuitMPS
             circ = circ_ansatz.from_openqasm2_str(circuit.to_qasm())
             expectation_value = 0.0
             for ops, sites, coeffs in zip(operators_list, sites_list, coeffs_list):
-                exp_values = circ.local_expectation(ops, where=sites, backend=self.backend, optimize=self.optimizer)
+                exp_values = circ.local_expectation(
+                    ops, where=sites, backend=self.backend, optimize=self.optimizer
+                )
                 expectation_value += np.dot(coeffs, exp_values)
             return np.real(expectation_value)
-        
+
         else:
             circ_ansatz = qtn.circuit.Circuit
             circ = circ_ansatz.from_openqasm2_str(circuit.to_qasm())
             expectation_value = 0.0
-            for ops, sites, coeffs in zip(operators_list_grouped, sites_list_grouped, coeffs_list_grouped):
-                exp_values = circ.local_expectation(ops, where=sites, backend=self.backend, optimize=self.optimizer)
+            for ops, sites, coeffs in zip(
+                operators_list_grouped, sites_list_grouped, coeffs_list_grouped
+            ):
+                exp_values = circ.local_expectation(
+                    ops, where=sites, backend=self.backend, optimize=self.optimizer
+                )
                 expectation_value += np.dot(coeffs, exp_values)
             return np.real(expectation_value)
 
-    def _qiboobs_to_quimbobs(
-        self, 
-        hamiltonian
-    ):
+    def _qiboobs_to_quimbobs(self, hamiltonian):
         """
         Convert a Qibo SymbolicHamiltonian into a Quimb-compatible decomposition.
 
@@ -247,16 +254,16 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             coeffs_list.append(coeff)
 
         return operators_list, sites_list, coeffs_list
-    
+
     def _group_by_tuples(self, A, B, C):
         """
         Groups the elements of B and C by the unique tuples in A.
-        
+
         Parameters:
             A (list of tuples): key tuples (can contain duplicates)
             B (list): values aligned with A
             C (list): values aligned with A
-        
+
         Returns:
             (A_new, B_new, C_new):
                 A_new: list of unique tuples
