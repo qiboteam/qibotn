@@ -255,7 +255,8 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
 
         return operators_list, sites_list, coeffs_list
 
-    def _group_by_tuples(self, A, B, C):
+    @staticmethod
+    def _group_by_tuples(A, B, C):
         """
         Groups the elements of B and C by the unique tuples in A.
 
