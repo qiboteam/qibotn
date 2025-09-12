@@ -201,7 +201,8 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
                 expectation_value += np.dot(coeffs, exp_values)
             return np.real(expectation_value)
 
-    def _qiboobs_to_quimbobs(self, hamiltonian):
+    @staticmethod
+    def _qiboobs_to_quimbobs(hamiltonian):
         """
         Convert a Qibo SymbolicHamiltonian into a Quimb-compatible decomposition.
 
