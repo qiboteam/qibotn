@@ -3,6 +3,8 @@ import warnings
 from collections import Counter, defaultdict
 
 import numpy as np
+import jax
+import jax.numpy as jnp
 import quimb as qu
 import quimb.tensor as qtn
 from qibo.backends import NumpyBackend
@@ -12,6 +14,43 @@ from qibo.result import QuantumState
 from qibotn.backends.abstract import QibotnBackend
 from qibotn.result import TensorNetworkResult
 
+GATE_MAP = {
+        "h": "H",
+        "x": "X",
+        "y": "Y",
+        "z": "Z",
+        "s": "S",
+        "sdg": "SDG",
+        "t": "T",
+        "tdg": "TDG",
+        "sx": "SX",
+        "sxdg": "SXDG",
+        "rx": "RX",
+        "ry": "RY",
+        "rz": "RZ",
+        "u1": "U1",
+        "u2": "U2",
+        "u3": "U3",
+        "cx": "CNOT",
+        "cnot": "CNOT",
+        "cy": "CY",
+        "cz": "CZ",
+        "iswap": "ISWAP",
+        "swap": "SWAP",
+        "ccx": "CCX",
+        "toffoli": "CCX",
+        "ccz": "CCZ",
+        "cswap": "CSWAP",
+        "fredkin": "CSWAP",
+        "crx": "CRX",
+        "cry": "CRY",
+        "crz": "CRZ",
+        "fsim": "FSIM",
+        "rxx": "RXX",
+        "ryy": "RYY",
+        "rzz": "RZZ",
+        "m": None,  # measurement, skip
+    }
 
 class QuimbBackend(QibotnBackend, NumpyBackend):
 
@@ -145,8 +184,52 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             prob_type="default",
             statevector=statevector,
         )
-
+  
     def expectation(self, circuit, observable):
+        """
+        Compute the expectation value of a Qibo-friendly ``observable`` on the Tensor Network constructed from a Qibo ``circuit``.
+        This method takes a Qibo-style symbolic Hamiltonian (e.g., `X(0)*Z(1) + 2.0*Y(2)*Z(0)`)
+        as the observable, converts it into a Quimb observable and computes its expectation
+        value using the provided circuit.
+
+        Args:
+            circuit: A Qibo quantum circuit object on which the expectation value
+                is computed.
+            observable: The observable whose expectation value we want to compute.
+                This must be provided in the symbolic Hamiltonian form supported by Qibo
+                (e.g., `X(0)*Y(1)` or `Z(0)*Z(1) + 1.5*Y(2)`).
+
+        Returns:
+            float: The expectation value (real part).
+        """
+
+        '''Convert Qibo observables to Quimb'''
+        operators_list, sites_list, coeffs_list = self._qiboobs_to_quimbobs(observable)
+
+        '''Convert Qibo circuit to Quimb circuit'''
+        parameters = circuit.get_parameters()
+        quimb_circuit = self._qibo_circuit_to_quimb(
+            circuit, quimb_circuit_type=qtn.Circuit, to_backend=jnp.array, convert_eager=True
+        )
+        quimb_parameters = {
+            key: jnp.asarray(parameters[i]) for i, key in enumerate(quimb_circuit.get_params().keys())
+        }
+        quimb_circuit.set_params(quimb_parameters)
+
+        '''Compute expectation value'''
+        expectation_value = 0.0
+        for ops, sites, coeffs in zip(operators_list, sites_list, coeffs_list):
+            exp_values = quimb_circuit.local_expectation(
+                ops,
+                where=sites,
+                backend=self.backend,
+                optimize=self.optimizer
+            )
+            expectation_value = expectation_value + coeffs * exp_values
+        
+        return jnp.real(expectation_value)
+
+    def expectation_old(self, circuit, observable):
         """Compute the expectation value of a Qibo-friendly ``observable`` on the Tensor Network constructed from a Qibo ``circuit``.
 
         This method takes a Qibo-style symbolic Hamiltonian (e.g., `X(0)*Z(1) + 2.0*Y(2)*Z(0)`)
@@ -191,6 +274,7 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         else:
             circ_ansatz = qtn.circuit.Circuit
             circ = circ_ansatz.from_openqasm2_str(circuit.to_qasm())
+
             expectation_value = 0.0
             for ops, sites, coeffs in zip(
                 operators_list_grouped, sites_list_grouped, coeffs_list_grouped
@@ -283,3 +367,42 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         C_new = list(grouped_C.values())
 
         return A_new, B_new, C_new
+
+    def _qibo_circuit_to_quimb(self, qibo_circ, quimb_circuit_type=qtn.Circuit, **circuit_kwargs):
+        """
+        Convert a Qibo Circuit to a Quimb Circuit.
+
+        Parameters
+        ----------
+        qibo_circ : qibo.models.circuit.Circuit
+            The circuit to convert.
+        quimb_circuit_type : type
+            The Quimb circuit class to use (Circuit, CircuitMPS, etc).
+        circuit_kwargs : dict
+            Extra arguments to pass to the Quimb circuit constructor.
+
+        Returns
+        -------
+        circ : quimb.tensor.circuit.Circuit
+            The converted circuit.
+        """
+        nqubits = qibo_circ.nqubits
+        quimb_gates = []
+
+        for gate in qibo_circ.queue:
+            gname = getattr(gate, "name", None)
+            qname = GATE_MAP.get(gname, None)
+            if qname is None:
+                continue  # skip measurements and unknown gates
+
+            # Handle parametrized gates (Qibo: .parameters, Quimb: expects flat tuple)
+            params = getattr(gate, "parameters", ())
+            qubits = getattr(gate, "qubits", ())
+
+            # Quimb expects (*params, *qubits)
+            gate_spec = (qname,) + tuple(params) + tuple(qubits)
+            quimb_gates.append(gate_spec)
+
+        circ = quimb_circuit_type(nqubits, **circuit_kwargs)
+        circ.apply_gates(quimb_gates)
+        return circ
