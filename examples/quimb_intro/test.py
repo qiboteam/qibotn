@@ -24,20 +24,22 @@ hamiltonian = hamiltonians.SymbolicHamiltonian(form)
 
 # define circuit
 def build_circuit(nqubits, nlayers):
-    """Construct a Qibo parametric quantum circuit."""
+    """Construct a more complex Qibo parametric quantum circuit without CNOT gates."""
     circ = Circuit(nqubits)
-    for _ in range(nlayers):
+    for layer in range(nlayers):
         for q in range(nqubits):
             circ.add(gates.RY(q=q, theta=0.))
             circ.add(gates.RZ(q=q, theta=0.))
-        [circ.add(gates.CZ(q % nqubits, (q + 1) % nqubits)) for q in range(nqubits)]
+            circ.add(gates.RX(q=q, theta=0.))
+        # Add controlled rotations and SWAPs for entanglement
+        for q in range(nqubits - 1):
+            circ.add(gates.CNOT(q, q + 1))
+            circ.add(gates.SWAP(q, q + 1))
     circ.add(gates.M(*range(nqubits)))
     return circ
 
-nqubits = 4
+nqubits = 6
 circuit = build_circuit(nqubits=nqubits, nlayers=3)
-
-quimb_circuit = quimb_backend._qibo_circuit_to_quimb(circuit)
 
 def f(params):
     circuit.set_parameters(params)
