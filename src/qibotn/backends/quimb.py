@@ -14,27 +14,35 @@ from qibo.result import QuantumState
 from qibotn.backends.abstract import QibotnBackend
 from qibotn.result import TensorNetworkResult
 
+from qibo.gates.abstract import ParametrizedGate
+
+
 GATE_MAP = {
         "h": "H",
         "x": "X",
         "y": "Y",
         "z": "Z",
         "s": "S",
+
         "sdg": "SDG",
         "t": "T",
         "tdg": "TDG",
         "sx": "SX",
         "sxdg": "SXDG",
+
         "rx": "RX",
         "ry": "RY",
         "rz": "RZ",
+
         "u1": "U1",
         "u2": "U2",
         "u3": "U3",
-        "cx": "CNOT",
+
+        "cx": "CX",
         "cnot": "CNOT",
         "cy": "CY",
         "cz": "CZ",
+
         "iswap": "ISWAP",
         "swap": "SWAP",
         "ccx": "CCX",
@@ -368,6 +376,45 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
 
         return A_new, B_new, C_new
 
+    # def _qibo_circuit_to_quimb(self, qibo_circ, quimb_circuit_type=qtn.Circuit, **circuit_kwargs):
+    #     """
+    #     Convert a Qibo Circuit to a Quimb Circuit.
+
+    #     Parameters
+    #     ----------
+    #     qibo_circ : qibo.models.circuit.Circuit
+    #         The circuit to convert.
+    #     quimb_circuit_type : type
+    #         The Quimb circuit class to use (Circuit, CircuitMPS, etc).
+    #     circuit_kwargs : dict
+    #         Extra arguments to pass to the Quimb circuit constructor.
+
+    #     Returns
+    #     -------
+    #     circ : quimb.tensor.circuit.Circuit
+    #         The converted circuit.
+    #     """
+    #     nqubits = qibo_circ.nqubits
+    #     quimb_gates = []
+    #     circ = quimb_circuit_type(nqubits, **circuit_kwargs)
+
+    #     for gate in qibo_circ.queue:
+    #         gname = getattr(gate, "name", None)
+    #         qname = GATE_MAP.get(gname, None)
+    #         if qname is None:
+    #             continue  # skip measurements and unknown gates
+
+    #         # Handle parametrized gates (Qibo: .parameters, Quimb: expects flat tuple)
+    #         params = getattr(gate, "parameters", ())
+    #         qubits = getattr(gate, "qubits", ())
+
+    #         # Quimb expects (*params, *qubits)
+    #         gate_spec = (qname,) + tuple(params) + tuple(qubits)
+    #         quimb_gates.append(gate_spec)
+
+    #     circ.apply_gates(quimb_gates)
+    #     return circ
+
     def _qibo_circuit_to_quimb(self, qibo_circ, quimb_circuit_type=qtn.Circuit, **circuit_kwargs):
         """
         Convert a Qibo Circuit to a Quimb Circuit.
@@ -387,7 +434,7 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             The converted circuit.
         """
         nqubits = qibo_circ.nqubits
-        quimb_gates = []
+        circ = quimb_circuit_type(nqubits, **circuit_kwargs)
 
         for gate in qibo_circ.queue:
             gname = getattr(gate, "name", None)
@@ -395,14 +442,23 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             if qname is None:
                 continue  # skip measurements and unknown gates
 
-            # Handle parametrized gates (Qibo: .parameters, Quimb: expects flat tuple)
             params = getattr(gate, "parameters", ())
             qubits = getattr(gate, "qubits", ())
-
-            # Quimb expects (*params, *qubits)
-            gate_spec = (qname,) + tuple(params) + tuple(qubits)
-            quimb_gates.append(gate_spec)
-
-        circ = quimb_circuit_type(nqubits, **circuit_kwargs)
-        circ.apply_gates(quimb_gates)
+            
+            # Check if the gate is parametrized
+            is_parametrized = isinstance(gate, ParametrizedGate)
+            
+            if is_parametrized:
+                circ.apply_gate(
+                    qname,
+                    *params,
+                    *qubits,
+                    parametrized= is_parametrized
+                )
+            else:
+                circ.apply_gate(
+                    qname,
+                    *params,
+                    *qubits,
+                                )
         return circ
