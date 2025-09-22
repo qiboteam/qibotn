@@ -45,7 +45,7 @@ GATE_MAP = {
 
         "fsim": "fsim",
 
-        "m": "measure"
+        "measure": "measure"
     }
 
 class QuimbBackend(QibotnBackend, NumpyBackend):
@@ -193,7 +193,7 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             statevector=statevector,
         )
 
-    def expectation(self, circuit: Circuit, operators_list: list[str], sites_list: list[str], coeffs_list: list[str]):
+    def expectation(self, circuit, operators_list, sites_list, coeffs_list):
         """
         Compute the expectation value of a symbolic Hamiltonian on a quantum circuit using tensor network contraction.
         This method takes a Qibo circuit, converts it to a Quimb tensor network circuit, and evaluates the expectation value
