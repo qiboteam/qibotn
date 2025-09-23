@@ -45,7 +45,7 @@ sphinx-copybutton = "^0.5.2"
 sphinxcontrib-katex = "^0.9.9"
 
 [tool.poetry.group.dev.dependencies]
-ipython = "^7.0.0"
+ipython = "^8.34.0"
 
 [tool.poetry.group.tests]
 optional = true
