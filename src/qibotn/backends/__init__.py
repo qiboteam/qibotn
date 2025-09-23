@@ -13,7 +13,7 @@ class MetaBackend:
     """Meta-backend class which takes care of loading the qibotn backends."""
 
     @staticmethod
-    def load(platform: str, runcard: dict = None) -> QibotnBackend:
+    def load(platform: str, runcard: dict = None, **kwargs) -> QibotnBackend:
         """Loads the backend.
 
         Args:
@@ -26,7 +26,8 @@ class MetaBackend:
         if platform == "cutensornet":  # pragma: no cover
             return CuTensorNet(runcard)
         elif platform == "quimb":  # pragma: no cover
-            return QuimbBackend()
+            quimb_backend = kwargs.get("quimb_backend", "numpy")
+            return QuimbBackend(quimb_backend)
         elif platform == "qmatchatea":  # pragma: no cover
             from qibotn.backends.qmatchatea import QMatchaTeaBackend
 
