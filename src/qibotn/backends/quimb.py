@@ -39,11 +39,9 @@ GATE_MAP = {
 }
 
 
-# class QuimbBackend(QibotnBackend, NumpyBackend):
 if not __name__ == "__main__":
 
     def __init__(self, engine="numpy"):
-        # uper().__init__()
         super(self.__class__, self).__init__()
 
         self.name = "qibotn"
