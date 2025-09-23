@@ -1,63 +1,55 @@
 from collections import Counter
 
 import numpy as np
-
-from qibo.models import Circuit
-from qibo.backends import NumpyBackend
-from qibo.config import raise_error
-from qibotn.backends.abstract import QibotnBackend
-from qibotn.result import TensorNetworkResult
-from qibo.gates.abstract import ParametrizedGate
-
 import quimb as qu
 import quimb.tensor as qtn
+from qibo.backends import NumpyBackend
+from qibo.config import raise_error
+from qibo.gates.abstract import ParametrizedGate
+from qibo.models import Circuit
 
+from qibotn.backends.abstract import QibotnBackend
+from qibotn.result import TensorNetworkResult
 
 GATE_MAP = {
-        "h": "H",
-        "x": "X",
-        "y": "Y",
-        "z": "Z",
-        "s": "S",
-        "t": "T",
+    "h": "H",
+    "x": "X",
+    "y": "Y",
+    "z": "Z",
+    "s": "S",
+    "t": "T",
+    "rx": "RX",
+    "ry": "RY",
+    "rz": "RZ",
+    "u3": "U3",  # TODO: check
+    "cx": "CX",
+    "cnot": "CNOT",
+    "cy": "CY",
+    "cz": "CZ",
+    "iswap": "ISWAP",
+    "swap": "SWAP",
+    "ccx": "CCX",
+    "ccy": "CCY",
+    "ccz": "CCZ",
+    "toffoli": "TOFFOLI",
+    "cswap": "CSWAP",
+    "fredkin": "FREDKIN",
+    "fsim": "fsim",
+    "measure": "measure",
+}
 
-        "rx": "RX",
-        "ry": "RY",
-        "rz": "RZ",
-
-        "u3": "U3", # TODO: check
-
-        "cx": "CX",
-        "cnot": "CNOT",
-        "cy": "CY",
-        "cz": "CZ",
-
-        "iswap": "ISWAP",
-        "swap": "SWAP",
-
-        "ccx": "CCX",
-        "ccy": "CCY",
-        "ccz": "CCZ",
-
-        "toffoli": "TOFFOLI",
-        "cswap": "CSWAP",
-        "fredkin": "FREDKIN",
-
-        "fsim": "fsim",
-
-        "measure": "measure"
-    }
 
 class QuimbBackend(QibotnBackend, NumpyBackend):
 
-    def __init__(self):
+    def __init__(self, engine="numpy"):
         super().__init__()
 
         self.name = "qibotn"
         self.platform = "quimb"
+        self.engine = engine
 
         self.configure_tn_simulation()
-        self.setup_backend_specifics()
+        self.setup_backend_specifics(quimb_backend=engine)
 
     def configure_tn_simulation(
         self,
@@ -71,7 +63,7 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         Args:
             ansatz : str, optional
                 The tensor network ansatz to use. Default is `None` and, in this case, a
-                generic Circuit Quimb class is used.            
+                generic Circuit Quimb class is used.
                 max_bond_dimension : int, optional
                 The maximum bond dimension for the MPS ansatz. Default is 10.
 
@@ -83,7 +75,9 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         self.max_bond_dimension = max_bond_dimension
         self.n_most_frequent_states = n_most_frequent_states
 
-    def setup_backend_specifics(self, qimb_backend="numpy", contractions_optimizer="auto-hq"):
+    def setup_backend_specifics(
+        self, quimb_backend="numpy", contractions_optimizer="auto-hq"
+    ):
         """Setup backend specifics.
         Args:
             qimb_backend: str
@@ -91,19 +85,22 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             contractions_optimizer: str, optional
                 The contractions_optimizer to use for the quimb tensor network simulation.
         """
-        if qimb_backend == "jax":
+        if quimb_backend == "jax":
             import jax.numpy as jnp
+
             self.np = jnp
-        elif qimb_backend == "numpy":
+        elif quimb_backend == "numpy":
             import numpy as np
+
             self.np = np
-        elif qimb_backend == "torch":
+        elif quimb_backend == "torch":
             import torch
+
             self.np = torch
         else:
-            raise_error(ValueError, f"Unsupported quimb backend: {qimb_backend}")
+            raise_error(ValueError, f"Unsupported quimb backend: {quimb_backend}")
 
-        self.backend = qimb_backend
+        self.backend = quimb_backend
         self.contractions_optimizer = contractions_optimizer
 
     def execute_circuit(
@@ -180,7 +177,9 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             measured_probabilities = None
 
         statevector = (
-            circ_quimb.to_dense(backend=self.backend, optimize=self.contractions_optimizer)
+            circ_quimb.to_dense(
+                backend=self.backend, optimize=self.contractions_optimizer
+            )
             if return_array
             else None
         )
@@ -193,14 +192,16 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
             statevector=statevector,
         )
 
-    def expectation(self, circuit, operators_list, sites_list, coeffs_list):
+    def expectation_observable_symbolic_from_state(
+        self, circuit, operators_list, sites_list, coeffs_list, nqubits
+    ):
         """
         Compute the expectation value of a symbolic Hamiltonian on a quantum circuit using tensor network contraction.
         This method takes a Qibo circuit, converts it to a Quimb tensor network circuit, and evaluates the expectation value
         of a Hamiltonian specified by three lists of strings: operators, sites, and coefficients.
         The expectation value is computed by summing the contributions from each term in the Hamiltonian, where each term's
         expectation is calculated using Quimb's `local_expectation` function.
-        
+
         Parameters
         ----------
         circuit : qibo.models.Circuit
@@ -216,27 +217,30 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
         float
             The real part of the expectation value of the Hamiltonian on the given circuit state.
         """
-        quimb_circuit = self._qibo_circuit_to_quimb(circuit, quimb_circuit_type=qtn.Circuit)
-            
+        quimb_circuit = self._qibo_circuit_to_quimb(
+            circuit, quimb_circuit_type=qtn.Circuit
+        )
+
         expectation_value = 0.0
-        for opstr, sitesstr, coeffstr in zip(operators_list, sites_list, coeffs_list):
-            
+        for opstr, sites, coeff in zip(operators_list, sites_list, coeffs_list):
+
             ops = self._string_to_quimb_operator(opstr)
-            coeff = self._parse_coefficient(coeffstr)
-            sites = tuple(int(q) for q in sitesstr)
-            
+            coeff = coeff.real
+
             exp_values = quimb_circuit.local_expectation(
                 ops,
                 where=sites,
                 backend=self.backend,
-                optimize=self.contractions_optimizer
+                optimize=self.contractions_optimizer,
             )
 
             expectation_value = expectation_value + coeff * exp_values
-        
-        return np.real(expectation_value)
 
-    def _qibo_circuit_to_quimb(self, qibo_circ, quimb_circuit_type=qtn.Circuit, **circuit_kwargs):
+        return self.np.real(expectation_value)
+
+    def _qibo_circuit_to_quimb(
+        self, qibo_circ, quimb_circuit_type=qtn.Circuit, **circuit_kwargs
+    ):
         """
         Convert a Qibo Circuit to a Quimb Circuit. Measurement gates are ignored. If are given gates not supported by Quimb, an error is raised.
 
@@ -267,18 +271,12 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
 
             params = getattr(gate, "parameters", ())
             qubits = getattr(gate, "qubits", ())
-            
-            is_parametrized = (
-                isinstance(gate, ParametrizedGate)
-                and getattr(gate, "trainable", True)
-                )
+
+            is_parametrized = isinstance(gate, ParametrizedGate) and getattr(
+                gate, "trainable", True
+            )
             if is_parametrized:
-                circ.apply_gate(
-                    qname,
-                    *params,
-                    *qubits,
-                    parametrized=is_parametrized
-                )
+                circ.apply_gate(qname, *params, *qubits, parametrized=is_parametrized)
             else:
                 circ.apply_gate(
                     qname,
@@ -286,28 +284,6 @@ class QuimbBackend(QibotnBackend, NumpyBackend):
                     *qubits,
                 )
         return circ
-
-    def _parse_coefficient(self, s):
-        """Parse a coefficient from string to float, int, or complex.
-        Args:
-            s: str
-                The string representation of the coefficient.
-        Returns:
-            The coefficient as float, int, or complex.
-        """ 
-        try:
-            return float(s)
-        except ValueError:
-            pass
-        if s == "j":
-            return 1j
-        elif s == "-j":
-            return -1j
-        else:
-            try:
-                return complex(s)
-            except ValueError:
-                raise ValueError(f"Cannot parse coefficient: {s}")
 
     def _string_to_quimb_operator(self, op_str):
         """
