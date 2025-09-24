@@ -234,6 +234,7 @@ if not __name__ == "__main__":
                 where=sites,
                 backend=self.backend,
                 optimize=self.contractions_optimizer,
+                simplify_sequence="R",
             )
 
             expectation_value = expectation_value + coeff * exp_values
