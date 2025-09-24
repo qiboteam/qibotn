@@ -41,15 +41,17 @@ GATE_MAP = {
 
 if not __name__ == "__main__":
 
-    def __init__(self, engine="numpy"):
+    def __init__(self, quimb_backend="numpy", contraction_optimizer="auto-hq"):
         super(self.__class__, self).__init__()
 
         self.name = "qibotn"
         self.platform = "quimb"
-        self.engine = engine
+        self.backend = quimb_backend
 
         self.configure_tn_simulation()
-        self.setup_backend_specifics(quimb_backend=engine)
+        self.setup_backend_specifics(
+            quimb_backend=quimb_backend, contractions_optimizer=contraction_optimizer
+        )
 
     def configure_tn_simulation(
         self,
@@ -300,13 +302,16 @@ if not __name__ == "__main__":
             The corresponding Quimb operator.
         """
         op_str = op_str.lower()
+        # breakpoint()
         op = qu.pauli(op_str[0])
         for c in op_str[1:]:
             op = op & qu.pauli(c)
         return op
 
 
-def QuimbBackend(quimb_backend: str = "numpy") -> QibotnBackend:
+def QuimbBackend(
+    quimb_backend: str = "numpy", contraction_optimizer="auto-hq"
+) -> QibotnBackend:
     bases = (QibotnBackend,)
     methods = {
         "__init__": __init__,
@@ -332,4 +337,4 @@ def QuimbBackend(quimb_backend: str = "numpy") -> QibotnBackend:
     else:
         raise_error(ValueError, f"Unsupported quimb backend: {quimb_backend}")
 
-    return type("QuimbBackend", bases, methods)(quimb_backend)
+    return type("QuimbBackend", bases, methods)(quimb_backend, contraction_optimizer)
