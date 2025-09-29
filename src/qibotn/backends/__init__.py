@@ -27,7 +27,7 @@ class MetaBackend:
             return CuTensorNet(runcard)
         elif platform == "quimb":  # pragma: no cover
             quimb_backend = kwargs.get("quimb_backend", "numpy")
-            contraction_optimizer = kwargs.get("quimb_backend", "auto-hq")
+            contraction_optimizer = kwargs.get("contraction_optimizer", "auto-hq")
             return QuimbBackend(
                 quimb_backend=quimb_backend, contraction_optimizer=contraction_optimizer
             )
