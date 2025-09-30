@@ -219,7 +219,7 @@ if not __name__ == "__main__":
         """
         quimb_circuit = self._qibo_circuit_to_quimb(
             circuit, 
-            quimb_circuit_type=qtn.Circuit, 
+            quimb_circuit_type=qtn.CircuitMPS if self.ansatz == "MPS" else qtn.Circuit, 
             gate_opts={"max_bond": self.max_bond_dimension},
         )
 
