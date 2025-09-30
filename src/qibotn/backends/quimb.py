@@ -1,9 +1,7 @@
 from collections import Counter
 
-import numpy as np
 import quimb as qu
 import quimb.tensor as qtn
-from qibo.backends import NumpyBackend
 from qibo.config import raise_error
 from qibo.gates.abstract import ParametrizedGate
 from qibo.models import Circuit
@@ -220,7 +218,9 @@ if not __name__ == "__main__":
             The real part of the expectation value of the Hamiltonian on the given circuit state.
         """
         quimb_circuit = self._qibo_circuit_to_quimb(
-            circuit, quimb_circuit_type=qtn.Circuit
+            circuit, 
+            quimb_circuit_type=qtn.Circuit, 
+            gate_opts={"max_bond": self.max_bond_dimension},
         )
 
         expectation_value = 0.0
