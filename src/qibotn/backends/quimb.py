@@ -1,10 +1,7 @@
 from collections import Counter
-from typing import Optional
 
-import numpy as np
 import quimb as qu
 import quimb.tensor as qtn
-from qibo.backends import NumpyBackend
 from qibo.config import raise_error
 from qibo.gates.abstract import ParametrizedGate
 from qibo.models import Circuit
