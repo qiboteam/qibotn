@@ -49,7 +49,7 @@ if not __name__ == "__main__":
 
         self.ansatz = None
         self.max_bond_dimension = None
-        self.cutoff = None
+        self.svd_cutoff = None
         self.n_most_frequent_states = None
 
         self.configure_tn_simulation()
@@ -61,7 +61,7 @@ if not __name__ == "__main__":
         self,
         ansatz: str = "mps",
         max_bond_dimension: Optional[int] = None,
-        cutoff: Optional[float] = 1e-10,
+        svd_cutoff: Optional[float] = 1e-10,
         n_most_frequent_states: int = 100,
     ):
         """
@@ -80,7 +80,7 @@ if not __name__ == "__main__":
         """
         self.ansatz = ansatz
         self.max_bond_dimension = max_bond_dimension
-        self.cutoff = cutoff
+        self.svd_cutoff = svd_cutoff
         self.n_most_frequent_states = n_most_frequent_states
 
     @property
@@ -231,7 +231,7 @@ if not __name__ == "__main__":
         quimb_circuit = self._qibo_circuit_to_quimb(
             circuit,
             quimb_circuit_type=self.circuit_ansatz,
-            gate_opts={"max_bond": self.max_bond_dimension, "cutoff": self.cutoff},
+            gate_opts={"max_bond": self.max_bond_dimension, "cutoff": self.svd_cutoff},
         )
 
         expectation_value = 0.0
