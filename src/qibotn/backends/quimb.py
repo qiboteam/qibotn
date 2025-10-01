@@ -314,7 +314,6 @@ if not __name__ == "__main__":
             The corresponding Quimb operator.
         """
         op_str = op_str.lower()
-        # breakpoint()
         op = qu.pauli(op_str[0])
         for c in op_str[1:]:
             op = op & qu.pauli(c)
