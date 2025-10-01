@@ -1,4 +1,5 @@
 from collections import Counter
+from typing import Optional
 
 import quimb as qu
 import quimb.tensor as qtn
@@ -46,6 +47,11 @@ if not __name__ == "__main__":
         self.platform = "quimb"
         self.backend = quimb_backend
 
+        self.ansatz = None
+        self.max_bond_dimension = None
+        self.cutoff = None
+        self.n_most_frequent_states = None
+
         self.configure_tn_simulation()
         self.setup_backend_specifics(
             quimb_backend=quimb_backend, contractions_optimizer=contraction_optimizer
@@ -53,8 +59,9 @@ if not __name__ == "__main__":
 
     def configure_tn_simulation(
         self,
-        ansatz: str = None,
-        max_bond_dimension: int = 10,
+        ansatz: str = "mps",
+        max_bond_dimension: Optional[int] = None,
+        cutoff: Optional[float] = 1e-10,
         n_most_frequent_states: int = 100,
     ):
         """
@@ -73,7 +80,14 @@ if not __name__ == "__main__":
         """
         self.ansatz = ansatz
         self.max_bond_dimension = max_bond_dimension
+        self.cutoff = cutoff
         self.n_most_frequent_states = n_most_frequent_states
+
+    @property
+    def circuit_ansatz(self):
+        if self.ansatz == "mps":
+            return qtn.CircuitMPS
+        return qtn.Circuit
 
     def setup_backend_specifics(
         self, quimb_backend="numpy", contractions_optimizer="auto-hq"
@@ -152,10 +166,7 @@ if not __name__ == "__main__":
                 ValueError, "Initial state not None supported only for MPS ansatz."
             )
 
-        circ_ansatz = (
-            qtn.circuit.CircuitMPS if self.ansatz == "MPS" else qtn.circuit.Circuit
-        )
-        circ_quimb = circ_ansatz.from_openqasm2_str(
+        circ_quimb = self.circuit_ansatz.from_openqasm2_str(
             circuit.to_qasm(), psi0=initial_state
         )
 
@@ -218,9 +229,9 @@ if not __name__ == "__main__":
             The real part of the expectation value of the Hamiltonian on the given circuit state.
         """
         quimb_circuit = self._qibo_circuit_to_quimb(
-            circuit, 
-            quimb_circuit_type=qtn.CircuitMPS if self.ansatz == "MPS" else qtn.Circuit, 
-            gate_opts={"max_bond": self.max_bond_dimension},
+            circuit,
+            quimb_circuit_type=self.circuit_ansatz,
+            gate_opts={"max_bond": self.max_bond_dimension, "cutoff": self.cutoff},
         )
 
         expectation_value = 0.0
@@ -322,6 +333,7 @@ def QuimbBackend(
         "expectation_observable_symbolic_from_state": expectation_observable_symbolic_from_state,
         "_qibo_circuit_to_quimb": _qibo_circuit_to_quimb,
         "_string_to_quimb_operator": _string_to_quimb_operator,
+        "circuit_ansatz": circuit_ansatz,
     }
     if quimb_backend == "numpy":
         from qibo.backends import NumpyBackend
