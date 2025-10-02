@@ -9,16 +9,16 @@ import pytest
 
 # backends to be tested
 # TODO: add cutensornet and quimb here as well
-BACKENDS = ["qmatchatea"]
+BACKENDS = ["cutensornet"]
+# BACKENDS = ["qmatchatea"]
 
 
 def get_backend(backend_name):
 
+    from qibotn.backends.cutensornet import CuTensorNet
     from qibotn.backends.qmatchatea import QMatchaTeaBackend
 
-    NAME2BACKEND = {
-        "qmatchatea": QMatchaTeaBackend,
-    }
+    NAME2BACKEND = {"qmatchatea": QMatchaTeaBackend, "cutensornet": CuTensorNet}
 
     return NAME2BACKEND[backend_name]()
 
