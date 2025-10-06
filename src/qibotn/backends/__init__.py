@@ -4,7 +4,7 @@ from qibo.config import raise_error
 
 from qibotn.backends.abstract import QibotnBackend
 from qibotn.backends.cutensornet import CuTensorNet  # pylint: disable=E0401
-from qibotn.backends.quimb import QuimbBackend  # pylint: disable=E0401
+from qibotn.backends.quimb import QuimbBackend
 
 PLATFORMS = ("cutensornet", "qutensornet", "qmatchatea")
 
@@ -13,7 +13,7 @@ class MetaBackend:
     """Meta-backend class which takes care of loading the qibotn backends."""
 
     @staticmethod
-    def load(platform: str, runcard: dict = None) -> QibotnBackend:
+    def load(platform: str, runcard: dict = None, **kwargs) -> QibotnBackend:
         """Loads the backend.
 
         Args:
@@ -26,7 +26,11 @@ class MetaBackend:
         if platform == "cutensornet":  # pragma: no cover
             return CuTensorNet(runcard)
         elif platform == "quimb":  # pragma: no cover
-            return QuimbBackend(runcard)
+            quimb_backend = kwargs.get("quimb_backend", "numpy")
+            contraction_optimizer = kwargs.get("contraction_optimizer", "auto-hq")
+            return QuimbBackend(
+                quimb_backend=quimb_backend, contraction_optimizer=contraction_optimizer
+            )
         elif platform == "qmatchatea":  # pragma: no cover
             from qibotn.backends.qmatchatea import QMatchaTeaBackend
 
