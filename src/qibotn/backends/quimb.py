@@ -203,7 +203,7 @@ if not __name__ == "__main__":
             statevector=statevector,
         )
 
-    def expectation_observable_symbolic_from_state(
+    def expectation_observable_symbolic(
         self, circuit, operators_list, sites_list, coeffs_list, nqubits
     ):
         """
