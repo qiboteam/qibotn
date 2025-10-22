@@ -252,6 +252,49 @@ if not __name__ == "__main__":
 
         return self.np.real(expectation_value)
 
+    def DMRG_optimize(
+            self, 
+            operators_list, 
+            sites_list, 
+            coeffs_list, 
+            initial_circuit, 
+            tol=1e-6, 
+            max_sweeps=100):
+        """
+            Perform DMRG (Density Matrix Renormalization Group) optimization to find the ground state of a Hamiltonian 
+            represented by a sum of Pauli operators.
+            Args:
+                operators_list (list of str): List of Pauli operator strings (e.g., ['XX', 'YY', 'ZZ']) representing 
+                    the terms in the Hamiltonian.
+                sites_list (list of list of int): List of lists specifying the qubit indices for each operator in 
+                    `operators_list`.
+                coeffs_list (list of float): List of coefficients corresponding to each term in the Hamiltonian.
+                initial_circuit (qibo.models.Circuit): Initial quantum circuit to be converted into an MPS (Matrix Product State) 
+                    as the starting point for DMRG optimization.
+                tol (float, optional): Convergence tolerance for the DMRG algorithm. Default is 1e-6.
+                max_sweeps (int, optional): Maximum number of DMRG sweeps (iterations) to perform. Default is 100.
+            Returns:
+                optimized_MPS (quimb.tensor.MPS): The optimized Matrix Product State representing the ground state.
+                ground_state_energy (float): The ground state energy found by the DMRG optimization.
+            Notes:
+                - This method uses the `quimb` library's DMRG2 implementation for optimization.
+                - The Hamiltonian is constructed as an MPO (Matrix Product Operator) from the provided Pauli terms.
+                - The initial state is prepared by converting the given quantum circuit to an MPS.
+        
+        """
+        
+        from quimb.tensor import DMRG2
+        initial_MPS = self._qibo_circuit_to_quimb(initial_circuit, quimb_circuit_type=qtn.CircuitMPS)._psi.copy()
+        mpo_hamiltonian = self._pauli_string_mpo(L=initial_circuit.nqubits, op_str_list=operators_list, sites_list=sites_list, coeffs=coeffs_list)
+
+        dmrg = DMRG2(mpo_hamiltonian, p0=initial_MPS)
+        dmrg.solve(tol=tol, max_sweeps=max_sweeps, verbosity=1)
+
+        optimized_MPS = dmrg.state
+        ground_state_energy = dmrg.energy
+
+        return optimized_MPS, ground_state_energy
+
     def _qibo_circuit_to_quimb(
         self, qibo_circ, quimb_circuit_type=qtn.Circuit, **circuit_kwargs
     ):
@@ -319,6 +362,30 @@ if not __name__ == "__main__":
             op = op & qu.pauli(c)
         return op
 
+    def _pauli_string_mpo(self, L, op_str_list, sites_list, coeffs=1.0, phys_dim=2, dtype="float64"):
+        
+        from quimb import eye, pauli
+        from quimb.tensor.tensor_builder import MPO_product_operator
+
+        mpo_terms = []
+        for op_str, sites, coeff in zip(op_str_list, sites_list, coeffs):
+            arrays = []
+            op_map = {'X': pauli('x'), 'Y': pauli('y'), 'Z': pauli('z')}
+            s_set = set(sites)
+            idx = 0
+            for i in range(L):
+                if i in s_set:
+                    arrays.append(op_map[op_str[idx]])
+                    idx += 1
+                else:
+                    arrays.append(eye(phys_dim, dtype=dtype))
+
+            arrays[sites[0]] = coeff * arrays[sites[0]]
+            mpo_terms.append(MPO_product_operator(arrays))
+        if len(mpo_terms) == 1:
+            return mpo_terms[0]
+        
+        return sum(mpo_terms)
 
 def QuimbBackend(
     quimb_backend: str = "numpy", contraction_optimizer="auto-hq"
@@ -333,6 +400,8 @@ def QuimbBackend(
         "_qibo_circuit_to_quimb": _qibo_circuit_to_quimb,
         "_string_to_quimb_operator": _string_to_quimb_operator,
         "circuit_ansatz": circuit_ansatz,
+        "_pauli_string_mpo": _pauli_string_mpo,
+        "DMRG_optimize": DMRG_optimize,
     }
     if quimb_backend == "numpy":
         from qibo.backends import NumpyBackend
