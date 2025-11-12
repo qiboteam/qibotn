@@ -381,9 +381,17 @@ if not __name__ == "__main__":
         mpo_terms = []
         for op_str, sites, coeff in zip(op_str_list, sites_list, coeffs):
             arrays = []
-            op_map = {"X": pauli("x"), "Y": pauli("y"), "Z": pauli("z")}
+            op_map = {
+                "x": pauli("x"),
+                "y": pauli("y"),
+                "z": pauli("z"),
+                "X": pauli("x"),
+                "Y": pauli("y"),
+                "Z": pauli("z"),
+            }
             s_set = set(sites)
             idx = 0
+            # import pdb; pdb.set_trace()
             for i in range(L):
                 if i in s_set:
                     arrays.append(op_map[op_str[idx]])
