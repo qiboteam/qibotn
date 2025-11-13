@@ -20,7 +20,7 @@ GATE_MAP = {
     "rx": "RX",
     "ry": "RY",
     "rz": "RZ",
-    "u3": "U3",  # TODO: check
+    "u3": "U3",
     "cx": "CX",
     "cnot": "CNOT",
     "cy": "CY",
@@ -210,7 +210,10 @@ def expectation_observable_symbolic(
     This method takes a Qibo circuit, converts it to a Quimb tensor network circuit, and evaluates the expectation value
     of a Hamiltonian specified by three lists of strings: operators, sites, and coefficients.
     The expectation value is computed by summing the contributions from each term in the Hamiltonian, where each term's
-    expectation is calculated using Quimb's `local_expectation` function.
+    expectation is calculated using Quimb's `local_expectation` function.         
+    Each operator string must act on all different qubits, i.e., for each term, the corresponding sites tuple must contain unique qubit indices.
+    Example: operators_list = ['xyz', 'xyz'], sites_list = [(1,2,3), (1,2,3)], coeffs_list = [1, 2]
+
 
     Parameters
     ----------
@@ -218,15 +221,23 @@ def expectation_observable_symbolic(
         The quantum circuit to evaluate, provided as a Qibo circuit object.
     operators_list : list of str
         List of operator strings representing the symbolic Hamiltonian terms.
-    sites_list : list of str
-        List of strings, each specifying the qubits (sites) the corresponding operator acts on.
-    coeffs_list : list of str
-        List of strings representing the coefficients for each Hamiltonian term.
+    sites_list : list of tuple of int
+        Tuples each specifying the qubits (sites) the corresponding operator acts on.
+    coeffs_list : list of real/complex
+        The coefficients for each Hamiltonian term.
     Returns
     -------
     float
         The real part of the expectation value of the Hamiltonian on the given circuit state.
     """
+    # Validate that no term acts multiple times on the same qubit (no repeated indices in a sites tuple)
+    for sites in sites_list:
+        if len(sites) != len(set(sites)):
+            raise_error(
+                ValueError,
+                f"Invalid Hamiltonian term sites {sites}: repeated qubit indices are not allowed "
+                "within a single term (e.g. (0,0,0) is invalid).",
+            )
     quimb_circuit = self._qibo_circuit_to_quimb(
         circuit,
         quimb_circuit_type=self.circuit_ansatz,
@@ -276,12 +287,12 @@ def _qibo_circuit_to_quimb(
     circ = quimb_circuit_type(nqubits, **circuit_kwargs)
 
     for gate in qibo_circ.queue:
-        gname = getattr(gate, "name", None)
-        qname = GATE_MAP.get(gname, None)
-        if qname == "measure":
+        gate_name = getattr(gate, "name", None)
+        quimb_gate_name = GATE_MAP.get(gate_name, None)
+        if quimb_gate_name == "measure":
             continue
-        if qname is None:
-            raise_error(ValueError, f"Gate {gname} not supported in Quimb backend.")
+        if quimb_gate_name is None:
+            raise_error(ValueError, f"Gate {gate_name} not supported in Quimb backend.")
 
         params = getattr(gate, "parameters", ())
         qubits = getattr(gate, "qubits", ())
@@ -290,10 +301,10 @@ def _qibo_circuit_to_quimb(
             gate, "trainable", True
         )
         if is_parametrized:
-            circ.apply_gate(qname, *params, *qubits, parametrized=is_parametrized)
+            circ.apply_gate(quimb_gate_name, *params, *qubits, parametrized=is_parametrized)
         else:
             circ.apply_gate(
-                qname,
+                quimb_gate_name,
                 *params,
                 *qubits,
             )
