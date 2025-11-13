@@ -210,7 +210,7 @@ def expectation_observable_symbolic(
     This method takes a Qibo circuit, converts it to a Quimb tensor network circuit, and evaluates the expectation value
     of a Hamiltonian specified by three lists of strings: operators, sites, and coefficients.
     The expectation value is computed by summing the contributions from each term in the Hamiltonian, where each term's
-    expectation is calculated using Quimb's `local_expectation` function.         
+    expectation is calculated using Quimb's `local_expectation` function.
     Each operator string must act on all different qubits, i.e., for each term, the corresponding sites tuple must contain unique qubit indices.
     Example: operators_list = ['xyz', 'xyz'], sites_list = [(1,2,3), (1,2,3)], coeffs_list = [1, 2]
 
@@ -301,7 +301,9 @@ def _qibo_circuit_to_quimb(
             gate, "trainable", True
         )
         if is_parametrized:
-            circ.apply_gate(quimb_gate_name, *params, *qubits, parametrized=is_parametrized)
+            circ.apply_gate(
+                quimb_gate_name, *params, *qubits, parametrized=is_parametrized
+            )
         else:
             circ.apply_gate(
                 quimb_gate_name,
