@@ -1,4 +1,5 @@
 from collections import Counter
+import pdb
 from typing import Optional
 
 import quimb as qu
@@ -252,7 +253,67 @@ if not __name__ == "__main__":
 
         return self.np.real(expectation_value)
 
-    def DMRG_optimize(
+    def TNOptimizer(
+        self,
+        initial_circuit,
+        operators_list=None,
+        sites_list=None,
+        coeffs_list=None,
+        method="gradient",
+        iterations=100,
+        **kwargs
+    ):
+        """
+        Optimize a circuit using either DMRG or gradient descent.
+
+        Args:
+            circuit: The quantum circuit to optimize.
+            operators_list, sites_list, coeffs_list: Hamiltonian specification (required for DMRG and gradient).
+            method: "dmrg" or "gradient".
+            **kwargs: Additional arguments for the optimizer (passed to TNOptimizer for gradient).
+
+        Returns:
+            Optimization result (depends on method).
+        """
+        if method == "dmrg":
+            tol = kwargs.get("tol", 1e-6)
+            return self._DMRG_optimize(
+                operators_list,
+                sites_list,
+                coeffs_list,
+                initial_circuit,
+                tol=tol,
+                max_sweeps=iterations,
+            )
+        elif method == "gradient":
+
+            return self._gradient_optimize(
+                initial_circuit,
+                operators_list=operators_list,
+                sites_list=sites_list,
+                coeffs_list=coeffs_list,
+                nqubits=initial_circuit.nqubits,
+                iterations=iterations,
+                **kwargs
+            )
+        else:
+            raise_error(ValueError, f"Unknown optimization method: {method}")
+
+    def _gradient_optimize(
+        self,
+        circuit,
+        operators_list,
+        sites_list,
+        coeffs_list,
+        nqubits,
+        iterations=100,
+        **kwargs,
+    ):
+        # This should call in some way what is not handled by QiboML (?)
+        raise_error(NotImplementedError, "_gradient_optimize is not implemented yet.")
+    
+       
+    def _DMRG_optimize(
         self,
         operators_list,
         sites_list,
@@ -391,7 +452,6 @@ if not __name__ == "__main__":
             }
             s_set = set(sites)
             idx = 0
-            # import pdb; pdb.set_trace()
             for i in range(L):
                 if i in s_set:
                     arrays.append(op_map[op_str[idx]])
@@ -421,7 +481,9 @@ def QuimbBackend(
         "_string_to_quimb_operator": _string_to_quimb_operator,
         "circuit_ansatz": circuit_ansatz,
         "_pauli_string_mpo": _pauli_string_mpo,
-        "DMRG_optimize": DMRG_optimize,
+        "_DMRG_optimize": _DMRG_optimize,
+        "_gradient_optimize": _gradient_optimize,
+        "TNOptimizer": TNOptimizer,
     }
     if quimb_backend == "numpy":
         from qibo.backends import NumpyBackend

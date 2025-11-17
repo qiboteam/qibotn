@@ -33,3 +33,15 @@ class QibotnBackend(ABC):
     def _setup_backend_specifics(self):
         """Configure the backend specific according to the used package."""
         pass
+    def TNOptimizer(
+        self,
+        initial_circuit,
+        operators_list,
+        sites_list,
+        coeffs_list,
+        method="gradient",
+        iterations=100,
+        **kwargs,
+    ):
+        """Optimize a parameterized circuit using tensor network methods."""
+        pass
