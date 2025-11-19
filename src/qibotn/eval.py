@@ -1,8 +1,9 @@
 import cupy as cp
-import cuquantum.cutensornet as cutn
+# import cuquantum.tensornet as cutn
+import cuquantum.bindings.cutensornet as cutn
 from cupy.cuda import nccl
 from cupy.cuda.runtime import getDeviceCount
-from cuquantum import Network, contract
+from cuquantum.tensornet import Network, contract
 from mpi4py import MPI
 from qibo import hamiltonians
 from qibo.symbols import I, X, Y, Z
