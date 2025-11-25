@@ -1,7 +1,8 @@
 import cupy as cp
-import numpy as np
+
 # from cuquantum import tensornet as cutn
 import cuquantum.bindings.cutensornet as cutn
+import numpy as np
 
 from qibotn.circuit_convertor import QiboCircuitToEinsum
 from qibotn.mps_utils import apply_gate, initial
