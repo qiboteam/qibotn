@@ -1,6 +1,5 @@
 import cupy as cp
 
-# from cuquantum import tensornet as cutn
 import cuquantum.bindings.cutensornet as cutn
 import numpy as np
 
