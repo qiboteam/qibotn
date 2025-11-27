@@ -254,10 +254,10 @@ if not __name__ == "__main__":
 
     def DMRG_optimize(
         self,
+        initial_circuit,
         operators_list,
         sites_list,
         coeffs_list,
-        initial_circuit,
         tol=1e-6,
         max_sweeps=100,
     ):
@@ -284,25 +284,24 @@ if not __name__ == "__main__":
 
         """
 
-        from quimb.tensor import DMRG2
-
-        initial_MPS = self._qibo_circuit_to_quimb(
-            initial_circuit, quimb_circuit_type=qtn.CircuitMPS
-        )._psi.copy()
+        quimb_circuit = self._qibo_circuit_to_quimb(
+            initial_circuit, 
+            quimb_circuit_type=qtn.CircuitMPS
+        )
+        initial_MPS = quimb_circuit._psi.copy()
+        
         mpo_hamiltonian = self._pauli_string_mpo(
             L=initial_circuit.nqubits,
             op_str_list=operators_list,
             sites_list=sites_list,
-            coeffs=coeffs_list,
+            coeff_list=coeffs_list,
         )
 
-        dmrg = DMRG2(mpo_hamiltonian, p0=initial_MPS)
+        dmrg = qtn.DMRG2(mpo_hamiltonian, p0=initial_MPS)
         dmrg.solve(tol=tol, max_sweeps=max_sweeps, verbosity=1)
+        quimb_circuit._psi = dmrg.state
 
-        optimized_MPS = dmrg.state
-        ground_state_energy = dmrg.energy
-
-        return optimized_MPS, ground_state_energy
+        return quimb_circuit, dmrg.energy # returining ground state energy and optimized circuit for testing
 
     def _qibo_circuit_to_quimb(
         self, qibo_circ, quimb_circuit_type=qtn.Circuit, **circuit_kwargs
@@ -372,39 +371,43 @@ if not __name__ == "__main__":
         return op
 
     def _pauli_string_mpo(
-        self, L, op_str_list, sites_list, coeffs=1.0, phys_dim=2, dtype="float64"
+        self, L, op_str_list, sites_list, coeff_list, phys_dim=2, dtype="float64"
     ):
 
-        from quimb import eye, pauli
-        from quimb.tensor.tensor_builder import MPO_product_operator
-
         mpo_terms = []
-        for op_str, sites, coeff in zip(op_str_list, sites_list, coeffs):
-            arrays = []
-            op_map = {
-                "x": pauli("x"),
-                "y": pauli("y"),
-                "z": pauli("z"),
-                "X": pauli("x"),
-                "Y": pauli("y"),
-                "Z": pauli("z"),
+        op_map = {
+                "x": qu.pauli("x"),
+                "y": qu.pauli("y"),
+                "z": qu.pauli("z"),
+                "X": qu.pauli("x"),
+                "Y": qu.pauli("y"),
+                "Z": qu.pauli("z"),
             }
-            s_set = set(sites)
-            idx = 0
-            # import pdb; pdb.set_trace()
+
+        for op_str, sites, coeff in zip(op_str_list, sites_list, coeff_list):
+            
+            operators_arrays = []
+            sites_set = set(sites)
+            idx = 0 # index on operator string: keeps memory of the last added to operators_array
+
             for i in range(L):
-                if i in s_set:
-                    arrays.append(op_map[op_str[idx]])
+                if i in sites_set:
+                    operators_arrays.append(op_map[op_str[idx]])
                     idx += 1
                 else:
-                    arrays.append(eye(phys_dim, dtype=dtype))
+                    operators_arrays.append(qu.eye(phys_dim, dtype=dtype))
 
-            arrays[sites[0]] = coeff * arrays[sites[0]]
-            mpo_terms.append(MPO_product_operator(arrays))
+            operators_arrays[sites[0]] = coeff * operators_arrays[sites[0]]
+            mpo_terms.append(qtn.tensor_builder.MPO_product_operator(operators_arrays))
+        
         if len(mpo_terms) == 1:
             return mpo_terms[0]
 
-        return sum(mpo_terms)
+        total_mpo = mpo_terms[0].copy()
+        for mpo in mpo_terms[1:]:
+            total_mpo = total_mpo + mpo
+
+        return total_mpo
 
 
 def QuimbBackend(
