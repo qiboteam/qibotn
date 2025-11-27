@@ -2488,8 +2488,8 @@ qulacs = ["qulacs (>=0.6.4,<0.7.0) ; python_version < \"3.13\""]
 [package.source]
 type = "git"
 url = "https://github.com/qiboteam/qibo"
-reference = "HEAD"
-resolved_reference = "a582ddc9fe011e39362a440a6c2c2d21a6de7649"
+reference = "backends"
+resolved_reference = "2bfe46abdfcf84486cbfddb4fe4c9164a47e8486"
 
 [[package]]
 name = "qiskit"
@@ -3329,4 +3329,4 @@ qmatchatea = ["qiskit", "qmatchatea", "qtealeaves"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "6ca68814561b66decbfb6b314e5f8cd91552f95548ed501e43e4a915d1079680"
+content-hash = "e7fa6e7a211343674411b5fb57f7cd79a5ebbb06ad755a7978f5f81bca1e8ca1"
