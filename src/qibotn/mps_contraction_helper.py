@@ -1,4 +1,4 @@
-from cuquantum import contract, contract_path
+from cuquantum.tensornet import contract, contract_path
 
 # Reference: https://github.com/NVIDIA/cuQuantum/blob/main/python/samples/cutensornet/tn_algorithms/mps_algorithms.ipynb
 

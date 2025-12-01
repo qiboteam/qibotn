@@ -21,18 +21,21 @@ packages = [{ include = "qibotn", from = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
-qibo = { git="https://github.com/qiboteam/qibo" }
+qibo = { git = "https://github.com/qiboteam/qibo" }
+qibojit = { git = "https://github.com/qiboteam/qibojit.git" }
 quimb = { version = "^1.10.0", extras = ["tensor"] }
-cupy-cuda11x = { version = "^13.1.0", optional = true }
-cuquantum-python-cu11 = { version = "^24.1.0", optional = true }
+cupy-cuda12x = { version = "^13.6.0", optional = true }
+cuda-toolkit = {extras = ["all"], version = "^12.9.1"}
+nvidia-nccl-cu12 = { version = "^2.16.5", optional = true }
+cuquantum-python-cu12 = { version = "^25.9.1", optional = true }
 qmatchatea = { version = "^1.4.3", optional = true }
 qiskit = { version = "^1.4.0", optional = true }
 qtealeaves = { version = "^1.5.20", optional = true }
 
 
 [tool.poetry.extras]
-cuda = ["cupy-cuda11x", "cuquantum-python-cu11", "mpi4py"]
-qmatchatea = ["qmatchatea", "qtealeaves", "qiskit"]
+cuda = ["cupy-cuda12x", "cuda-toolkit", "nvidia-nccl-cu12", "cuquantum-python-cu12", "mpi4py"]
+qmatchatea = ["qmatchatea"]
 
 [tool.poetry.group.docs]
 optional = true
