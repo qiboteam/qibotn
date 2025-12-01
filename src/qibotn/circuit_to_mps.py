@@ -1,5 +1,4 @@
 import cupy as cp
-
 import cuquantum.bindings.cutensornet as cutn
 import numpy as np
 

@@ -1,5 +1,4 @@
 import cupy as cp
-
 import cuquantum.bindings.cutensornet as cutn
 from cupy.cuda import nccl
 from cupy.cuda.runtime import getDeviceCount
