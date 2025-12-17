@@ -1,6 +1,6 @@
 import cupy as cp
+import cuquantum.bindings.cutensornet as cutn
 import numpy as np
-from cuquantum import cutensornet as cutn
 
 from qibotn.circuit_convertor import QiboCircuitToEinsum
 from qibotn.mps_utils import apply_gate, initial
