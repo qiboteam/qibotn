@@ -104,15 +104,15 @@ def setup_backend_specifics(
     if quimb_backend == "jax":
         import jax.numpy as jnp
 
-        self.np = jnp
+        self.engine = jnp
     elif quimb_backend == "numpy":
         import numpy as np
 
-        self.np = np
+        self.engine = np
     elif quimb_backend == "torch":
         import torch
 
-        self.np = torch
+        self.engine = torch
     else:
         raise_error(ValueError, f"Unsupported quimb backend: {quimb_backend}")
 
@@ -260,7 +260,7 @@ def expectation_observable_symbolic(
 
         expectation_value = expectation_value + coeff * exp_values
 
-    return self.np.real(expectation_value)
+    return self.real(expectation_value)
 
 
 def _qibo_circuit_to_quimb(
