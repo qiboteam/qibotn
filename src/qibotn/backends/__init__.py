@@ -5,7 +5,7 @@ from qibo.config import raise_error
 from qibotn.backends.abstract import QibotnBackend
 from qibotn.backends.cutensornet import CuTensorNet  # pylint: disable=E0401
 
-PLATFORMS = ("cutensornet", "qutensornet", "qmatchatea")
+PLATFORMS = ("cutensornet", "quimb", "qmatchatea")
 
 
 class MetaBackend:

@@ -202,7 +202,7 @@ def execute_circuit(
     )
 
 
-def expectation_observable_symbolic(
+def exp_value_observable_symbolic(
     self, circuit, operators_list, sites_list, coeffs_list, nqubits
 ):
     """
@@ -341,7 +341,7 @@ METHODS = {
     "configure_tn_simulation": configure_tn_simulation,
     "setup_backend_specifics": setup_backend_specifics,
     "execute_circuit": execute_circuit,
-    "expectation_observable_symbolic": expectation_observable_symbolic,
+    "exp_value_observable_symbolic": exp_value_observable_symbolic,
     "_qibo_circuit_to_quimb": _qibo_circuit_to_quimb,
     "_string_to_quimb_operator": _string_to_quimb_operator,
     "circuit_ansatz": circuit_ansatz,
