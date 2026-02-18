@@ -241,22 +241,22 @@ def exp_value_observable_symbolic(
                 "within a single term (e.g. (0,0,0) is invalid).",
             )
 
-    ket = self._qibo_circuit_to_quimb(
+    circuit_tn = self._qibo_circuit_to_quimb(
         circuit,
         quimb_circuit_type=self.circuit_ansatz,
         gate_opts={"max_bond": self.max_bond_dimension, "cutoff": self.svd_cutoff},
     ).psi
-
-    bra = ket.copy().H
+    bra = circuit_tn.copy().H
 
     expectation_value = 0.0
     for opstr, sites, coeff in zip(operators_list, sites_list, coeffs_list):
+        ket = circuit_tn.copy()
         coeff = coeff.real
         for label, site in zip(opstr, sites): 
             op_matrix = qu.pauli(label.upper())
             ket.gate_(op_matrix, site)
-        exp_values = (bra & ket).contract(optimize="auto-hq").real
-        expectation_value = expectation_value + coeff * exp_values
+        exp_value = (bra & ket).contract(optimize="auto-hq").real
+        expectation_value = expectation_value + coeff * exp_value
 
     return expectation_value
 
