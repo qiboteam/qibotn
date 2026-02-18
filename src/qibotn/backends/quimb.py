@@ -252,7 +252,7 @@ def exp_value_observable_symbolic(
     for opstr, sites, coeff in zip(operators_list, sites_list, coeffs_list):
         ket = circuit_tn.copy()
         coeff = coeff.real
-        for label, site in zip(opstr, sites): 
+        for label, site in zip(opstr, sites):
             op_matrix = qu.pauli(label.upper())
             ket.gate_(op_matrix, site)
         exp_value = (bra & ket).contract(optimize="auto-hq").real
@@ -309,7 +309,6 @@ def _qibo_circuit_to_quimb(
                 *qubits,
             )
     return circ
-
 
 
 CLASSES_ROOTS = {"numpy": "Numpy", "torch": "PyTorch", "jax": "Jax"}
