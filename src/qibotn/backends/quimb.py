@@ -210,7 +210,8 @@ def exp_value_observable_symbolic(
     This method takes a Qibo circuit, converts it to a Quimb tensor network circuit, and evaluates the expectation value
     of a Hamiltonian specified by three lists of strings: operators, sites, and coefficients.
     The expectation value is computed by summing the contributions from each term in the Hamiltonian, where each term's
-    expectation is calculated using Quimb's `local_expectation` function.
+    expectation is calculated applying gates to the tensor network representation of the circuit and contracting it
+    with the respective bra.
     Each operator string must act on all different qubits, i.e., for each term, the corresponding sites tuple must contain unique qubit indices.
     Example: operators_list = ['xyz', 'xyz'], sites_list = [(1,2,3), (1,2,3)], coeffs_list = [1, 2]
 
@@ -230,6 +231,7 @@ def exp_value_observable_symbolic(
     float
         The real part of the expectation value of the Hamiltonian on the given circuit state.
     """
+
     # Validate that no term acts multiple times on the same qubit (no repeated indices in a sites tuple)
     for sites in sites_list:
         if len(sites) != len(set(sites)):
@@ -238,29 +240,25 @@ def exp_value_observable_symbolic(
                 f"Invalid Hamiltonian term sites {sites}: repeated qubit indices are not allowed "
                 "within a single term (e.g. (0,0,0) is invalid).",
             )
-    quimb_circuit = self._qibo_circuit_to_quimb(
+
+    ket = self._qibo_circuit_to_quimb(
         circuit,
         quimb_circuit_type=self.circuit_ansatz,
         gate_opts={"max_bond": self.max_bond_dimension, "cutoff": self.svd_cutoff},
-    )
+    ).psi
+
+    bra = ket.copy().H
 
     expectation_value = 0.0
     for opstr, sites, coeff in zip(operators_list, sites_list, coeffs_list):
-
-        ops = self._string_to_quimb_operator(opstr)
         coeff = coeff.real
-
-        exp_values = quimb_circuit.local_expectation(
-            ops,
-            where=sites,
-            backend=self.backend,
-            optimize=self.contractions_optimizer,
-            simplify_sequence="R",
-        )
-
+        for label, site in zip(opstr, sites): 
+            op_matrix = qu.pauli(label.upper())
+            ket.gate_(op_matrix, site)
+        exp_values = (bra & ket).contract(optimize="auto-hq").real
         expectation_value = expectation_value + coeff * exp_values
 
-    return self.real(expectation_value)
+    return expectation_value
 
 
 def _qibo_circuit_to_quimb(
@@ -313,26 +311,6 @@ def _qibo_circuit_to_quimb(
     return circ
 
 
-def _string_to_quimb_operator(self, op_str):
-    """
-    Convert a Pauli string (e.g. 'xzy') to a Quimb operator using '&' chaining.
-
-    Parameters
-    ----------
-    op_str : str
-        A string like 'xzy', where each character is one of 'x', 'y', 'z', 'i'.
-
-    Returns
-    -------
-    qu_op : quimb.Qarray
-        The corresponding Quimb operator.
-    """
-    op_str = op_str.lower()
-    op = qu.pauli(op_str[0])
-    for c in op_str[1:]:
-        op = op & qu.pauli(c)
-    return op
-
 
 CLASSES_ROOTS = {"numpy": "Numpy", "torch": "PyTorch", "jax": "Jax"}
 
@@ -343,7 +321,6 @@ METHODS = {
     "execute_circuit": execute_circuit,
     "exp_value_observable_symbolic": exp_value_observable_symbolic,
     "_qibo_circuit_to_quimb": _qibo_circuit_to_quimb,
-    "_string_to_quimb_operator": _string_to_quimb_operator,
     "circuit_ansatz": circuit_ansatz,
 }
 
