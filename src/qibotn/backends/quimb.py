@@ -255,7 +255,7 @@ def exp_value_observable_symbolic(
         for label, site in zip(opstr, sites):
             op_matrix = qu.pauli(label.upper())
             ket.gate_(op_matrix, site)
-        exp_value = (bra & ket).contract(optimize="auto-hq").real
+        exp_value = (bra & ket).contract(optimize=self.contraction_optimizer).real
         expectation_value = expectation_value + coeff * exp_value
 
     return expectation_value
