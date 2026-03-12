@@ -172,42 +172,34 @@ def execute_circuit(
         - When MPI_enabled is True, multinode support is activated using dense_vector_tn_mpi_qu.
     """
     import numpy as np
-    
-   
+
     if self.MPI_enabled:
         if nshots is not None:
             raise_error(
                 NotImplementedError,
-                "Sampling (nshots) is not supported with MPI-based execution."
+                "Sampling (nshots) is not supported with MPI-based execution.",
             )
-        
-        
+
         mps_opts = None
         if self.ansatz == "mps":
-            mps_opts = {
-                "max_bond": self.max_bond_dimension,
-                "cutoff": self.svd_cutoff
-            }
-        
-        
+            mps_opts = {"max_bond": self.max_bond_dimension, "cutoff": self.svd_cutoff}
+
         state, self.rank = dense_vector_tn_mpi_qu(
             qasm=circuit.to_qasm(),
             nqubits=circuit.nqubits,
             initial_state=initial_state,
             mps_opts=mps_opts,
-            backend=self.backend
+            backend=self.backend,
         )
-        
-        
+
         if self.rank > 0:
             state = np.array(0)
-        
-        
+
         if return_array:
             statevector = state.flatten() if self.rank == 0 else state
         else:
             statevector = state if self.rank == 0 else state
-        
+
         return TensorNetworkResult(
             nqubits=circuit.nqubits,
             backend=self,
@@ -216,8 +208,7 @@ def execute_circuit(
             prob_type=None,
             statevector=statevector,
         )
-    
-    
+
     if initial_state is not None and self.ansatz == "mps":
         initial_state = qtn.tensor_1d.MatrixProductState.from_dense(
             initial_state, 2
@@ -289,17 +280,13 @@ def exp_value_observable_symbolic(
     float
         The real part of the expectation value of the Hamiltonian on the given circuit state.
     """
-   
+
     if self.MPI_enabled:
-        
+
         mps_opts = None
         if self.ansatz == "mps":
-            mps_opts = {
-                "max_bond": self.max_bond_dimension,
-                "cutoff": self.svd_cutoff
-            }
-        
-        
+            mps_opts = {"max_bond": self.max_bond_dimension, "cutoff": self.svd_cutoff}
+
         expectation_value, self.rank = exp_value_observable_symbolic_mpi_qu(
             qasm=circuit.to_qasm(),
             nqubits=circuit.nqubits,
@@ -308,13 +295,13 @@ def exp_value_observable_symbolic(
             coeffs_list=coeffs_list,
             mps_opts=mps_opts,
             backend=self.backend,
-            contractions_optimizer=self.contractions_optimizer
+            contractions_optimizer=self.contractions_optimizer,
         )
-        
+
         return expectation_value
-    
+
     # Standard (non-MPI) execution path
-    
+
     for sites in sites_list:
         if len(sites) != len(set(sites)):
             raise_error(
@@ -469,7 +456,7 @@ def __getattr__(name):
         return BACKENDS[name]
     except KeyError:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from None
-    
+
 
 def dense_vector_tn_mpi_qu(
     qasm: str, nqubits, initial_state, mps_opts, backend="numpy"
@@ -486,20 +473,20 @@ def dense_vector_tn_mpi_qu(
     Returns:
         list: Amplitudes of final state after the simulation of the circuit.
     """
-    import numpy as np
     import cotengra as ctg
+    import numpy as np
     from mpi4py import MPI
     from mpi4py.futures import MPICommExecutor
+
     from qibotn.eval_qu import init_state_tn
-    
-   
+
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     target_size = int(2**nqubits / comm.size)
     amplitudes = []
 
     with MPICommExecutor() as pool:
-        
+
         if pool is not None:
 
             if initial_state is not None:
@@ -528,26 +515,30 @@ def dense_vector_tn_mpi_qu(
                 # show the live progress of the best contraction found so far
                 progbar=False,
             )
-           
+
             tensor_network = circ_quimb.psi
             tree = tensor_network.contraction_tree(optimize=opt)
-            
+
             arrays = [t.data for t in tensor_network]
 
-          
             fa = [
                 pool.submit(tree.contract_slice, arrays, i) for i in range(tree.nslices)
             ]
-          
+
             amplitudes = [(c.result()).flatten() for c in fa]
-          
-    
+
     return np.array(amplitudes), rank
 
 
 def exp_value_observable_symbolic_mpi_qu(
-    qasm: str, nqubits, operators_list, sites_list, coeffs_list, mps_opts, 
-    backend="numpy", contractions_optimizer="auto-hq"
+    qasm: str,
+    nqubits,
+    operators_list,
+    sites_list,
+    coeffs_list,
+    mps_opts,
+    backend="numpy",
+    contractions_optimizer="auto-hq",
 ):
     """Evaluate expectation value of symbolic Hamiltonian with Quimb using multi node multi cpu.
 
@@ -564,16 +555,15 @@ def exp_value_observable_symbolic_mpi_qu(
     Returns:
         tuple: (expectation_value, rank) - The expectation value and MPI rank.
     """
-    import numpy as np
     import cotengra as ctg
+    import numpy as np
     from mpi4py import MPI
     from mpi4py.futures import MPICommExecutor
     from qibo.config import raise_error
-    
+
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
-    
-  
+
     for sites in sites_list:
         if len(sites) != len(set(sites)):
             raise_error(
@@ -581,28 +571,27 @@ def exp_value_observable_symbolic_mpi_qu(
                 f"Invalid Hamiltonian term sites {sites}: repeated qubit indices are not allowed "
                 "within a single term (e.g. (0,0,0) is invalid).",
             )
-    
+
     expectation_value = 0.0
-    
+
     with MPICommExecutor() as pool:
-        
+
         if pool is not None:
-            
+
             circ_cls = qtn.circuit.CircuitMPS if mps_opts else qtn.circuit.Circuit
             circ_quimb = circ_cls.from_openqasm2_str(
                 qasm, psi0=None, gate_opts=mps_opts
             )
-            
-            
+
             for opstr, sites, coeff in zip(operators_list, sites_list, coeffs_list):
-                
+
                 op_str = opstr.lower()
                 ops = qu.pauli(op_str[0])
                 for c in op_str[1:]:
                     ops = ops & qu.pauli(c)
-                
+
                 coeff = coeff.real
-                
+
                 target_size = int(2**nqubits / comm.size)
                 opt = ctg.ReusableHyperOptimizer(
                     parallel=pool,
@@ -614,7 +603,7 @@ def exp_value_observable_symbolic_mpi_qu(
                     max_repeats=128,
                     progbar=False,
                 )
-                
+
                 exp_val = circ_quimb.local_expectation(
                     ops,
                     where=sites,
@@ -622,9 +611,9 @@ def exp_value_observable_symbolic_mpi_qu(
                     optimize=opt,
                     simplify_sequence="R",
                 )
-                
+
                 expectation_value += coeff * exp_val
-    
+
     if rank == 0:
         return float(np.real(expectation_value)), rank
     else:
