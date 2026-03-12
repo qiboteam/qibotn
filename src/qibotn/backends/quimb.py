@@ -49,6 +49,8 @@ def __init__(self, quimb_backend="numpy", contraction_optimizer="auto-hq"):
     self.max_bond_dimension = None
     self.svd_cutoff = None
     self.n_most_frequent_states = None
+    self.MPI_enabled = False
+    self.rank = None
 
     self.configure_tn_simulation()
     self.setup_backend_specifics(
@@ -62,6 +64,7 @@ def configure_tn_simulation(
     max_bond_dimension: Optional[int] = None,
     svd_cutoff: Optional[float] = 1e-10,
     n_most_frequent_states: int = 100,
+    MPI_enabled: bool = False,
 ):
     """
     Configure tensor network simulation.
@@ -70,17 +73,25 @@ def configure_tn_simulation(
         ansatz : str, optional
             The tensor network ansatz to use. Default is `None` and, in this case, a
             generic Circuit Quimb class is used.
-            max_bond_dimension : int, optional
+        max_bond_dimension : int, optional
             The maximum bond dimension for the MPS ansatz. Default is 10.
+        svd_cutoff : float, optional
+            SVD cutoff value for MPS truncation. Default is 1e-10.
+        n_most_frequent_states : int, optional
+            Number of most frequent states to return. Default is 100.
+        MPI_enabled : bool, optional
+            Enable MPI-based multinode support. Default is False.
 
     Notes:
         - The ansatz determines the tensor network structure used for simulation. Currently, only "MPS" is supported.
         - The `max_bond_dimension` parameter controls the maximum allowed bond dimension for the MPS ansatz.
+        - MPI_enabled enables multinode support for large-scale simulations.
     """
     self.ansatz = ansatz
     self.max_bond_dimension = max_bond_dimension
     self.svd_cutoff = svd_cutoff
     self.n_most_frequent_states = n_most_frequent_states
+    self.MPI_enabled = MPI_enabled
 
 
 @property
@@ -158,8 +169,47 @@ def execute_circuit(
         - The ansatz determines the tensor network structure used for simulation. Currently, only "MPS" is supported.
         - If `initial_state` is provided, it must be compatible with the MPS ansatz.
         - The `nshots` parameter enables sampling from the circuit's output distribution. If not specified, the full statevector is computed.
+        - When MPI_enabled is True, multinode support is activated using dense_vector_tn_mpi_qu.
     """
-    if initial_state is not None and self.ansatz == "MPS":
+    import numpy as np
+
+    if self.MPI_enabled:
+        if nshots is not None:
+            raise_error(
+                NotImplementedError,
+                "Sampling (nshots) is not supported with MPI-based execution.",
+            )
+
+        mps_opts = None
+        if self.ansatz == "mps":
+            mps_opts = {"max_bond": self.max_bond_dimension, "cutoff": self.svd_cutoff}
+
+        state, self.rank = dense_vector_tn_mpi_qu(
+            qasm=circuit.to_qasm(),
+            nqubits=circuit.nqubits,
+            initial_state=initial_state,
+            mps_opts=mps_opts,
+            backend=self.backend,
+        )
+
+        if self.rank > 0:
+            state = np.array(0)
+
+        if return_array:
+            statevector = state.flatten() if self.rank == 0 else state
+        else:
+            statevector = state if self.rank == 0 else state
+
+        return TensorNetworkResult(
+            nqubits=circuit.nqubits,
+            backend=self,
+            measures=None,
+            measured_probabilities=None,
+            prob_type=None,
+            statevector=statevector,
+        )
+
+    if initial_state is not None and self.ansatz == "mps":
         initial_state = qtn.tensor_1d.MatrixProductState.from_dense(
             initial_state, 2
         )  # 2 is the physical dimension
@@ -230,7 +280,28 @@ def exp_value_observable_symbolic(
     float
         The real part of the expectation value of the Hamiltonian on the given circuit state.
     """
-    # Validate that no term acts multiple times on the same qubit (no repeated indices in a sites tuple)
+
+    if self.MPI_enabled:
+
+        mps_opts = None
+        if self.ansatz == "mps":
+            mps_opts = {"max_bond": self.max_bond_dimension, "cutoff": self.svd_cutoff}
+
+        expectation_value, self.rank = exp_value_observable_symbolic_mpi_qu(
+            qasm=circuit.to_qasm(),
+            nqubits=circuit.nqubits,
+            operators_list=operators_list,
+            sites_list=sites_list,
+            coeffs_list=coeffs_list,
+            mps_opts=mps_opts,
+            backend=self.backend,
+            contractions_optimizer=self.contractions_optimizer,
+        )
+
+        return expectation_value
+
+    # Standard (non-MPI) execution path
+
     for sites in sites_list:
         if len(sites) != len(set(sites)):
             raise_error(
@@ -385,3 +456,165 @@ def __getattr__(name):
         return BACKENDS[name]
     except KeyError:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from None
+
+
+def dense_vector_tn_mpi_qu(
+    qasm: str, nqubits, initial_state, mps_opts, backend="numpy"
+):
+    """Evaluate circuit in QASM format with Quimb using multi node multi cpu.
+
+    Args:
+        qasm (str): QASM program.
+        nqubits (int): Number of qubits in the circuit
+        initial_state (list): Initial state in the dense vector form. If ``None`` the default ``|00...0>`` state is used.
+        mps_opts (dict): Parameters to tune the gate_opts for mps settings in ``class quimb.tensor.circuit.CircuitMPS``.
+        backend (str):  Backend to perform the contraction with, e.g. ``numpy``, ``cupy``, ``jax``. Passed to ``opt_einsum``.
+
+    Returns:
+        list: Amplitudes of final state after the simulation of the circuit.
+    """
+    import cotengra as ctg
+    import numpy as np
+    from mpi4py import MPI
+    from mpi4py.futures import MPICommExecutor
+
+    from qibotn.eval_qu import init_state_tn
+
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    target_size = int(2**nqubits / comm.size)
+    amplitudes = []
+
+    with MPICommExecutor() as pool:
+
+        if pool is not None:
+
+            if initial_state is not None:
+                initial_state = init_state_tn(nqubits, initial_state)
+
+            circ_cls = qtn.circuit.CircuitMPS if mps_opts else qtn.circuit.Circuit
+            circ_quimb = circ_cls.from_openqasm2_str(
+                qasm, psi0=initial_state, gate_opts=mps_opts
+            )
+
+            # options to perform the slicing and finding contraction path usign Cotengra
+
+            opt = ctg.ReusableHyperOptimizer(
+                parallel=pool,
+                # make sure we generate at least 1 slice per process
+                slicing_opts={"target_slices": comm.size},
+                slicing_reconf_opts={"target_size": target_size},
+                # uses basic greedy search algorithm to find optimal contraction path
+                methods=["greedy"],
+                # terminate search if contraction is cheap
+                max_time="rate:1e6",
+                # just uniformly sample the space
+                optlib="random",
+                # maximum number of trial contraction trees to generate
+                max_repeats=128,
+                # show the live progress of the best contraction found so far
+                progbar=False,
+            )
+
+            tensor_network = circ_quimb.psi
+            tree = tensor_network.contraction_tree(optimize=opt)
+
+            arrays = [t.data for t in tensor_network]
+
+            fa = [
+                pool.submit(tree.contract_slice, arrays, i) for i in range(tree.nslices)
+            ]
+
+            amplitudes = [(c.result()).flatten() for c in fa]
+
+    return np.array(amplitudes), rank
+
+
+def exp_value_observable_symbolic_mpi_qu(
+    qasm: str,
+    nqubits,
+    operators_list,
+    sites_list,
+    coeffs_list,
+    mps_opts,
+    backend="numpy",
+    contractions_optimizer="auto-hq",
+):
+    """Evaluate expectation value of symbolic Hamiltonian with Quimb using multi node multi cpu.
+
+    Args:
+        qasm (str): QASM program.
+        nqubits (int): Number of qubits in the circuit.
+        operators_list (list): List of operator strings representing the symbolic Hamiltonian terms.
+        sites_list (list): Tuples each specifying the qubits (sites) the corresponding operator acts on.
+        coeffs_list (list): The coefficients for each Hamiltonian term.
+        mps_opts (dict): Parameters to tune the gate_opts for mps settings in ``class quimb.tensor.circuit.CircuitMPS``.
+        backend (str): Backend to perform the contraction with, e.g. ``numpy``, ``cupy``, ``jax``.
+        contractions_optimizer (str): Contractions optimizer to use.
+
+    Returns:
+        tuple: (expectation_value, rank) - The expectation value and MPI rank.
+    """
+    import cotengra as ctg
+    import numpy as np
+    from mpi4py import MPI
+    from mpi4py.futures import MPICommExecutor
+    from qibo.config import raise_error
+
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+
+    for sites in sites_list:
+        if len(sites) != len(set(sites)):
+            raise_error(
+                ValueError,
+                f"Invalid Hamiltonian term sites {sites}: repeated qubit indices are not allowed "
+                "within a single term (e.g. (0,0,0) is invalid).",
+            )
+
+    expectation_value = 0.0
+
+    with MPICommExecutor() as pool:
+
+        if pool is not None:
+
+            circ_cls = qtn.circuit.CircuitMPS if mps_opts else qtn.circuit.Circuit
+            circ_quimb = circ_cls.from_openqasm2_str(
+                qasm, psi0=None, gate_opts=mps_opts
+            )
+
+            for opstr, sites, coeff in zip(operators_list, sites_list, coeffs_list):
+
+                op_str = opstr.lower()
+                ops = qu.pauli(op_str[0])
+                for c in op_str[1:]:
+                    ops = ops & qu.pauli(c)
+
+                coeff = coeff.real
+
+                target_size = int(2**nqubits / comm.size)
+                opt = ctg.ReusableHyperOptimizer(
+                    parallel=pool,
+                    slicing_opts={"target_slices": comm.size},
+                    slicing_reconf_opts={"target_size": target_size},
+                    methods=["greedy"],
+                    max_time="rate:1e6",
+                    optlib="random",
+                    max_repeats=128,
+                    progbar=False,
+                )
+
+                exp_val = circ_quimb.local_expectation(
+                    ops,
+                    where=sites,
+                    backend=backend,
+                    optimize=opt,
+                    simplify_sequence="R",
+                )
+
+                expectation_value += coeff * exp_val
+
+    if rank == 0:
+        return float(np.real(expectation_value)), rank
+    else:
+        return 0.0, rank
