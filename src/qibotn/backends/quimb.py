@@ -4,7 +4,6 @@ from typing import Optional
 import quimb as qu
 import quimb.tensor as qtn
 from qibo.config import raise_error
-from qibo.gates.abstract import ParametrizedGate
 from qibo.models import Circuit
 
 from qibotn.backends.abstract import QibotnBackend
@@ -25,6 +24,8 @@ GATE_MAP = {
     "cnot": "CNOT",
     "cy": "CY",
     "cz": "CZ",
+    "cu1": "CU1",
+    "rzz": "RZZ",
     "iswap": "ISWAP",
     "swap": "SWAP",
     "ccx": "CCX",
@@ -368,19 +369,12 @@ def _qibo_circuit_to_quimb(
         params = getattr(gate, "parameters", ())
         qubits = getattr(gate, "qubits", ())
 
-        is_parametrized = isinstance(gate, ParametrizedGate) and getattr(
-            gate, "trainable", True
+        # Quimb's apply_gate does not accept the 'parametrized' kwarg in this path.
+        circ.apply_gate(
+            quimb_gate_name,
+            *params,
+            *qubits,
         )
-        if is_parametrized:
-            circ.apply_gate(
-                quimb_gate_name, *params, *qubits, parametrized=is_parametrized
-            )
-        else:
-            circ.apply_gate(
-                quimb_gate_name,
-                *params,
-                *qubits,
-            )
     return circ
 
 
