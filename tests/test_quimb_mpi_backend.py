@@ -44,7 +44,6 @@ def build_symbolic_lists(nqubits):
     return operators_list, sites_list, coeffs_list
 
 
-
 @pytest.mark.parametrize("nqubits", [2, 5, 7])
 def test_quimb_statevector_mpi(nqubits: int):
     qibo.set_backend(backend="numpy")
@@ -67,7 +66,6 @@ def test_quimb_statevector_mpi(nqubits: int):
         ), "Resulting dense vectors do not match"
     else:
         assert outcome.state() is None
-
 
 
 @pytest.mark.parametrize("nqubits", [2, 5, 7])

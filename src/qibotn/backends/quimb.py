@@ -4,7 +4,6 @@ from typing import Optional
 import quimb as qu
 import quimb.tensor as qtn
 from qibo.config import raise_error
-from qibo.gates.abstract import ParametrizedGate
 from qibo.models import Circuit
 
 from qibotn.backends.abstract import QibotnBackend
@@ -25,6 +24,8 @@ GATE_MAP = {
     "cnot": "CNOT",
     "cy": "CY",
     "cz": "CZ",
+    "cu1": "CU1",
+    "rzz": "RZZ",
     "iswap": "ISWAP",
     "swap": "SWAP",
     "ccx": "CCX",
