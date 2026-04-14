@@ -172,42 +172,39 @@ def execute_circuit(
         - When MPI_enabled is True, multinode support is activated using dense_vector_tn_mpi_qu.
     """
     import numpy as np
-    
-   
+
     if self.MPI_enabled:
         if nshots is not None:
             raise_error(
                 NotImplementedError,
-                "Sampling (nshots) is not supported with MPI-based execution."
+                "Sampling (nshots) is not supported with MPI-based execution.",
             )
-        
-        
+
         mps_opts = None
         if self.ansatz == "mps":
-            mps_opts = {
-                "max_bond": self.max_bond_dimension,
-                "cutoff": self.svd_cutoff
-            }
-        
-        
+            mps_opts = {"max_bond": self.max_bond_dimension, "cutoff": self.svd_cutoff}
+
         state, self.rank = dense_vector_tn_mpi_qu(
             qasm=circuit.to_qasm(),
             nqubits=circuit.nqubits,
             initial_state=initial_state,
             mps_opts=mps_opts,
-            backend=self.backend
+            backend=self.backend,
         )
-        
-        
+
         if self.rank > 0:
             state = np.array(0)
-        
-        
+
         if return_array:
             statevector = state.flatten() if self.rank == 0 else state
         else:
             statevector = state if self.rank == 0 else state
-        
+
+        if self.rank == 0:
+            statevector = state.flatten() if return_array else state
+        else:
+            statevector = None
+
         return TensorNetworkResult(
             nqubits=circuit.nqubits,
             backend=self,
@@ -216,8 +213,7 @@ def execute_circuit(
             prob_type=None,
             statevector=statevector,
         )
-    
-    
+
     if initial_state is not None and self.ansatz == "mps":
         initial_state = qtn.tensor_1d.MatrixProductState.from_dense(
             initial_state, 2
@@ -289,17 +285,13 @@ def exp_value_observable_symbolic(
     float
         The real part of the expectation value of the Hamiltonian on the given circuit state.
     """
-   
+
     if self.MPI_enabled:
-        
+
         mps_opts = None
         if self.ansatz == "mps":
-            mps_opts = {
-                "max_bond": self.max_bond_dimension,
-                "cutoff": self.svd_cutoff
-            }
-        
-        
+            mps_opts = {"max_bond": self.max_bond_dimension, "cutoff": self.svd_cutoff}
+
         expectation_value, self.rank = exp_value_observable_symbolic_mpi_qu(
             qasm=circuit.to_qasm(),
             nqubits=circuit.nqubits,
@@ -308,13 +300,13 @@ def exp_value_observable_symbolic(
             coeffs_list=coeffs_list,
             mps_opts=mps_opts,
             backend=self.backend,
-            contractions_optimizer=self.contractions_optimizer
+            contraction_optimizer=self.contractions_optimizer,
         )
-        
+
         return expectation_value
-    
+
     # Standard (non-MPI) execution path
-    
+
     for sites in sites_list:
         if len(sites) != len(set(sites)):
             raise_error(
@@ -381,23 +373,12 @@ def _qibo_circuit_to_quimb(
         params = getattr(gate, "parameters", ())
         qubits = getattr(gate, "qubits", ())
 
-        is_parametrized = isinstance(gate, ParametrizedGate) and getattr(
-            gate, "trainable", True
-        )
-        if is_parametrized:
-            circ.apply_gate(
-                quimb_gate_name, *params, *qubits, parametrized=is_parametrized
-            )
-        else:
-            circ.apply_gate(
-                quimb_gate_name,
-                *params,
-                *qubits,
-            )
+        # Quimb's apply_gate does not accept the 'parametrized' kwarg in this path.
+        circ.apply_gate(quimb_gate_name, *params, *qubits)
     return circ
 
 
-def _string_to_quimb_operator(self, op_str):
+def _string_to_quimb_operator(op_str):
     """
     Convert a Pauli string (e.g. 'xzy') to a Quimb operator using '&' chaining.
 
@@ -427,7 +408,7 @@ METHODS = {
     "execute_circuit": execute_circuit,
     "exp_value_observable_symbolic": exp_value_observable_symbolic,
     "_qibo_circuit_to_quimb": _qibo_circuit_to_quimb,
-    "_string_to_quimb_operator": _string_to_quimb_operator,
+    "_string_to_quimb_operator": staticmethod(_string_to_quimb_operator),
     "circuit_ansatz": circuit_ansatz,
 }
 
@@ -469,10 +450,10 @@ def __getattr__(name):
         return BACKENDS[name]
     except KeyError:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from None
-    
+
 
 def dense_vector_tn_mpi_qu(
-    qasm: str, nqubits, initial_state, mps_opts, backend="numpy"
+    qasm: str, nqubits, initial_state, mps_opts, backend="numpy", path_opts=None
 ):
     """Evaluate circuit in QASM format with Quimb using multi node multi cpu.
 
@@ -482,24 +463,26 @@ def dense_vector_tn_mpi_qu(
         initial_state (list): Initial state in the dense vector form. If ``None`` the default ``|00...0>`` state is used.
         mps_opts (dict): Parameters to tune the gate_opts for mps settings in ``class quimb.tensor.circuit.CircuitMPS``.
         backend (str):  Backend to perform the contraction with, e.g. ``numpy``, ``cupy``, ``jax``. Passed to ``opt_einsum``.
+        path_opts (dict or object, optional): Contraction path options passed to Quimb/Cotengra.
+            If ``None``, a default ``ReusableHyperOptimizer`` is used.
 
     Returns:
         list: Amplitudes of final state after the simulation of the circuit.
     """
-    import numpy as np
     import cotengra as ctg
+    import numpy as np
     from mpi4py import MPI
     from mpi4py.futures import MPICommExecutor
+
     from qibotn.eval_qu import init_state_tn
-    
-   
+
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     target_size = int(2**nqubits / comm.size)
     amplitudes = []
 
     with MPICommExecutor() as pool:
-        
+
         if pool is not None:
 
             if initial_state is not None:
@@ -512,42 +495,50 @@ def dense_vector_tn_mpi_qu(
 
             # options to perform the slicing and finding contraction path usign Cotengra
 
-            opt = ctg.ReusableHyperOptimizer(
-                parallel=pool,
-                # make sure we generate at least 1 slice per process
-                slicing_opts={"target_slices": comm.size},
-                slicing_reconf_opts={"target_size": target_size},
-                # uses basic greedy search algorithm to find optimal contraction path
-                methods=["greedy"],
-                # terminate search if contraction is cheap
-                max_time="rate:1e6",
-                # just uniformly sample the space
-                optlib="random",
-                # maximum number of trial contraction trees to generate
-                max_repeats=128,
-                # show the live progress of the best contraction found so far
-                progbar=False,
-            )
-           
+            if path_opts is None or isinstance(path_opts, dict):
+                path_kwargs = {
+                    # make sure we generate at least 1 slice per process
+                    "slicing_opts": {"target_slices": comm.size},
+                    "slicing_reconf_opts": {"target_size": target_size},
+                    # uses basic greedy search algorithm to find optimal contraction path
+                    "methods": ["greedy"],
+                    # terminate search if contraction is cheap
+                    "max_time": "rate:1e6",
+                    # just uniformly sample the space
+                    "optlib": "random",
+                    # maximum number of trial contraction trees to generate
+                    "max_repeats": 128,
+                    # show the live progress of the best contraction found so far
+                    "progbar": False,
+                }
+                if isinstance(path_opts, dict):
+                    path_kwargs.update(path_opts)
+                path_opts = ctg.ReusableHyperOptimizer(parallel=pool, **path_kwargs)
+
             tensor_network = circ_quimb.psi
-            tree = tensor_network.contraction_tree(optimize=opt)
-            
+            tree = tensor_network.contraction_tree(optimize=path_opts)
+
             arrays = [t.data for t in tensor_network]
 
-          
             fa = [
                 pool.submit(tree.contract_slice, arrays, i) for i in range(tree.nslices)
             ]
-          
+
             amplitudes = [(c.result()).flatten() for c in fa]
-          
-    
+
     return np.array(amplitudes), rank
 
 
 def exp_value_observable_symbolic_mpi_qu(
-    qasm: str, nqubits, operators_list, sites_list, coeffs_list, mps_opts, 
-    backend="numpy", contractions_optimizer="auto-hq"
+    qasm: str,
+    nqubits,
+    operators_list,
+    sites_list,
+    coeffs_list,
+    mps_opts,
+    backend="numpy",
+    contraction_optimizer="auto-hq",
+    path_opts=None,
 ):
     """Evaluate expectation value of symbolic Hamiltonian with Quimb using multi node multi cpu.
 
@@ -559,21 +550,24 @@ def exp_value_observable_symbolic_mpi_qu(
         coeffs_list (list): The coefficients for each Hamiltonian term.
         mps_opts (dict): Parameters to tune the gate_opts for mps settings in ``class quimb.tensor.circuit.CircuitMPS``.
         backend (str): Backend to perform the contraction with, e.g. ``numpy``, ``cupy``, ``jax``.
-        contractions_optimizer (str): Contractions optimizer to use.
+        contraction_optimizer (str, optional): The contractions_optimizer to use for the Quimb/Cotengra tensor network simulation.
+        If ``None``, defaults to "auto-hq".
+        path_opts (dict or object, optional): Contraction path options passed to Quimb/Cotengra.
+            If ``None``, defaults to a ``ReusableHyperOptimizer`` unless
+            ``contractions_optimizer`` is set to a non-default value.
 
     Returns:
         tuple: (expectation_value, rank) - The expectation value and MPI rank.
     """
-    import numpy as np
     import cotengra as ctg
+    import numpy as np
     from mpi4py import MPI
     from mpi4py.futures import MPICommExecutor
     from qibo.config import raise_error
-    
+
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
-    
-  
+
     for sites in sites_list:
         if len(sites) != len(set(sites)):
             raise_error(
@@ -581,50 +575,60 @@ def exp_value_observable_symbolic_mpi_qu(
                 f"Invalid Hamiltonian term sites {sites}: repeated qubit indices are not allowed "
                 "within a single term (e.g. (0,0,0) is invalid).",
             )
-    
+
     expectation_value = 0.0
-    
+
     with MPICommExecutor() as pool:
-        
+
         if pool is not None:
-            
+
             circ_cls = qtn.circuit.CircuitMPS if mps_opts else qtn.circuit.Circuit
             circ_quimb = circ_cls.from_openqasm2_str(
                 qasm, psi0=None, gate_opts=mps_opts
             )
-            
-            
+
+            target_size = int(2**nqubits / comm.size)
+            if path_opts is None:
+                if contraction_optimizer not in (None, "auto-hq"):
+                    path_opts = contraction_optimizer
+                else:
+                    path_opts = ctg.ReusableHyperOptimizer(
+                        parallel=pool,
+                        slicing_opts={"target_slices": comm.size},
+                        slicing_reconf_opts={"target_size": target_size},
+                        methods=["greedy"],
+                        max_time="rate:1e6",
+                        optlib="random",
+                        max_repeats=128,
+                        progbar=False,
+                    )
+            elif isinstance(path_opts, dict):
+                path_kwargs = {
+                    "slicing_opts": {"target_slices": comm.size},
+                    "slicing_reconf_opts": {"target_size": target_size},
+                    "methods": ["greedy"],
+                    "max_time": "rate:1e6",
+                    "optlib": "random",
+                    "max_repeats": 128,
+                    "progbar": False,
+                }
+                path_kwargs.update(path_opts)
+                path_opts = ctg.ReusableHyperOptimizer(parallel=pool, **path_kwargs)
             for opstr, sites, coeff in zip(operators_list, sites_list, coeffs_list):
-                
-                op_str = opstr.lower()
-                ops = qu.pauli(op_str[0])
-                for c in op_str[1:]:
-                    ops = ops & qu.pauli(c)
-                
+
+                ops = _string_to_quimb_operator(opstr)
                 coeff = coeff.real
-                
-                target_size = int(2**nqubits / comm.size)
-                opt = ctg.ReusableHyperOptimizer(
-                    parallel=pool,
-                    slicing_opts={"target_slices": comm.size},
-                    slicing_reconf_opts={"target_size": target_size},
-                    methods=["greedy"],
-                    max_time="rate:1e6",
-                    optlib="random",
-                    max_repeats=128,
-                    progbar=False,
-                )
-                
+
                 exp_val = circ_quimb.local_expectation(
                     ops,
                     where=sites,
                     backend=backend,
-                    optimize=opt,
+                    optimize=path_opts,
                     simplify_sequence="R",
                 )
-                
+
                 expectation_value += coeff * exp_val
-    
+
     if rank == 0:
         return float(np.real(expectation_value)), rank
     else:
