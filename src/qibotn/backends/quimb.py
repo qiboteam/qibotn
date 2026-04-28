@@ -453,6 +453,17 @@ def __getattr__(name):
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from None
 
 
+def _gather_dense_slice_futures(tree, futures, backend):
+    """Assemble contracted slice futures into the final dense output.
+
+    Cotengra's ``contract_slice`` returns one contribution per slice, which may
+    need summing and/or stacking depending on whether sliced indices overlap the
+    output. ``gather_slices`` performs that reconstruction for us.
+    """
+
+    return tree.gather_slices((future.result() for future in futures), backend=backend)
+
+
 def dense_vector_tn_mpi_qu(
     qasm: str, nqubits, initial_state, mps_opts, backend="numpy", path_opts=None
 ):
@@ -480,7 +491,7 @@ def dense_vector_tn_mpi_qu(
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     target_size = int(2**nqubits / comm.size)
-    amplitudes = []
+    amplitudes = np.array([])
 
     with MPICommExecutor() as pool:
 
@@ -525,9 +536,9 @@ def dense_vector_tn_mpi_qu(
                 pool.submit(tree.contract_slice, arrays, i) for i in range(tree.nslices)
             ]
 
-            amplitudes = [(c.result()).flatten() for c in fa]
+            amplitudes = _gather_dense_slice_futures(tree, fa, backend=backend)
 
-    return np.array(amplitudes), rank
+    return amplitudes, rank
 
 
 def exp_value_observable_symbolic_mpi_qu(
