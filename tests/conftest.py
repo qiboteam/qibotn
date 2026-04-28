@@ -3,6 +3,7 @@
 Pytest fixtures.
 """
 
+import os
 import sys
 
 import pytest
@@ -57,6 +58,17 @@ def pytest_runtest_setup(item):
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "linux: mark test to run only on linux")
+    if os.getenv("OMPI_COMM_WORLD_SIZE"):
+        if hasattr(config.option, "no_cov"):
+            config.option.no_cov = True
+        cov_plugin = config.pluginmanager.get_plugin("_cov")
+        if cov_plugin is not None:
+            config.pluginmanager.unregister(cov_plugin)
+
+
+def pytest_addoption(parser):
+    # Keep pyproject's [tool.pytest.ini_options].env valid even when pytest-env is not installed.
+    parser.addini("env", type="linelist", help="Environment variables for tests.")
 
 
 def pytest_generate_tests(metafunc):
