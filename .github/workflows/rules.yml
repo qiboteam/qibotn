@@ -3,6 +3,7 @@ name: Tests
 
 env:
   CUDA_PATH:
+  CMAKE_POLICY_VERSION_MINIMUM: "3.5"
 
 on:
   workflow_dispatch:
@@ -26,8 +27,6 @@ jobs:
     # job to build
     needs: check
     if: ${{fromJSON(needs.check.outputs.cuda_avail)}}
-    env:
-      CMAKE_POLICY_VERSION_MINIMUM: "3.5"
     strategy:
           matrix:
             os: [ubuntu-latest]
