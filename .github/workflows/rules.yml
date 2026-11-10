@@ -3,6 +3,7 @@ name: Tests
 
 env:
   CUDA_PATH:
+  CMAKE_POLICY_VERSION_MINIMUM: "3.5"
 
 on:
   workflow_dispatch:
@@ -29,7 +30,7 @@ jobs:
     strategy:
           matrix:
             os: [ubuntu-latest]
-            python-version: ["3.11", "3.12", "3.13"]
+            python-version: ["3.12", "3.13", "3.14"]
     uses: qiboteam/workflows/.github/workflows/rules-poetry.yml@v1
     with:
       os: ${{ matrix.os }}
